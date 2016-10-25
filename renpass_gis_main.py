@@ -89,11 +89,12 @@ country_codes = ['AT', 'BE', 'CH', 'CZ', 'DE', 'DK', 'FR', 'LU', 'NL', 'NO',
 for cc in country_codes:
 
     # build single dataframe for electric busses
-    inputs = results.slice_unstacked(bus_label=cc + '_bus_el', type='input',
+    inputs = results.slice_unstacked(bus_label=cc + '_bus_el', type='to_bus',
                                      date_from=date_from, date_to=date_to,
                                      formatted=True)
 
-    outputs = results.slice_unstacked(bus_label=cc + '_bus_el', type='output',
+    outputs = results.slice_unstacked(bus_label=cc + '_bus_el',
+				      type='from_bus',
                                       date_from=date_from, date_to=date_to,
                                       formatted=True)
 
