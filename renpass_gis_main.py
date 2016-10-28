@@ -70,7 +70,10 @@ results = ResultsDataFrame(energy_system=es)
 
 # %% postprocessing: write complete result dataframe to file system
 
-results_path = 'results/'
+if not os.path.isdir('results'):
+    os.mkdir('results')
+
+results_path = 'results'
 
 date = str(datetime.now())
 
