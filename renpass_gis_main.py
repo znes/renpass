@@ -70,7 +70,10 @@ results = ResultsDataFrame(energy_system=es)
 
 # %% postprocessing: write complete result dataframe to file system
 
-results_path = 'results/'
+if not os.path.isdir('results'):
+    os.mkdir('results')
+
+results_path = 'results'
 
 date = str(datetime.now())
 
@@ -87,16 +90,14 @@ country_codes = ['AT', 'BE', 'CH', 'CZ', 'DE', 'DK', 'FR', 'LU', 'NL', 'NO',
                  'PL', 'SE']
 
 for cc in country_codes:
-
-    # build single dataframe for electric busses
+    # build single dataframe for electric buses
     inputs = results.slice_unstacked(bus_label=cc + '_bus_el', type='to_bus',
                                      date_from=date_from, date_to=date_to,
                                      formatted=True)
 
-    outputs = results.slice_unstacked(bus_label=cc + '_bus_el',
-				      type='from_bus',
-                                      date_from=date_from, date_to=date_to,
-                                      formatted=True)
+    outputs = results.slice_unstacked(bus_label=(cc + '_bus_el'),
+                                      type='from_bus', date_from=date_from,
+                                      date_to=date_to, formatted=True)
 
     other = results.slice_unstacked(bus_label=cc + '_bus_el', type='other',
                                     date_from=date_from, date_to=date_to,
