@@ -15,10 +15,10 @@ Overview
 ========
 
 renpassG!S is an easy-to-use application designed to model the cost-minimal dispatch of energy supply systems.
-Strictly speaking, it is a so-called numerical partial equilibrium model of a liberalised electricity market often referred to as fundamental model.
+Strictly speaking, it is a so-called numerical partial equilibrium model the liberalised electricity market often referred to as fundamental model.
 Making use of the broad functionality of `oemof <https://github.com/oemof/oemof>`_, the application provides easy-to-understand energy system scenarios
-for different regions in a CSV format, optimizing the power plant dispatch at minimum cost.
-Results are exported into a CSV structure as well an can be easily accessed using spreadsheet software such as LibreOffice Calc or Microsoft Excel.
+for different regions in spreadsheet format (CSV), optimizing the power plant dispatch at minimum cost.
+Results are exported into spreadsheet format as well an can be easily accessed using spreadsheet software such as LibreOffice Calc or Microsoft Excel.
 
 The general functionality can be derived from the following figure:
 
@@ -61,14 +61,14 @@ Just run the script from the command line:
 
     python3 renpass_gis_main.py --some_args
 
-All results are written in the subfolder *results*.
+All result files are written into the subfolder *results*.
 
 
 Development
 ===========
 
 We adhere strictly to the `oemof developer rules <http://oemof.readthedocs.io/en/stable/developing_oemof.html>`_.
-If you want to contribute and have questions, just write us an e-mail (see below).
+If you want to contribute and have questions, just write us an e-mail.
 
 
 Contact
