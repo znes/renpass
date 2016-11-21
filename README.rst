@@ -68,7 +68,7 @@ Contribution
 ============
 
 We adhere strictly to the `oemof developer rules <http://oemof.readthedocs.io/en/stable/developing_oemof.html>`_.
-For any questions concerning the contribution, you can use or [contact details](#contact) below.
+For any questions concerning the contribution, you can use or `contact details <#contact>`_ below.
 
 
 Contact
