@@ -1,5 +1,5 @@
 
-.. contents:: `Table of contents`
+.. contents::
     :depth: 2
     :local:
     :backlinks: top
