@@ -34,7 +34,7 @@ For questions on the data, you can use or contact details below.
 Installation
 =============
 
-renpassG!S is build within _oemof and works with the current stable version (v.0.1).
+renpassG!S is build within `oemof <https://github.com/oemof/oemof>`_ and works with the current stable version (v.0.1).
 Please follow the current installation guidelines in the `documentation <https://github.com/oemof/oemof#documentation>`_.
 
 Contact
