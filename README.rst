@@ -1,5 +1,6 @@
 The application renpassG!S stands for (r)enewable (en)ergy (pa)thway (s)imulation (s)ystem capable of working with (GIS) data.
-It is based on the original idea of the model _renpass and closely linked to the Open Energy Modelling Framework (_oemof).
+It is based on the original idea of the model [renpass](http://www.renpass.eu) and closely linked to the Open Energy Modelling Framework ([oemof](http://github.com/oemof/oemof))
+).
 
 This documentation is meant to explain the basic functionality and structured as follows:
 
@@ -30,7 +31,4 @@ Installation
 renpassG!S is build within _oemof and works with the current stable version (v.0.1).
 
 Please follow the current installation guidelines.
-
-.. _renpass: http://www.renpass.eu
-.. _oemof: https://github.com/oemof/oemof
 
