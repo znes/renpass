@@ -10,8 +10,9 @@ This documentation is meant to explain the basic functionality and structured as
     :backlinks: top
 .. sectnum::
 
+
 Overview
-=============
+========
 
 renpassG!S is an easy-to-use application designed to model the cost-minimal dispatch of energy supply systems.
 Strictly speaking, it is a so-called numerical partial equilibrium model of a liberalised electricity market often referred to as fundamental model.
@@ -31,17 +32,53 @@ Currently, it is developed and maintained at the Center for Sustainable Energy S
 As there are currently some licensing issues concerning the scenario data, this repository only provides the application code.
 For questions on the data, you can use or contact details below.
 
+
+Application Examples
+====================
+
+Bla
+
 Installation
-=============
+============
 
 renpassG!S is build within `oemof <https://github.com/oemof/oemof>`_ and works with the current stable version (v.0.1).
 Please follow the current installation guidelines in the `documentation <https://github.com/oemof/oemof#documentation>`_.
 
+If oemof has been installed successfully (including a suitable solver), the application can be run from the directory.
+Just clone this repository using:
+
+.. code:: bash
+
+    git clone https://github.com/znes/renpass_gis.git
+
+
+Usage
+=====
+
+Just run the script from the command line:
+
+.. code:: bash
+
+    python3 renpass_gis_main.py --some_args
+
+All results are written in the subfolder *results*.
+
+
+Development
+===========
+
+We adhere strictly to the `oemof developer rules <http://oemof.readthedocs.io/en/stable/developing_oemof.html>`_.
+If you want to contribute and have questions, just write us an e-mail (see below).
+
+
 Contact
-=============
+=======
 
 If you have any questions or want to contribute, feel free to contact us!
+For questions, bugs, or possible improvements please create an `issue <https://github.com/znes/renpass_gis/issues>`_.
 
-* Flensburg University of Applied Sciences: <cord.kaldemeyer(at)hs-flensburg.de>
+If there are other concerns, please write us an e-mail:
 
-* University of Flensburg: <martin.soethe(at)uni-flensburg.de>
+* Cord Kaldemeyer (Flensburg University of Applied Sciences): <cord.kaldemeyer(at)hs-flensburg.de>
+
+* Martin Söthe (University of Flensburg): <martin.soethe(at)uni-flensburg.de>
