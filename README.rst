@@ -66,7 +66,7 @@ Annual production per energy carrier for two selected scenarios
     :align: center    
     :width: 100%
 
-Diurnal pumped-storage power plant dispatch in Norway
+Diurnal pumped-storage dispatch in Norway for a selected scenario
 -------------------------------------------------------------------
 
 .. image:: /documents/renpass_gis_pumped_hydro.png
