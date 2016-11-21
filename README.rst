@@ -17,8 +17,8 @@ Making use of the broad functionality of oemof, the application renpassG!S provi
 optimizing the power plant dispatch for minimum cost and exports results of the optimization process.
 
 .. image:: /documents/model_overview_renpass_gis_en.png
-    :alt: HTTPie compared to cURL
-    :width: 100%
+    :alt: renpassG!S model model overview
+    :width: 75%
     :align: center
 
 Installation
