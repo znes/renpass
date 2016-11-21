@@ -1,14 +1,15 @@
+Introduction
+============
+
+renpassG!S is an easy-to-use application designed to model energy systems, which is developed and maintained at the Center for Sustainable Energy Systems (Zentrum für nachhaltige Energysysteme (ZNES)) in Flensburg. The application is closely linked to the Open-Energy-Modeling-Framework (oemof). renpassG!S, an application of the broad functionality of oemof provides easy-to-understand energy system scenarios for Europe in a CSV format, optimizing the power plant dispatch for minimum cost and exports results of the optimization process.
+
+The documentation is structured as follows:
 
 .. contents::
     :depth: 2
     :local:
     :backlinks: top
 .. sectnum::
-
-Introduction
-============
-
-renpassG!S is an easy-to-use application designed to model energy systems, which is developed and maintained at the Center for Sustainable Energy Systems (Zentrum für nachhaltige Energysysteme (ZNES)) in Flensburg. The application is closely linked to the Open-Energy-Modeling-Framework (oemof). renpassG!S, an application of the broad functionality of oemof provides easy-to-understand energy system scenarios for Europe in a CSV format, optimizing the power plant dispatch for minimum cost and exports results of the optimization process.
 
 Scenario Data
 =============
