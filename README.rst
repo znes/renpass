@@ -42,15 +42,24 @@ and price formation in Germany and its interconnected neighbor countries based o
 and marginal costs and the assumption of an inflexible electricity demand.
 The following figures show some impressions of possible outcomes.
 
+Hourly power plant dispatch for a week in January
+-------------------------------------------------
+
 .. image:: /documents/renpass_gis_dispatch.png
     :alt: power plant dispatch
     :align: center    
     :width: 100%
 
+Wholesale electricity market price formation for a week in May/June
+-------------------------------------------------------------------
+
 .. image:: /documents/renpass_gis_prices.png
     :alt: wholesale market price formation
     :align: center    
     :width: 100%
+
+Annual production per energy carrier for two selected scenarios
+-------------------------------------------------------------------
 
 .. image:: /documents/renpass_gis_annual_production.png
     :alt: annual production
