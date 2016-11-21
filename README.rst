@@ -36,7 +36,15 @@ For questions on the data, you can use or `contact details <#contact>`_ below.
 Application Examples
 ====================
 
-Bla
+The model has been used in different research projects. 
+One application was to model future scenarios of the power plant dispatch
+and price formation in Germany and its interconnected neighbor countries based on operational
+and marginal costs and the assumption of an inflexible electricity demand.
+Some impressions are shown below.
+
+Currently, a similar spin-off model is adapted to the requirements of the Middle East and North Africa
+(MENA) region to model possible pathways for the future electricity generation based on a high share of
+renewables.
 
 Installation
 ============
@@ -78,7 +86,7 @@ If you have any questions or want to contribute, feel free to contact us!
 
 For questions, bugs, or possible improvements please create an `issue <https://github.com/znes/renpass_gis/issues>`_.
 
-If there are other concerns, please write us an e-mail:
+For all other concerns, please write us an e-mail:
 
 * Cord Kaldemeyer (Flensburg University of Applied Sciences): <cord.kaldemeyer(at)hs-flensburg.de>
 
