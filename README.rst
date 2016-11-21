@@ -13,8 +13,10 @@ This documentation is meant to explain the basic functionality and structured as
 Overview
 =============
 
-renpassG!S is an easy-to-use application designed to model energy systems, which is developed and maintained at
-the Center for Sustainable Energy Systems (Zentrum für nachhaltige Energysysteme (ZNES)) in Flensburg.
+renpassG!S is an easy-to-use application designed to model the cost-minimal dispatch of energy supply systems.
+Strictly speaking, it is a so-called numerical partial equilibrium model of a liberalised electricity market often referred to as fundamental model.
+
+Currently, it is developed and maintained at the Center for Sustainable Energy Systems (Zentrum für nachhaltige Energysysteme (ZNES)) in Flensburg.
 Making use of the broad functionality of `oemof <https://github.com/oemof/oemof>`_, the application provides easy-to-understand energy system scenarios
 for different regions in a CSV format, optimizing the power plant dispatch at minimum cost.
 Results are exported into a CSV structure as well an can be easily accessed using spreadsheet software such as LibreOffice Calc or Microsoft Excel.
