@@ -27,7 +27,7 @@ The general functionality can be derived from the following figure:
     :width: 100%
 
 
-As there are some licensing issues concerning the scenario data, this repository currently only provides the application code.
+As there are currently some licensing issues concerning the scenario data, this repository only provides the application code.
 If you are interested in using or contributuing to the app, feel free to contact us.
 
 Installation
