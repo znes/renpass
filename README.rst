@@ -30,7 +30,7 @@ The general functionality can be derived from the following figure:
 
 Currently, it is developed and maintained at the Center for Sustainable Energy Systems (Zentrum für nachhaltige Energysysteme (ZNES)) in Flensburg.
 As there are currently some licensing issues concerning the scenario data, this repository only provides the application code.
-For questions on the data, you can use or contact details below.
+For questions on the data, you can use or `contact details <#contact>`_ below.
 
 
 Application Examples
@@ -68,7 +68,7 @@ Contribution
 ============
 
 We adhere strictly to the `oemof developer rules <http://oemof.readthedocs.io/en/stable/developing_oemof.html>`_.
-For any questions concerning the contribution, you can use or `contact details <#contact>`_ below.
+For any questions concerning the contribution, you can use our `contact details <#contact>`_ below.
 
 
 Contact
