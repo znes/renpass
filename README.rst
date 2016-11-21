@@ -1,4 +1,5 @@
-The application renpassG!S stands for (r)enewable (en)ergy (pa)thway (s)imulation (s)ystem capable of working with (GIS) data.
+The application renpassG!S stands for (r)enewable (en)ergy (pa)thway (s)imulation (s)ystem capable of working with data
+from geographic information systems (GIS).
 It is based on the original idea of `renpass <http://www.renpass.eu>`_ and closely linked to
 the `Open Energy Modelling Framework (oemof) <https://github.com/oemof/oemof>`_.
 
