@@ -9,10 +9,15 @@ The documentation is structured as follows:
 
 
 .. contents::
-    :depth: 2
+    :depth: 1
     :local:
     :backlinks: top
 .. sectnum::
+
+.. image:: https://raw.githubusercontent.com/jkbrzt/httpie/master/httpie.png
+    :alt: HTTPie compared to cURL
+    :width: 100%
+    :align: center
 
 Installation
 =============
