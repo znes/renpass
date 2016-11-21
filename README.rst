@@ -64,17 +64,18 @@ Just run the script from the command line:
 All result files are written into the subfolder *results*.
 
 
-Development
-===========
+Contribution
+============
 
 We adhere strictly to the `oemof developer rules <http://oemof.readthedocs.io/en/stable/developing_oemof.html>`_.
-If you want to contribute and have questions, just write us an e-mail.
+For any questions concerning the contribution, you can use or [contact details](#contact) below.
 
 
 Contact
 =======
 
 If you have any questions or want to contribute, feel free to contact us!
+
 For questions, bugs, or possible improvements please create an `issue <https://github.com/znes/renpass_gis/issues>`_.
 
 If there are other concerns, please write us an e-mail:
