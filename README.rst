@@ -39,6 +39,8 @@ Please follow the current installation guidelines in the `documentation <https:/
 Contact
 =============
 
+If you have any questions or want to contribute, feel free to contact us!
+
 * Flensburg University of Applied Sciences: <cord.kaldemeyer(at)hs-flensburg.de>
 
 * University of Flensburg: <martin.soethe(at)uni-flensburg.de>
