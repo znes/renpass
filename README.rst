@@ -74,6 +74,7 @@ Diurnal pumped-storage dispatch in Norway for a selected scenario
     :align: center    
     :width: 100%
 
+
 Currently, a similar spin-off model is adapted to the requirements of the Middle East and North Africa
 (MENA) region to model possible pathways for the future electricity generation based on a high share of
 renewables.
