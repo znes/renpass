@@ -31,26 +31,6 @@ renpassG!S is build within _oemof and works with the current stable version (v.0
 
 Please follow the current installation guidelines.
 
-
-.. ..
-
-<!--
-
-Some chapter
-=============
-
-With content..
-
-Some subsection
----------------
-
-With more content.
-
-Some subsubsection
-~~~~~~~~~~~~~~~~~~
-
--->
-
 .. _renpass: http://www.renpass.eu
 .. _oemof: https://github.com/oemof/oemof
 
