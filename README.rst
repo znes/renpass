@@ -66,6 +66,14 @@ Annual production per energy carrier for two selected scenarios
     :align: center    
     :width: 100%
 
+Diurnal pumped-storage power plant dispatch in Norway
+-------------------------------------------------------------------
+
+.. image:: /documents/renpass_gis_pumped_hydro.png
+    :alt: pump
+    :align: center    
+    :width: 100%
+
 Currently, a similar spin-off model is adapted to the requirements of the Middle East and North Africa
 (MENA) region to model possible pathways for the future electricity generation based on a high share of
 renewables.
