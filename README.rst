@@ -16,7 +16,7 @@ The application is closely linked to the Open-Energy-Modeling-Framework (oemof).
 Making use of the broad functionality of oemof, the application renpassG!S provides easy-to-understand energy system scenarios for Europe in a CSV format,
 optimizing the power plant dispatch for minimum cost and exports results of the optimization process.
 
-.. image:: https://raw.githubusercontent.com/jkbrzt/httpie/master/httpie.png
+.. image:: /documents/model_overview_renpass_gis_en.png
     :alt: HTTPie compared to cURL
     :width: 100%
     :align: center
