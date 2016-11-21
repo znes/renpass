@@ -1,4 +1,5 @@
-The application renpassG!S stands for (r)enewable (en)ergy (pa)thway (s)imulation (s)ystem capable of working with (GIS) data.
+The application renpassG!S stands for (r)enewable (en)ergy (pa)thway (s)imulation (s)ystem capable of working with data
+from geographic information systems (GIS).
 It is based on the original idea of `renpass <http://www.renpass.eu>`_ and closely linked to
 the `Open Energy Modelling Framework (oemof) <https://github.com/oemof/oemof>`_.
 
@@ -15,7 +16,7 @@ Overview
 ========
 
 renpassG!S is an easy-to-use application designed to model the cost-minimal dispatch of energy supply systems.
-Strictly speaking, it is a so-called numerical partial equilibrium model the liberalised electricity market often referred to as fundamental model.
+Strictly speaking, it is a so-called numerical partial equilibrium model of a liberalised electricity market often referred to as fundamental model.
 Making use of the broad functionality of `oemof <https://github.com/oemof/oemof>`_, the application provides easy-to-understand energy system scenarios
 for different regions in spreadsheet format (CSV), optimizing the power plant dispatch at minimum cost.
 Results are exported into spreadsheet format as well an can be easily accessed using spreadsheet software such as LibreOffice Calc or Microsoft Excel.
@@ -96,13 +97,16 @@ Just clone this repository using:
 Usage
 =====
 
-Just run the script from the command line:
+Energy supply systems can be modelled via oemof's `csv-reader <http://oemof.readthedocs.io/en/latest/oemof_solph.html#csv-reader>`_ functionality.
+There are two examples on how to use it provided in the example folder.
+
+Once the energy supply systems have been modelled, the application script can be run from the command line:
 
 .. code:: bash
 
     python3 renpass_gis_main.py --some_args
 
-All result files are written into the subfolder *results*.
+Finally, all result files are written into the subfolder *results*.
 
 
 Contribution
