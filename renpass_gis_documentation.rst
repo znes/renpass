@@ -5,6 +5,7 @@ renpassG!S is an easy-to-use application designed to model energy systems, which
 
 The documentation is structured as follows:
 
+
 .. contents::
     :depth: 2
     :local:
