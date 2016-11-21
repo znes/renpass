@@ -1,5 +1,5 @@
 The application renpassG!S stands for (r)enewable (en)ergy (pa)thway (s)imulation (s)ystem capable of working with (GIS) data.
-It is based on the original idea of the model `renpass <http://www.renpass.eu>`_ and closely linked to
+It is based on the original idea of `renpass <http://www.renpass.eu>`_ and closely linked to
 the `Open Energy Modelling Framework (oemof) <https://github.com/oemof/oemof>`_.
 
 This documentation is meant to explain the basic functionality and structured as follows:
@@ -39,6 +39,6 @@ Please follow the current installation guidelines in the `documentation <https:/
 Contact
 =============
 
-* `Flensburg University of Applied Sciences <cord.kaldemeyer(at)hs-flensburg.de>`_
+* Flensburg University of Applied Sciences: <cord.kaldemeyer(at)hs-flensburg.de>
 
-* `University of Flensburg <martin.soethe(at)uni-flensburg.de>`_
+* University of Flensburg: <martin.soethe(at)uni-flensburg.de>
