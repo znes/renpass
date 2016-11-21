@@ -30,7 +30,7 @@ The general functionality can be derived from the following figure:
 
 Currently, it is developed and maintained at the Center for Sustainable Energy Systems (Zentrum für nachhaltige Energysysteme (ZNES)) in Flensburg.
 As there are currently some licensing issues concerning the scenario data, this repository only provides the application code.
-For questions on the data, you can use or `contact details <#contact>`_ below.
+For questions on the data, you can use our `contact details <#contact>`_ below.
 
 
 Application Examples
@@ -40,7 +40,7 @@ The model has been used in different research projects.
 One application was to model future scenarios of the power plant dispatch
 and price formation in Germany and its interconnected neighbor countries based on operational
 and marginal costs and the assumption of an inflexible electricity demand.
-Some impressions are shown below.
+The following figures show some impressions of possible outcomes.
 
 Currently, a similar spin-off model is adapted to the requirements of the Middle East and North Africa
 (MENA) region to model possible pathways for the future electricity generation based on a high share of
