@@ -18,7 +18,7 @@ optimizing the power plant dispatch for minimum cost and exports results of the 
 
 .. image:: /documents/model_overview_renpass_gis_en.png
     :alt: renpassG!S model model overview
-    :width: 600px
+    :scale: 50 %
     :align: center
 
 Installation
