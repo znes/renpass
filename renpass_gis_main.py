@@ -9,6 +9,7 @@ from oemof.tools import logger
 from oemof.solph import OperationalModel, EnergySystem, GROUPINGS
 from oemof.solph import NodesFromCSV
 from oemof.outputlib import ResultsDataFrame
+from docopt import docopt
 
 
 # %% configuration
