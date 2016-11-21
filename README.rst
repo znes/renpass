@@ -42,6 +42,21 @@ and price formation in Germany and its interconnected neighbor countries based o
 and marginal costs and the assumption of an inflexible electricity demand.
 The following figures show some impressions of possible outcomes.
 
+.. image:: /documents/renpass_gis_dispatch.png
+    :alt: power plant dispatch
+    :align: center    
+    :width: 100%
+
+.. image:: /documents/renpass_gis_prices.png
+    :alt: wholesale market price formation
+    :align: center    
+    :width: 100%
+
+.. image:: /documents/renpass_gis_annual_production.png
+    :alt: annual production
+    :align: center    
+    :width: 100%
+
 Currently, a similar spin-off model is adapted to the requirements of the Middle East and North Africa
 (MENA) region to model possible pathways for the future electricity generation based on a high share of
 renewables.
