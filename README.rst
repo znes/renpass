@@ -141,4 +141,3 @@ and in particular the following people for their contributions to this first ver
 * Clemens Wingenbach and Stephan Günther for providing the prior version
 * Frauke Wiese and Gesine Bökenkamp for creating `renpass <http://www.renpass.eu>`_
 * All people at the Center for Sustainable Energy Systems (ZNES) Flensburg
-
