@@ -39,21 +39,15 @@ from oemof.solph import NodesFromCSV
 from oemof.outputlib import ResultsDataFrame
 from docopt import docopt
 
-
 # %% configuration
-
-scenario_path = 'scenarios/'
-
-date_from = '2025-01-01 00:00:00'
-date_to = '2025-12-31 23:00:00'
-
-nodes_flows = 'nep_2025.csv'
-nodes_flows_sequences = 'nep_2014_seq.csv'
-
-
-# %% misc.
-
-datetime_index = pd.date_range(date_from, date_to, freq='60min')
+# arguments = {
+#              'NODESFLOWS':'nep_2014.csv',
+#              'NODESFLOWSSEQ':'nep_2014_seq.csv',
+#              '--path':'scenarios/',
+#              '--solver':'gurobi',
+#              '--date-from':'2014-01-01 00:00:00',
+#              '--date-to':'2014-12-31 23:00:00',
+# }
 
 
 def stopwatch():
