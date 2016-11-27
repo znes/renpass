@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+""" renpass_gis
+
+Usage:
+  renpass_gis_main.py [-p=PATH | --path=PATH] [-o=SOLVER | --solver=SOLVER]
+  [--date-from=TIMESTAMP] [--date-to=TIMESTAMP] NODESFLOWS NODESFLOWSSEQ
+  renpass_gis_main.py -h | --help | --version
+"""
 
 import os
 import logging
