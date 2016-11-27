@@ -10,6 +10,17 @@ Arguments:
 
   NODESFLOWS                Name of CSV file with nodes and flows.
   NODESFLOWSSEQ             Name fo CSV file containing sequences.
+
+Options:
+
+  -h --help                 Show this screen and exit.
+  -o --solver=SOLVER        The solver to use. [default: gurobi]
+  -p --path=PATH            Directory path to scenario files.
+                            [default: scenarios/]
+     --date-from=TIMESTAMP  Start interval of scenario period.
+                            [default: 2014-01-01 00:00:00]
+     --date-to=TIMESTAMP    End interval. [default: 2014-12-31 23:00:00]
+     --version              Show version.
 """
 
 import os
