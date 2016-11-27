@@ -6,6 +6,11 @@ Usage:
   [--date-from=TIMESTAMP] [--date-to=TIMESTAMP] NODESFLOWS NODESFLOWSSEQ
   renpass_gis_main.py -h | --help | --version
 
+Examples:
+
+  renpass_gis_main.py -p scenarios/ -o glpk --date-from '2012-10-01 00:00:00' \
+      --date-to '2012-10-31 23:00:00' nodes-flows.csv nodes-flows-seq.csv
+
 Arguments:
 
   NODESFLOWS                Name of CSV file with nodes and flows.
