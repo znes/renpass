@@ -184,3 +184,8 @@ def main(**arguments):
             + date + '_' + cc + '.csv'
         country_data.sort_index(axis=1, inplace=True)
         country_data.to_csv(os.path.join(results_path, file_name))
+
+if __name__ == '__main__':
+    kw = docopt(__doc__, version='renpass_gis vx.x')
+    logger.define_logging()
+    main(**kw)
