@@ -60,10 +60,17 @@ def stopwatch():
 
 
 def main(**arguments):
+    """
+    main function of renpass_gis
 
 
+    Parameters:
+    -----------
 
+    **arguments
+        Keyword arguments as provided by docstring
 
+    """
 
     # %% misc.
 
