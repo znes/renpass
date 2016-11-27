@@ -5,6 +5,11 @@ Usage:
   renpass_gis_main.py [-p=PATH | --path=PATH] [-o=SOLVER | --solver=SOLVER]
   [--date-from=TIMESTAMP] [--date-to=TIMESTAMP] NODESFLOWS NODESFLOWSSEQ
   renpass_gis_main.py -h | --help | --version
+
+Arguments:
+
+  NODESFLOWS                Name of CSV file with nodes and flows.
+  NODESFLOWSSEQ             Name fo CSV file containing sequences.
 """
 
 import os
