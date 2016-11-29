@@ -51,37 +51,58 @@ def stopwatch():
     return str(stopwatch.now-last)[0:-4]
 
 
-def main(**arguments):
+def create_nodes(**arguments):
+    """Creates nodes with their respective sequences
+
+    Parameters
+    ----------
+    **arguments : key word arguments
+        Arguments passed from command line
     """
-    main function of renpass_gis
+    nodes = NodesFromCSV(file_nodes_flows=os.path.join(
+                         arguments['--path'], arguments['NODE_DATA']),
+                         file_nodes_flows_sequences=os.path.join(
+                         arguments['--path'],
+                         arguments['SEQ_DATA']),
+                         delimiter=',')
+
+    return nodes
 
 
-    Parameters:
-    -----------
+def create_energysystem(nodes, **arguments):
+    """Creates the energysystem.
 
-    **arguments
-        Keyword arguments as provided by docstring
-
+    Parameters
+    ----------
+    nodes:
+        A list of entities that comprise the energy system
+    **arguments : key word arguments
+        Arguments passed from command line
     """
-
-    # %% misc.
-
-    stopwatch()
 
     datetime_index = pd.date_range(arguments['--date-from'],
                                    arguments['--date-to'],
                                    freq='60min')
 
-    # %% model creation and solving
+    es = EnergySystem(entities=nodes,
+                      groupings=GROUPINGS,
+                      timeindex=datetime_index)
 
-    es = EnergySystem(groupings=GROUPINGS, time_idx=datetime_index)
+    return es
 
-    nodes = NodesFromCSV(file_nodes_flows=os.path.join(
-                         arguments['--path'], arguments['NODESFLOWS']),
-                         file_nodes_flows_sequences=os.path.join(
-                         arguments['--path'],
-                         arguments['NODESFLOWSSEQ']),
-                         delimiter=',')
+
+def simulate(es=None, **arguments):
+    """Creates the optimization model, solves it and writes back results to
+    energy system object
+
+    Parameters
+    ----------
+    es : :class:`oemof.solph.network.EnergySystem` object
+        Energy system holding nodes, grouping functions and other important
+        information.
+    **arguments : key word arguments
+        Arguments passed from command line
+    """
 
     om = OperationalModel(es)
 
