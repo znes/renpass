@@ -114,28 +114,42 @@ def simulate(es=None, **arguments):
 
     logging.info('Optimization time: ' + stopwatch())
 
-    logging.info('Done! \n Check the results')
+    return om
 
-    #  %% output: create pandas dataframe with results
+
+def write_results(es, om, **arguments):
+    """Write results to CSV-files
+
+    Parameters
+    ----------
+    es : :class:`oemof.solph.network.EnergySystem` object
+        Energy system holding nodes, grouping functions and other important
+        information.
+    om : :class:'oemof.solph.models.OperationalModel' object for operational
+        simulation with optimized dispatch
+    **arguments : key word arguments
+        Arguments passed from command line
+
+    """
+    # output: create pandas dataframe with results
 
     results = ResultsDataFrame(energy_system=es)
 
-    # %% postprocessing: write complete result dataframe to file system
+    # postprocessing: write complete result dataframe to file system
 
-    if not os.path.isdir('results'):
-        os.mkdir('results')
+    if not os.path.isdir(arguments['--output-directory']):
+        os.mkdir(arguments['--output-directory'])
 
-    results_path = 'results'
+    results_path = arguments['--output-directory']
 
     date = str(datetime.now())
 
-    file_name = 'scenario_' + arguments['NODESFLOWS'].replace('.csv', '_') +\
+    file_name = 'scenario_' + arguments['NODE_DATA'].replace('.csv', '_') +\
         date + '_' + 'results_complete.csv'
 
     results.to_csv(os.path.join(results_path, file_name))
 
-    # %% postprocessing: write dispatch and prices for all regions to file
-    # system
+    # postprocessing: write dispatch and prices for all regions to file system
 
     # country codes
     country_codes = ['AT', 'BE', 'CH', 'CZ', 'DE', 'DK', 'FR', 'LU', 'NL',
@@ -193,10 +207,14 @@ def simulate(es=None, **arguments):
             country_data = pd.concat([inputs, outputs, other], axis=1)
 
         # sort columns and save as csv file
-        file_name = 'scenario_' + arguments['NODESFLOWS'].replace('.csv', '_')\
+        file_name = 'scenario_' + arguments['NODE_DATA'].replace('.csv', '_')\
             + date + '_' + cc + '.csv'
         country_data.sort_index(axis=1, inplace=True)
         country_data.to_csv(os.path.join(results_path, file_name))
+
+    return
+
+###############################################################################
 
 if __name__ == '__main__':
     kw = docopt(__doc__, version='renpass_gis vx.x')
