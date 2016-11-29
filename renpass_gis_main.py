@@ -2,8 +2,7 @@
 """ renpass_gis
 
 Usage:
-  renpass_gis_main.py [-p=PATH | --path=PATH] [-o=SOLVER | --solver=SOLVER]
-  [--date-from=TIMESTAMP] [--date-to=TIMESTAMP] NODESFLOWS NODESFLOWSSEQ
+  renpass_gis_main.py [options] NODE_DATA SEQ_DATA
   renpass_gis_main.py -h | --help | --version
 
 Examples:
