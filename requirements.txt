@@ -1,1 +1,1 @@
--e git://github.com/oemof/oemof.git@release/v0.1#egg=oemof
+-e git://github.com/oemof/oemof.git@v0.1.1#egg=oemof
