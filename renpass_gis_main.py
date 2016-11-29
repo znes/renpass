@@ -13,8 +13,8 @@ Examples:
 
 Arguments:
 
-  NODESFLOWS                Name of CSV file with nodes and flows.
-  NODESFLOWSSEQ             Name fo CSV file containing sequences.
+  NODE_DATA                  CSV-file containing data for nodes and flows.
+  SEQ_DATA                   CSV-file with data for sequences.
 
 Options:
 
