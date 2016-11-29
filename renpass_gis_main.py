@@ -214,9 +214,33 @@ def write_results(es, om, **arguments):
 
     return
 
+
+def main(**arguments):
+    """
+    """
+    logging.info('Starting renpass_gis!')
+
+    stopwatch()
+
+    # create nodes from csv
+    nodes = create_nodes(**arguments)
+
+    # create energy system and pass nodes
+    es = create_energysystem(nodes.values(), **arguments)
+
+    # create optimization model and solve it
+    om = simulate(es=es, **arguments)
+
+    # write results in output directory
+    write_results(es=es, om=om, **arguments)
+    logging.info('Done! \n Check the results')
+
+    return
+
+
 ###############################################################################
 
 if __name__ == '__main__':
-    kw = docopt(__doc__, version='renpass_gis vx.x')
     logger.define_logging()
-    main(**kw)
+    arguments = docopt(__doc__, version='renpass_gis v0.1')
+    main(**arguments)
