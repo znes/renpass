@@ -18,14 +18,15 @@ Arguments:
 
 Options:
 
-  -h --help                 Show this screen and exit.
-  -o --solver=SOLVER        The solver to use. [default: gurobi]
-  -p --path=PATH            Directory path to scenario files.
-                            [default: scenarios/]
-     --date-from=TIMESTAMP  Start interval of scenario period.
-                            [default: 2014-01-01 00:00:00]
-     --date-to=TIMESTAMP    End interval. [default: 2014-12-31 23:00:00]
-     --version              Show version.
+  -h --help                  Show this screen and exit.
+  -o --solver=SOLVER         Solver to be used. [default: glpk]
+  -p --path=DIR              Directory path to scenario files.
+                             [default: scenarios/]
+     --output-directory=DIR  Directory to write results to. [default: results]
+     --date-from=TIMESTAMP   Start interval of simulation.
+                             [default: 2014-01-01 00:00:00]
+     --date-to=TIMESTAMP     End interval. [default: 2014-12-31 23:00:00]
+     --version               Show version.
 """
 
 import os
