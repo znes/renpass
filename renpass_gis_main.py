@@ -40,15 +40,6 @@ from oemof.solph import NodesFromCSV
 from oemof.outputlib import ResultsDataFrame
 from docopt import docopt
 
-# %% configuration
-# arguments = {
-#              'NODESFLOWS':'nep_2014.csv',
-#              'NODESFLOWSSEQ':'nep_2014_seq.csv',
-#              '--path':'scenarios/',
-#              '--solver':'gurobi',
-#              '--date-from':'2014-01-01 00:00:00',
-#              '--date-to':'2014-12-31 23:00:00',
-# }
 
 
 def stopwatch():
