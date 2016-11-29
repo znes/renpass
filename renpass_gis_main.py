@@ -41,6 +41,7 @@ from oemof.outputlib import ResultsDataFrame
 from docopt import docopt
 
 
+###############################################################################
 
 def stopwatch():
     if not hasattr(stopwatch, 'now'):
