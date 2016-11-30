@@ -7,9 +7,7 @@ Usage:
 
 Examples:
 
-  renpass_gis_main.py -p scenario-folder/ -o gurobi \
-    --date-from '2012-01-01 00:00:00' --date-to '2012-12-31 23:00:00' \
-    scenario.csv scenario-seq.csv
+  renpass_gis_main.py -o gurobi path/to/scenario.csv path/to/scenario-seq.csv
 
 Arguments:
 
