@@ -1,8 +1,9 @@
-The application renpassG!S stands for (r)enewable (en)ergy (pa)thway (s)imulation (s)ystem capable of working with (GIS) data.
+The application renpassG!S stands for (r)enewable (en)ergy (pa)thway (s)imulation (s)ystem capable of working with data
+from geographic information systems (GIS).
 It is based on the original idea of `renpass <http://www.renpass.eu>`_ and closely linked to
 the `Open Energy Modelling Framework (oemof) <https://github.com/oemof/oemof>`_.
 
-This documentation is meant to explain the basic functionality and structured as follows:
+This documentation is meant to explain the basic functionality and is structured as follows:
 
 .. contents::
     :depth: 1
@@ -15,10 +16,10 @@ Overview
 ========
 
 renpassG!S is an easy-to-use application designed to model the cost-minimal dispatch of energy supply systems.
-Strictly speaking, it is a so-called numerical partial equilibrium model the liberalised electricity market often referred to as fundamental model.
-Making use of the broad functionality of `oemof <https://github.com/oemof/oemof>`_, the application provides easy-to-understand energy system scenarios
-for different regions in spreadsheet format (CSV), optimizing the power plant dispatch at minimum cost.
-Results are exported into spreadsheet format as well an can be easily accessed using spreadsheet software such as LibreOffice Calc or Microsoft Excel.
+Technically speaking, it is a so-called numerical partial equilibrium model of a liberalised electricity market often referred to as fundamental model.
+Making use of the broad functionality of `oemof <https://github.com/oemof/oemof>`_, the application enables the user to calculate easy-to-understand energy system scenarios
+for different regions in spreadsheet format (CSV), optimizing the power plant dispatch at minimum costs.
+Results are exported into spreadsheet format as well an can be easily accessed using suitable software such as LibreOffice Calc or Microsoft Excel.
 
 The general functionality can be derived from the following figure:
 
@@ -38,8 +39,8 @@ Application Examples
 
 The model has been used in different research projects. 
 One application was to model future scenarios of the power plant dispatch
-and price formation in Germany and its interconnected neighbor countries based on operational
-and marginal costs and the assumption of an inflexible electricity demand.
+and day-ahead market price formation in Germany and its interconnected neighbor
+countries based on operational and marginal costs and the assumption of an inflexible electricity demand.
 The following figures show some impressions of possible outcomes.
 
 Hourly power plant dispatch for a week in January
@@ -50,7 +51,7 @@ Hourly power plant dispatch for a week in January
     :align: center    
     :width: 100%
 
-Wholesale electricity market price formation for a week in May/June
+Day-ahead market price formation for a week in May/June
 -------------------------------------------------------------------
 
 .. image:: /documents/renpass_gis_prices.png
@@ -83,7 +84,7 @@ Installation
 ============
 
 renpassG!S is build within `oemof <https://github.com/oemof/oemof>`_ and works with the current stable version (v.0.1).
-Please follow the current installation guidelines in the `documentation <https://github.com/oemof/oemof#documentation>`_.
+Please follow the installation guidelines in the `documentation <https://github.com/oemof/oemof#documentation>`_.
 
 If oemof has been installed successfully (including a suitable solver), the application can be run from the directory.
 Just clone this repository using:
@@ -96,13 +97,30 @@ Just clone this repository using:
 Usage
 =====
 
-Just run the script from the command line:
+Energy supply systems can be modelled via oemof's `csv-reader <http://oemof.readthedocs.io/en/latest/oemof_solph.html#csv-reader>`_ functionality.
+There are two examples on how to use it provided in the oemof example folder.
+
+Once the energy supply systems have been modelled, the application script can be run from the command line:
+
+General usage:
 
 .. code:: bash
 
-    python3 renpass_gis_main.py --some_args
+    renpass_gis_main.py [options] NODE_DATA SEQ_DATA
 
-All result files are written into the subfolder *results*.
+Getting help:
+
+.. code:: bash
+
+    renpass_gis_main.py -h
+
+Example usage with another solver (standard is `CBC <https://projects.coin-or.org/Cbc>`_):
+
+.. code:: bash
+
+    renpass_gis_main.py -o gurobi path/to/scenario.csv path/to/scenario-seq.csv
+
+Per default, all result files are written back into the subfolder *results*.
 
 
 Contribution
@@ -124,3 +142,21 @@ For all other concerns, please write us an e-mail:
 * Cord Kaldemeyer (Flensburg University of Applied Sciences): <cord.kaldemeyer(at)hs-flensburg.de>
 
 * Martin Söthe (University of Flensburg): <martin.soethe(at)uni-flensburg.de>
+
+Credits
+=======
+
+Oemof and renpassG!S are community projects and have been realised in collaborative work.
+We therefore thank all people who contributed to the framework and the scenario development,
+and in particular the following people for their contributions to this first version of renpassG!S:
+
+* Simon Hilpert and Uwe Krien for the effort they put in the oemof-refactoring
+* Wolf-Dieter Bunke and Marion Christ for the initial scenario development
+* Clemens Wingenbach and Stephan Günther for providing the prior version
+* Frauke Wiese and Gesine Bökenkamp for creating `renpass <http://www.renpass.eu>`_
+* All people at the Center for Sustainable Energy Systems (ZNES) Flensburg
+
+Citation
+============
+
+We have an `entry <http://osf.io/kp4mh>`_ in the `Open Science Network <https://osf.io>`_ which can be used.
