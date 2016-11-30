@@ -3,7 +3,7 @@ from geographic information systems (GIS).
 It is based on the original idea of `renpass <http://www.renpass.eu>`_ and closely linked to
 the `Open Energy Modelling Framework (oemof) <https://github.com/oemof/oemof>`_.
 
-This documentation is meant to explain the basic functionality and structured as follows:
+This documentation is meant to explain the basic functionality and is structured as follows:
 
 .. contents::
     :depth: 1
@@ -17,7 +17,7 @@ Overview
 
 renpassG!S is an easy-to-use application designed to model the cost-minimal dispatch of energy supply systems.
 Technically speaking, it is a so-called numerical partial equilibrium model of a liberalised electricity market often referred to as fundamental model.
-Making use of the broad functionality of `oemof <https://github.com/oemof/oemof>`_, the application provides easy-to-understand energy system scenarios
+Making use of the broad functionality of `oemof <https://github.com/oemof/oemof>`_, the application enables the user to calculate easy-to-understand energy system scenarios
 for different regions in spreadsheet format (CSV), optimizing the power plant dispatch at minimum cost.
 Results are exported into spreadsheet format as well an can be easily accessed using suitable software such as LibreOffice Calc or Microsoft Excel.
 
