@@ -18,7 +18,7 @@ Overview
 renpassG!S is an easy-to-use application designed to model the cost-minimal dispatch of energy supply systems.
 Technically speaking, it is a so-called numerical partial equilibrium model of a liberalised electricity market often referred to as fundamental model.
 Making use of the broad functionality of `oemof <https://github.com/oemof/oemof>`_, the application enables the user to calculate easy-to-understand energy system scenarios
-for different regions in spreadsheet format (CSV), optimizing the power plant dispatch at minimum cost.
+for different regions in spreadsheet format (CSV), optimizing the power plant dispatch at minimum costs.
 Results are exported into spreadsheet format as well an can be easily accessed using suitable software such as LibreOffice Calc or Microsoft Excel.
 
 The general functionality can be derived from the following figure:
