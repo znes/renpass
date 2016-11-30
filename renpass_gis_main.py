@@ -17,7 +17,7 @@ Arguments:
 Options:
 
   -h --help                  Show this screen and exit.
-  -o --solver=SOLVER         Solver to be used. [default: glpk]
+  -o --solver=SOLVER         Solver to be used. [default: cbc]
      --output-directory=DIR  Directory to write results to. [default: results]
      --date-from=TIMESTAMP   Start interval of simulation. --date-from
                              and --date-to create a DatetimeIndex, which length
