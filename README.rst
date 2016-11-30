@@ -3,7 +3,7 @@ from geographic information systems (GIS).
 It is based on the original idea of `renpass <http://www.renpass.eu>`_ and closely linked to
 the `Open Energy Modelling Framework (oemof) <https://github.com/oemof/oemof>`_.
 
-This documentation is meant to explain the basic functionality and structured as follows:
+This documentation is meant to explain the basic functionality and is structured as follows:
 
 .. contents::
     :depth: 1
@@ -17,8 +17,8 @@ Overview
 
 renpassG!S is an easy-to-use application designed to model the cost-minimal dispatch of energy supply systems.
 Technically speaking, it is a so-called numerical partial equilibrium model of a liberalised electricity market often referred to as fundamental model.
-Making use of the broad functionality of `oemof <https://github.com/oemof/oemof>`_, the application provides easy-to-understand energy system scenarios
-for different regions in spreadsheet format (CSV), optimizing the power plant dispatch at minimum cost.
+Making use of the broad functionality of `oemof <https://github.com/oemof/oemof>`_, the application enables the user to calculate easy-to-understand energy system scenarios
+for different regions in spreadsheet format (CSV), optimizing the power plant dispatch at minimum costs.
 Results are exported into spreadsheet format as well an can be easily accessed using suitable software such as LibreOffice Calc or Microsoft Excel.
 
 The general functionality can be derived from the following figure:
@@ -102,11 +102,25 @@ There are two examples on how to use it provided in the oemof example folder.
 
 Once the energy supply systems have been modelled, the application script can be run from the command line:
 
+General usage:
+
 .. code:: bash
 
-    python3 renpass_gis_main.py --some_args
+    renpass_gis_main.py [options] NODE_DATA SEQ_DATA
 
-Finally, all result files are written into the subfolder *results*.
+Getting help:
+
+.. code:: bash
+
+    renpass_gis_main.py -h
+
+Example usage with another solver (standard is `CBC <https://projects.coin-or.org/Cbc>`_):
+
+.. code:: bash
+
+    renpass_gis_main.py -o gurobi path/to/scenario.csv path/to/scenario-seq.csv
+
+Per default, all result files are written back into the subfolder *results*.
 
 
 Contribution
@@ -141,3 +155,8 @@ and in particular the following people for their contributions to this first ver
 * Clemens Wingenbach and Stephan Günther for providing the prior version
 * Frauke Wiese and Gesine Bökenkamp for creating `renpass <http://www.renpass.eu>`_
 * All people at the Center for Sustainable Energy Systems (ZNES) Flensburg
+
+Citation
+============
+
+We have an `entry <http://osf.io/kp4mh>`_ in the `Open Science Network <https://osf.io>`_ which can be used.

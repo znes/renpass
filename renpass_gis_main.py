@@ -7,9 +7,7 @@ Usage:
 
 Examples:
 
-  renpass_gis_main.py -p scenario-folder/ -o gurobi \
-    --date-from '2012-01-01 00:00:00' --date-to '2012-12-31 23:00:00' \
-    scenario.csv scenario-seq.csv
+  renpass_gis_main.py -o gurobi path/to/scenario.csv path/to/scenario-seq.csv
 
 Arguments:
 
@@ -19,11 +17,12 @@ Arguments:
 Options:
 
   -h --help                  Show this screen and exit.
-  -o --solver=SOLVER         Solver to be used. [default: glpk]
-  -p --path=DIR              Directory path to scenario files.
-                             [default: scenarios/]
+  -o --solver=SOLVER         Solver to be used. [default: cbc]
      --output-directory=DIR  Directory to write results to. [default: results]
-     --date-from=TIMESTAMP   Start interval of simulation.
+     --date-from=TIMESTAMP   Start interval of simulation. --date-from
+                             and --date-to create a DatetimeIndex, which length
+                             should always reflect the number of rows in SEQ_DATA.
+                             It cannot be used to select / slice the data.
                              [default: 2014-01-01 00:00:00]
      --date-to=TIMESTAMP     End interval. [default: 2014-12-31 23:00:00]
      --version               Show version.
@@ -60,11 +59,8 @@ def create_nodes(**arguments):
     **arguments : key word arguments
         Arguments passed from command line
     """
-    nodes = NodesFromCSV(file_nodes_flows=os.path.join(
-                         arguments['--path'], arguments['NODE_DATA']),
-                         file_nodes_flows_sequences=os.path.join(
-                         arguments['--path'],
-                         arguments['SEQ_DATA']),
+    nodes = NodesFromCSV(file_nodes_flows=arguments['NODE_DATA'],
+                         file_nodes_flows_sequences=arguments['SEQ_DATA'],
                          delimiter=',')
 
     return nodes
@@ -242,6 +238,6 @@ def main(**arguments):
 ###############################################################################
 
 if __name__ == '__main__':
-    logger.define_logging()
     arguments = docopt(__doc__, version='renpass_gis v0.1')
+    logger.define_logging()
     main(**arguments)
