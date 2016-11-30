@@ -18,8 +18,6 @@ Options:
 
   -h --help                  Show this screen and exit.
   -o --solver=SOLVER         Solver to be used. [default: glpk]
-  -p --path=DIR              Directory path to scenario files.
-                             [default: scenarios/]
      --output-directory=DIR  Directory to write results to. [default: results]
      --date-from=TIMESTAMP   Start interval of simulation.
                              [default: 2014-01-01 00:00:00]
@@ -58,11 +56,8 @@ def create_nodes(**arguments):
     **arguments : key word arguments
         Arguments passed from command line
     """
-    nodes = NodesFromCSV(file_nodes_flows=os.path.join(
-                         arguments['--path'], arguments['NODE_DATA']),
-                         file_nodes_flows_sequences=os.path.join(
-                         arguments['--path'],
-                         arguments['SEQ_DATA']),
+    nodes = NodesFromCSV(file_nodes_flows=arguments['NODE_DATA'],
+                         file_nodes_flows_sequences=arguments['SEQ_DATA'],
                          delimiter=',')
 
     return nodes
