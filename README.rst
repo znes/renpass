@@ -114,7 +114,7 @@ Getting help:
 
     renpass_gis_main.py -h
 
-Example usage:
+Example usage with another solver (standard is `CBC <https://projects.coin-or.org/Cbc>`_):
 
 .. code:: bash
 
