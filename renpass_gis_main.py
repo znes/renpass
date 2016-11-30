@@ -19,7 +19,10 @@ Options:
   -h --help                  Show this screen and exit.
   -o --solver=SOLVER         Solver to be used. [default: glpk]
      --output-directory=DIR  Directory to write results to. [default: results]
-     --date-from=TIMESTAMP   Start interval of simulation.
+     --date-from=TIMESTAMP   Start interval of simulation. --date-from
+                             and --date-to create a DatetimeIndex, which length
+                             should always reflect the number of rows in SEQ_DATA.
+                             It cannot be used to select / slice the data.
                              [default: 2014-01-01 00:00:00]
      --date-to=TIMESTAMP     End interval. [default: 2014-12-31 23:00:00]
      --version               Show version.
