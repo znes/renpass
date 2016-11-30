@@ -235,6 +235,6 @@ def main(**arguments):
 ###############################################################################
 
 if __name__ == '__main__':
-    logger.define_logging()
     arguments = docopt(__doc__, version='renpass_gis v0.1')
+    logger.define_logging()
     main(**arguments)
