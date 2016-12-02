@@ -37,8 +37,8 @@ plt.rcParams.update({'font.size': 10})
 plt.rcParams['image.cmap'] = 'Blues'
 
 # %% configuration 
-scenario_name = 'scenario_morocco_2050_scenario_test001'
-scenario_timestamp = '2016-12-01_09-50-21'
+scenario_name = 'scenario_morocco_2050_scenario_test005'
+scenario_timestamp = '2016-12-01_21-38-29'
 region01 = 'MAdr01'
 region02 = 'MAdr02'
 region03 = 'MAdr03'

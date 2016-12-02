@@ -29,9 +29,9 @@ plt.rcParams.update({'font.size': 10})
 plt.rcParams['image.cmap'] = 'Blues'
 
 # %% configuration 
-scenario_name = 'scenario_morocco_2050_scenario_test001'
-scenario_timestamp01 = '2016-12-01_09-50-21' # Time when renpass_gis_main.py was run
-scenario_timestamp02 = '2016-12-01_10-03-25' # Time when the national Mococcan result was generated
+scenario_name = 'scenario_morocco_2050_scenario_test005'
+scenario_timestamp01 = '2016-12-01_21-38-29' # Time when renpass_gis_main.py was run
+scenario_timestamp02 = '2016-12-01_21-47-36' # Time when the national Mococcan result was generated
 country01 = 'AL'
 country02 = 'ES'
 country03 = 'MA'

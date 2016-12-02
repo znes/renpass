@@ -22,7 +22,7 @@ plt.rcParams.update({'font.size': 10})
 plt.rcParams['image.cmap'] = 'Blues'
 #
 # read file to be plotted
-file = ('results/scenario_morocco_2050_scenario_test001_2016-12-01_10-03-25_MA.csv')
+file = ('results/scenario_morocco_2050_scenario_test005_2016-12-01_21-47-36_MA.csv')
 
 df_raw = pd.read_csv(file, parse_dates=[0], index_col=0, keep_date_col=True)
 df_raw.head()
@@ -63,7 +63,6 @@ dispatch['exports'] = exports.sum(axis=1)
 dispatch['net_imports'] = dispatch.imports - dispatch.exports
 dispatch['net_exports'] = dispatch.exports - dispatch.imports
 
-dispatch['csp'] = dispatch['csp_direct'] + dispatch['storage_csp_out']
 
 # get storage and aggregate columns
 # punped hydro storage
@@ -80,6 +79,21 @@ dispatch['storage_in'] = dispatch['phs_in']
 dispatch['storage_out'] = dispatch['phs_out']
 dispatch['storage_level'] = dispatch['phs_level']
 
+dispatch['csp'] = dispatch['csp_direct'] + dispatch['storage_csp_out']
+
+# delete values close to zero
+for x in range(0,len(dispatch)):
+    #print(dispatch['shortage'][x])
+    if dispatch['shortage'][x] < 0.000001:
+        if dispatch['shortage'][x] > -0.0000001:
+            dispatch['shortage'][x] = 0;
+    if dispatch['biomass'][x] < 0.000001:
+        if dispatch['biomass'][x] > -0.0000001:
+            dispatch['biomass'][x] = 0;
+    if dispatch['hard_coal'][x] < 0.000001:
+        if dispatch['hard_coal'][x] > -0.0000001:
+            dispatch['hard_coal'][x] = 0;
+            
 # MW to GW
 dispatch = dispatch.divide(1000)
 

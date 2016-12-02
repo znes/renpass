@@ -11,8 +11,8 @@ os.chdir('C:/Users/doziimbos/renpass_gis/')
 import pandas as pd 
 
 # %% configuration
-scenario_name = 'scenario_morocco_2050_scenario_test001'
-scenario_timestamp = '2016-12-01_09-50-21'
+scenario_name = 'scenario_morocco_2050_scenario_test005'
+scenario_timestamp = '2016-12-01_21-38-29'
 countrycode = 'MA'
 
 scenario_path = 'results/' + scenario_name + '_' + scenario_timestamp + '_results_complete.csv'
@@ -38,13 +38,13 @@ idx = pd.IndexSlice
 
 inputs = df.loc[idx[
             :,
-            'input',
+            'to_bus',
             :,
             :],:]
 
 outputs = df.loc[idx[
             :,
-            'output',
+            'to_bus',
             :,
             :],:]
 
