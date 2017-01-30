@@ -141,8 +141,8 @@ def write_results(es, om, **arguments):
 
     date = str(datetime.now())
 
-    file_name = 'scenario_' + arguments['NODE_DATA'].replace('.csv', '_') +\
-        date + '_' + 'results_complete.csv'
+    file_name = 'scenario_' + os.path.basename(arguments['NODE_DATA'])\
+        .replace('.csv', '_') + date + '_' + 'results_complete.csv'
 
     results.to_csv(os.path.join(results_path, file_name))
 
@@ -204,8 +204,8 @@ def write_results(es, om, **arguments):
             country_data = pd.concat([inputs, outputs, other], axis=1)
 
         # sort columns and save as csv file
-        file_name = 'scenario_' + arguments['NODE_DATA'].replace('.csv', '_')\
-            + date + '_' + cc + '.csv'
+        file_name = 'scenario_' + os.path.basename(arguments['NODE_DATA'])\
+            .replace('.csv', '_') + date + '_' + cc + '.csv'
         country_data.sort_index(axis=1, inplace=True)
         country_data.to_csv(os.path.join(results_path, file_name))
 
