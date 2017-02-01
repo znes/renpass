@@ -37,6 +37,7 @@ from oemof.tools import logger
 from oemof.solph import OperationalModel, EnergySystem, GROUPINGS
 from oemof.solph import NodesFromCSV
 from oemof.outputlib import ResultsDataFrame
+from oemof.solph.network import Bus, Storage
 from docopt import docopt
 
 
