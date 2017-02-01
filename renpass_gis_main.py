@@ -147,11 +147,28 @@ def write_results(es, om, **arguments):
 
     results.to_csv(os.path.join(results_path, file_name))
 
-    # postprocessing: write dispatch and prices for all regions to file system
+    # postprocessing: write dispatch and prices for all buses to file system
 
-    # country codes
-    country_codes = ['AT', 'BE', 'CH', 'CZ', 'DE', 'DK', 'FR', 'LU', 'NL',
-                     'NO', 'PL', 'SE']
+    # rename redundant columns
+    results.reset_index(['obj_label'], inplace=True)
+    results.sortlevel(inplace=True)
+    type_to_suffix = {'to_bus': 'out', 'from_bus': 'in', 'other': 'level'}
+
+    labels = [s.label for s in es.entities if isinstance(s, Storage)]
+
+    for k, v in type_to_suffix.items():
+
+        new_labels = [l + '_' + v for l in labels]
+
+        idx = pd.IndexSlice[:, k, :]  # slice by type
+        results.loc[idx, 'obj_label'] = results.loc[idx, 'obj_label'].\
+            replace(dict(zip(labels, new_labels)))
+
+    # reintegrate into index
+    results.set_index(['obj_label'], inplace=True, append=True)
+    results.index = results.reorder_levels([0, 1, 3, 2]).index
+    results.sortlevel(inplace=True)
+
 
     for cc in country_codes:
         # build single dataframe for electric buses
