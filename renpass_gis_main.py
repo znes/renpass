@@ -140,7 +140,7 @@ def write_results(es, om, **arguments):
 
     results_path = arguments['--output-directory']
 
-    date = str(datetime.now())
+    date = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
 
     file_name = 'scenario_' + os.path.basename(arguments['NODE_DATA'])\
         .replace('.csv', '_') + date + '_' + 'results_complete.csv'
