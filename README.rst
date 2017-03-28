@@ -153,7 +153,7 @@ and in particular the following people for their contributions to this first ver
 * Simon Hilpert and Uwe Krien for the effort they put in the oemof-refactoring
 * Wolf-Dieter Bunke and Marion Christ for the initial scenario development
 * Clemens Wingenbach and Stephan Günther for providing the prior version
-* Frauke Wiese and Gesine Bökenkamp for creating `renpass <http://www.renpass.eu>`_
+* Frauke Wiese and Gesine Bökenkamp for creating `renpass <https://github.com/fraukewiese/renpass>`_
 * All people at the Center for Sustainable Energy Systems (ZNES) Flensburg
 
 Citation
