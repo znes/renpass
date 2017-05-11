@@ -38,7 +38,10 @@ from oemof.solph import OperationalModel, EnergySystem, GROUPINGS
 from oemof.solph import NodesFromCSV
 from oemof.outputlib import ResultsDataFrame
 from oemof.solph.network import Bus, Storage
-from docopt import docopt
+try:
+    from docopt import docopt
+except ImportError:
+    print("Unable to load docopt. Is docopt installed?")
 
 
 ###############################################################################
