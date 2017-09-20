@@ -400,7 +400,7 @@ outputs.rename(columns={countrycode + '_cspstorage': countrycode + '_storage_csp
 other.rename(columns={countrycode + '_cspstorage': countrycode + '_storage_csp_level'},
              inplace=True)
                  
-# data from model in MWh
+     # data from model in MWh
 country_data = pd.concat([inputs, outputs, other], axis=1)
 
 #%%
@@ -410,7 +410,7 @@ date_time = date[11:19]
 date_time = date_time.replace(":", "-", 2)
 date = date_date + '_' + date_time
 
-# sort columns and save as csv file
+     # sort columns and save as csv file
 file_name = 'scenario_' + scenario_name + date + '_' + \
                  countrycode + '.csv'
 country_data.sort_index(axis=1, inplace=True)
@@ -471,6 +471,7 @@ all_powerlines = pd.DataFrame()
 for k, v in files.items():
     df = pd.read_csv('results/' + v, parse_dates=[0],
                      index_col=0, keep_date_col=True)
+    #df_tmp = pd.DataFrame()
     
     # create for every country the sum of each column
     sums_per_country = df.sum()
@@ -478,7 +479,6 @@ for k, v in files.items():
     # create sums_per_country without storage. Because the fuel 'hydro' is in storage (pumped_hydro and hydrogen) as well
     nostorage = [c for c in df.columns if 'storage' not in c and k in c]
     sums_per_country_fuels = sums_per_country[nostorage]
-
     # create results dataframe with countries as rows and fuels as columns         
     for f in fuels:
         results.ix[k, f] = sum([sums_per_country_fuels[i] for i in sums_per_country_fuels.index 
@@ -580,37 +580,6 @@ fig1 = plt.gcf()
 plt.draw()
 fig1.savefig("results/" + file_name +".png", dpi=100)
 
-#NEW 
-# create dataframe with fuels, import, export and storage as columns
-resultsmax = pd.DataFrame(columns=fuels+['import', 'export', 'storage_phs_in', 'storage_phs_out', 'storage_phs_level', 
-    'storage_battery_in', 'storage_battery_out', 'storage_battery_level'])
-all_powerlines = pd.DataFrame()
-# loop through all countries
-for k, v in files.items():
-    df = pd.read_csv('results/' + v, parse_dates=[0],
-                     index_col=0, keep_date_col=True)
-    
-    # create for every country maximum values of each column
-    max_per_country = df.max()
-    
-    max_per_country_fuels = df.max()
-    
-    # create resultsmax dataframe with countries as rows and fuels as columns         
-    for f in fuels:
-        resultsmax.ix[k, f] = [max_per_country_fuels[i] for i in max_per_country_fuels.index 
-                      if f in i]
-
-# sort by row index   
-resultsmax.sort_index(inplace=True)
-
-print(resultsmax)
-     # sort columns and save as csv file
-file_name = 'scenario_' + scenario_name + date + '_' + \
-                 'all_regions_annual_max'
-file_name_full = file_name + '.csv'
-
-resultsmax.sort_index(axis=1, inplace=True)
-resultsmax.to_csv(os.path.join('results', file_name_full))
 
 ###############################################################################
 
