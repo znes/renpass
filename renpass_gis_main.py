@@ -19,7 +19,7 @@ Options:
   -h --help                  Show this screen and exit.
   -o --solver=SOLVER         Solver to be used. [default: cbc]
      --output-directory=DIR  Directory to write results to. [default: results]
-     --summary=SUMMARY       If set a summary of the results is added to the
+     --report                If set a report of the results is added to the
                              output-directory.
      --date-from=TIMESTAMP   Start interval of simulation. --date-from
                              and --date-to create a DatetimeIndex, which length
@@ -40,6 +40,7 @@ from oemof.solph import OperationalModel, EnergySystem, GROUPINGS
 from oemof.solph import NodesFromCSV
 from oemof.outputlib import ResultsDataFrame
 from oemof.solph.network import Bus, Storage
+# from io import export_html_report
 try:
     from docopt import docopt
 except ImportError:
@@ -223,8 +224,10 @@ def main(**arguments):
     results = ResultsDataFrame(energy_system=es)
 
     # make summary
-    if arguments['--summary']:
-        pass
+    if arguments['--report']:
+        # export_html_report()
+        # create subfolder containing plots
+        # make HTML-report with plots
 
     # write results in output directory
     write_results(results=results, es=es, **arguments)
