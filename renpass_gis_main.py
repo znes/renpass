@@ -19,6 +19,8 @@ Options:
   -h --help                  Show this screen and exit.
   -o --solver=SOLVER         Solver to be used. [default: cbc]
      --output-directory=DIR  Directory to write results to. [default: results]
+     --summary=SUMMARY       If set a summary of the results is added to the
+                             output-directory.
      --date-from=TIMESTAMP   Start interval of simulation. --date-from
                              and --date-to create a DatetimeIndex, which length
                              should always reflect the number of rows in SEQ_DATA.
@@ -118,24 +120,17 @@ def simulate(es=None, **arguments):
     return om
 
 
-def write_results(es, om, **arguments):
+def write_results(results, es, **arguments):
     """Write results to CSV-files
 
     Parameters
     ----------
-    es : :class:`oemof.solph.network.EnergySystem` object
-        Energy system holding nodes, grouping functions and other important
-        information.
-    om : :class:'oemof.solph.models.OperationalModel' object for operational
-        simulation with optimized dispatch
+    results : :class:`oemof.outputlib.ResultsDataFrame` object
+        Multi-indexed pandas dataframe from a solph result object.
     **arguments : key word arguments
         Arguments passed from command line
 
     """
-    # output: create pandas dataframe with results
-
-    results = ResultsDataFrame(energy_system=es)
-
     # postprocessing: write complete result dataframe to file system
 
     if not os.path.isdir(arguments['--output-directory']):
@@ -224,8 +219,15 @@ def main(**arguments):
     # create optimization model and solve it
     om = simulate(es=es, **arguments)
 
+    # output: create pandas dataframe with results
+    results = ResultsDataFrame(energy_system=es)
+
+    # make summary
+    if arguments['--summary']:
+        pass
+
     # write results in output directory
-    write_results(es=es, om=om, **arguments)
+    write_results(results=results, es=es, **arguments)
     logging.info('Done! \n Check the results')
 
     return
