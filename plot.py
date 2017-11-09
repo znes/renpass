@@ -8,6 +8,10 @@ def plot_prices(results):
     str
         Plotly div.
     """
-    results.slice_by(bus_label='DE_bus_el', type='other', obj_label='duals')
-
+    import plotly.graph_objs as go
+    import plotly
+    
+    prices = results.slice_by(bus_label='DE_bus_el', type='other', obj_label='duals')
+    data = [go.Scatter(x=prices.index.get_level_values(3), y=prices['val'])]
+    plotly.offline.plot(data, include_plotlyjs=False, output_type='div')
     return
