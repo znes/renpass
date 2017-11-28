@@ -20,20 +20,6 @@ from collections import OrderedDict
 # zusammenfassen, macht sie sonst sehr unübersichtlich.
 # =============================================================================
 
-def plot_prices(results):
-    """
-
-    Returns
-    -------
-    str: Plotly div.
-    """
-
-    prices = results.slice_by(bus_label='DE_bus_el', type='other', obj_label='duals')
-    data = [go.Scatter(x=prices.index.get_level_values(3), y=prices['val'])]
-    div = plotly.offline.plot(data, include_plotlyjs=False, output_type='div')
-    return div
-
-
 def get_countrycodes_techs(results):
     """
 
@@ -56,6 +42,39 @@ def get_countrycodes_techs(results):
         techs = techs.str.lstrip(cc)
     techs = list(techs.str.lstrip('_').unique())
     return countrycodes, techs
+
+def get_prices(results, countrycodes):
+    """
+
+    Returns
+    -------
+    dict: hourly prices for each country
+    """
+    prices = {}
+    for cc in countrycodes:
+        prices[cc] = pd.Series(index=results.index.get_level_values(3).unique())
+        prices[cc] = results.slice_unstacked(bus_label=cc + '_bus_el', type='other', 
+              obj_label='duals', formatted=True)
+        prices[cc] = prices[cc].unstack(level='obj_label').reset_index(level=0, drop=True)
+    return prices
+
+def get_load(results, countrycodes):
+    """
+
+    Returns
+    -------
+    dict: hourly load for each country
+    """
+    load = {}
+    for cc in countrycodes:
+        load[cc] = pd.Series(index=results.index.get_level_values(3).unique())
+        try:
+            load[cc] = results.slice_unstacked(obj_label=cc + '_load', type='from_bus', 
+                bus_label=cc + '_bus_el', formatted=True)
+            load[cc] = load[cc].unstack(level='obj_label').reset_index(level=0, drop=True)
+        except KeyError:
+            continue
+    return load
 
 def get_hourly_dispatch(countrycodes, techs, results):
     """
@@ -118,15 +137,25 @@ def plot_hourly_dispatch(timelines):
 
     Returns
     -------
-    str: Plotly div.
+    Series: series of plotly div. for each country
     """
     div = pd.Series(index=timelines.keys())
+    
     for cc in timelines.keys():
+        layout = go.Layout(
+            title='Hourly Dispatch ' + cc,
+            xaxis=dict(
+                title='Date'
+            ),
+            yaxis=dict(
+                title='Generation in MW'
+            )
+        )
         timelines[cc] = timelines[cc].loc[:, (timelines[cc] != 0).any(axis=0)]
         # two lines below work, but do't show stacked numbers instead of single numbers when hovered with mouse.
         # compare last entry in: https://plot.ly/python/filled-area-plots/#stacked-area-chart-with-original-values 
         try:
-            fig = timelines[cc].iplot(kind='area', fill=True, asFigure=True)
+            fig = timelines[cc].iplot(kind='area', fill=True, asFigure=True, mode='none', layout=layout)
             div[cc] = plotly.offline.plot(fig, include_plotlyjs=False, output_type='div')
         except:
             print(cc + ' could not be plotted.')
@@ -151,6 +180,55 @@ def plot_hourly_dispatch(timelines):
 #         plotly.offline.plot(plots, filename='timeline')
 # =============================================================================
     return div
+
+def plot_gen_load_prices(timelines, load, prices):
+    """
+
+    Returns
+    -------
+    Series: series of plotly div. for each country
+    """   
+    div = pd.Series(index=timelines.keys())
+    for cc in timelines.keys():
+        gen = timelines[cc].sum(axis=1)
+        
+        trace1 = go.Scatter(
+        x=gen.index,
+        y=gen.values,
+        mode='none',
+        fill='tozeroy',
+        name='Generation'
+        )
+        
+        trace2 = go.Scatter(
+        x=load[cc].index,
+        y=load[cc].values,
+        mode='line',
+        line=dict(width='0.5'),
+        name='Load'
+        )
+        
+        trace3 = go.Scatter(
+        x=prices[cc].index,
+        y=prices[cc].values,
+        name='Electricity Price',
+        yaxis='y2'
+        )
+        
+        layout = go.Layout(
+            title='Generation/Load and Electricity Prices',
+            yaxis=dict(
+                title='Generation/Load in MW'
+            ),
+            yaxis2=dict(
+                title='Electricity Prices in €/MWh',
+                overlaying='y',
+                side='right'
+            )
+        )
+        data = [trace1, trace2, trace3]
+        fig = go.Figure(data=data, layout=layout)
+        div[cc] = plotly.offline.plot(fig, include_plotlyjs=False, output_type='div')
         
 def plot_yearly_sums(timelines, techs):
     """
@@ -164,7 +242,16 @@ def plot_yearly_sums(timelines, techs):
     for cc in countrycodes:
         sums[cc] = timelines[cc].sum()
     sums = sums.T
-    fig = sums.iplot(kind='bar', barmode='stack', asFigure=True)
+    layout = go.Layout(
+        title='Yearly Generation per Country',
+        xaxis=dict(
+            title='Country'
+        ),
+        yaxis=dict(
+            title='Generation in MWh'
+        )
+    )
+    fig = sums.iplot(kind='bar', barmode='stack', asFigure=True, layout=layout)
     div = plotly.offline.plot(fig, include_plotlyjs=False, output_type='div')
     return div
 
@@ -226,9 +313,30 @@ def plot_transmission(transmission, countrycodes):
         text=text,
         hoverinfo='text'
     )
-    
+    layout = go.Layout(
+        title='Transmission between Countries',
+        xaxis=dict(
+            autorange=True,
+            showgrid=False,
+            zeroline=False,
+            showline=False,
+            autotick=True,
+            ticks='',
+            showticklabels=False
+            ),
+        yaxis=dict(
+            autorange=True,
+            showgrid=False,
+            zeroline=False,
+            showline=False,
+            autotick=True,
+            ticks='',
+            showticklabels=False
+        )
+    )
     data = [trace1, trace2, trace3]
-    div = plotly.offline.plot(data, include_plotlyjs=False, output_type='div')
+    fig = go.Figure(data=data, layout=layout)
+    div = plotly.offline.plot(fig, include_plotlyjs=False, output_type='div')
     return div
 
     
