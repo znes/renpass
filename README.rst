@@ -171,3 +171,6 @@ Boysen, Cnythia; Grotlüschen, Heike; Großer, Hauke; Kaldemeyer, Cord; Tuschy, 
 Ulf Philipp Mueller, Lukas Wienholt, David Kleinhans, IlkaCussmann, Wolf-Dieter Bunke , Guido Pleßmann and Jochen Wendiggensen (**2017**) The eGo grid model: *An open source approach towards a model of German high and extra-high voltage power grids*. SciGRID International Conference on Power Grid Modelling (submitted)
 
 Becker, Liv; Bunke, Wolf-Dieter; Christ, Marion; Degel, Melanie; Grünert, Judith; Söthe, Martin; Wiese, Frauke; Wingenbach, Clemens (**2016**) VerNetzen: *Sozial-ökologische und technisch-ökonomische Modellierung von Entwicklungspfaden der Energiewende.* der Reihe Forschungsergebnisse des ZNES Flensburg (elektronisch: ISSN 2196-7164) `Download <http://www.uni-flensburg.de/fileadmin/content/abteilungen/industrial/dokumente/downloads/veroeffentlichungen/forschungsergebnisse/vernetzen-2016-endbericht-online.pdf>`_ 
+
+Berg, Marina, Bohm, Sönke, Fink, Thomas, Hauser, Muriel, & Komendantova, Nadejda (**2016**). Summary of workshop results: *Scenario development and multi-criteria analysis for Morocco's future electricity system in 2050*. Bonn. `Download <http://menaselect.info/uploads/countries/morocco/2016_09_01_Summary_of_workshop_results_FINAL.pdf>`_
+
