@@ -20,6 +20,25 @@ from collections import OrderedDict
 # zusammenfassen, macht sie sonst sehr unübersichtlich.
 # =============================================================================
 
+
+def get_color_dict(results):
+    """ """
+
+    cdict = {'biomass': '#42c77a',
+             'gas': '#20b4b6',
+             'lignite': '#20b4b6',
+             'uranium': '#12341f',
+             'onshore': '#5b5bae'}
+
+    label_to_color = {}
+
+    for i in results.index.get_level_values('obj_label').unique():
+        for k, v in cdict.items():
+            if k in i:
+                label_to_color[i] = v
+
+    return label_to_color
+
 def get_countrycodes_techs(results):
     """
 
