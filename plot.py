@@ -1,4 +1,6 @@
-# container for all plotting functions, maybe classes
+# -*- coding: utf-8 -*-
+
+import os
 import plotly.graph_objs as go
 import plotly
 import pandas as pd
@@ -12,7 +14,7 @@ from collections import OrderedDict
 # und das nicht zufällig zu machen. WEnn eine Spalte bspw. "biomass" enthält soll
 # sie grün geplottet werden.
 # 2. der dispatchplot zeigt beim mouseover die gestapelten Werte an. Sprich wenn
-# Wind 5 GW und Solar 2 GW hat werden bei Wind 5 GW angezeigt und bei Solar 7 GW. 
+# Wind 5 GW und Solar 2 GW hat werden bei Wind 5 GW angezeigt und bei Solar 7 GW.
 # Eine Idee habe ich vom letzten Beispiel von folgendem Link, kann es aber nicht
 # auf das Problem umsetzen. https://plot.ly/python/filled-area-plots/#stacked-area-chart-with-original-values
 # 3. Die verwendeten Technologien im SQ Szenaro kommen teilweise mehrmals vor
@@ -20,7 +22,21 @@ from collections import OrderedDict
 # zusammenfassen, macht sie sonst sehr unübersichtlich.
 # =============================================================================
 
-
+#from pickle import load
+#results = load(open('results.p', 'rb'))
+#
+#
+#countrycodes = results.index.get_level_values(0).unique().str.split('_', 1)
+#
+## build single dataframe for electric buses
+#inputs = results.slice_unstacked(bus_label='DE_bus_el',
+#                                 type='to_bus',
+#                                 date_from='2014-01-01 00:00:00',
+#                                 date_to='2014-12-31 23:00:00',
+#                                 formatted=True)
+#
+#
+#
 def get_color_dict(results):
     """ """
 
@@ -38,6 +54,7 @@ def get_color_dict(results):
                 label_to_color[i] = v
 
     return label_to_color
+
 
 def get_countrycodes_techs(results):
     """
@@ -72,7 +89,7 @@ def get_prices(results, countrycodes):
     prices = {}
     for cc in countrycodes:
         prices[cc] = pd.Series(index=results.index.get_level_values(3).unique())
-        prices[cc] = results.slice_unstacked(bus_label=cc + '_bus_el', type='other', 
+        prices[cc] = results.slice_unstacked(bus_label=cc + '_bus_el', type='other',
               obj_label='duals', formatted=True)
         prices[cc] = prices[cc].unstack(level='obj_label').reset_index(level=0, drop=True)
     return prices
@@ -88,7 +105,7 @@ def get_load(results, countrycodes):
     for cc in countrycodes:
         load[cc] = pd.Series(index=results.index.get_level_values(3).unique())
         try:
-            load[cc] = results.slice_unstacked(obj_label=cc + '_load', type='from_bus', 
+            load[cc] = results.slice_unstacked(obj_label=cc + '_load', type='from_bus',
                 bus_label=cc + '_bus_el', formatted=True)
             load[cc] = load[cc].unstack(level='obj_label').reset_index(level=0, drop=True)
         except KeyError:
@@ -141,7 +158,7 @@ def get_transmission(results):
         except IndexError:
             break
     join = []
-    for i in range(0, len(split)): 
+    for i in range(0, len(split)):
         join.append("_".join([split[i][0], split[i][1]]))
         join.append("_".join([split[i][1], split[i][0]]))
     join = list(OrderedDict.fromkeys(join))
@@ -149,7 +166,7 @@ def get_transmission(results):
         transmission[join[i]] = transmission[join[i]] - transmission[join[i+1]]
         transmission = transmission.drop(join[i+1], axis=1)
     return transmission
-    
+
 
 def plot_hourly_dispatch(timelines):
     """
@@ -159,7 +176,7 @@ def plot_hourly_dispatch(timelines):
     Series: series of plotly div. for each country
     """
     div = pd.Series(index=timelines.keys())
-    
+
     for cc in timelines.keys():
         layout = go.Layout(
             title='Hourly Dispatch ' + cc,
@@ -172,23 +189,23 @@ def plot_hourly_dispatch(timelines):
         )
         timelines[cc] = timelines[cc].loc[:, (timelines[cc] != 0).any(axis=0)]
         # two lines below work, but do't show stacked numbers instead of single numbers when hovered with mouse.
-        # compare last entry in: https://plot.ly/python/filled-area-plots/#stacked-area-chart-with-original-values 
+        # compare last entry in: https://plot.ly/python/filled-area-plots/#stacked-area-chart-with-original-values
         try:
             fig = timelines[cc].iplot(kind='area', fill=True, asFigure=True, mode='none', layout=layout)
             div[cc] = plotly.offline.plot(fig, include_plotlyjs=False, output_type='div')
         except:
             print(cc + ' could not be plotted.')
             continue
-        
+
 # =============================================================================
 #         #trying to show correct numbers when hovering with mouse. taken from link above
 #         for i in range(0, len(timelines[cc].ix[0])):
 #             y_txt = [str(y0) for y0 in timelines[cc].ix[:, i]]
 #             plots[str(i)] = go.Scatter(x=timelines[cc].index, y=timelines[cc].ix[:, i], text=y_txt, hoverinfo='x+text')
-#             
+#
 #         y_txt = [str(y1) for y1 in timelines[cc].ix[:, 1]]
 #         plots[str(1)] = [go.Scatter(x=timelines[cc].index, y=timelines[cc].ix[:, 1], text=y_txt, hoverinfo='x+text')]
-#         
+#
 #         y_txt = [str(y0) for y0 in timelines[cc].ix[:, 0]]
 #         p0 = [go.Scatter(x=timelines[cc].index, y=timelines[cc].ix[:, 0], text=y_txt, hoverinfo='x+text')]
 #         y_txt = [str(y1) for y1 in timelines[cc].ix[:, 1]]
@@ -206,11 +223,11 @@ def plot_gen_load_prices(timelines, load, prices):
     Returns
     -------
     Series: series of plotly div. for each country
-    """   
+    """
     div = pd.Series(index=timelines.keys())
     for cc in timelines.keys():
         gen = timelines[cc].sum(axis=1)
-        
+
         trace1 = go.Scatter(
         x=gen.index,
         y=gen.values,
@@ -218,7 +235,7 @@ def plot_gen_load_prices(timelines, load, prices):
         fill='tozeroy',
         name='Generation'
         )
-        
+
         trace2 = go.Scatter(
         x=load[cc].index,
         y=load[cc].values,
@@ -226,14 +243,14 @@ def plot_gen_load_prices(timelines, load, prices):
         line=dict(width='0.5'),
         name='Load'
         )
-        
+
         trace3 = go.Scatter(
         x=prices[cc].index,
         y=prices[cc].values,
         name='Electricity Price',
         yaxis='y2'
         )
-        
+
         layout = go.Layout(
             title='Generation/Load and Electricity Prices',
             yaxis=dict(
@@ -248,7 +265,9 @@ def plot_gen_load_prices(timelines, load, prices):
         data = [trace1, trace2, trace3]
         fig = go.Figure(data=data, layout=layout)
         div[cc] = plotly.offline.plot(fig, include_plotlyjs=False, output_type='div')
-        
+
+    return div
+
 def plot_yearly_sums(timelines, techs):
     """
 
@@ -281,7 +300,7 @@ def plot_transmission(transmission, countrycodes):
     -------
     str: Plotly div.
     """
-    
+
     N = len(countrycodes)
     x_points = np.random.uniform(-N/2, N/2, N)
     y_points = np.random.uniform(-N/2, N/2, N)
@@ -305,7 +324,7 @@ def plot_transmission(transmission, countrycodes):
         text.append(join + ': ' + str(round(transmission[join].sum(),0)))
         i += 3
         j += 1
-        
+
     # Create a trace
     trace1 = go.Scatter(
         x=points[0],
@@ -315,7 +334,7 @@ def plot_transmission(transmission, countrycodes):
         text=points[2],
         hoverinfo='text'
     )
-        
+
     trace2 = go.Scatter(
         x=lines[0],
         y=lines[1],
@@ -323,7 +342,7 @@ def plot_transmission(transmission, countrycodes):
         text='',
         hoverinfo='text'
     )
-    
+
     trace3 = go.Scatter(
         x=lines_text[0],
         y=lines_text[1],
@@ -358,20 +377,30 @@ def plot_transmission(transmission, countrycodes):
     div = plotly.offline.plot(fig, include_plotlyjs=False, output_type='div')
     return div
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
-    
-    
+# path = '.'
+# fname = 'report.html'
+# plots = []
+#
+# countrycodes, techs = get_countrycodes_techs(results)
+# prices = get_prices(results, countrycodes)
+# load = get_load(results, countrycodes)
+# timelines = get_hourly_dispatch(countrycodes, techs, results)
+# transmission = get_transmission(results)
+# plots.extend(plot_hourly_dispatch(timelines).tolist())
+# plots.extend(plot_gen_load_prices(timelines, load, prices).tolist())
+# plots.append(plot_yearly_sums(timelines, techs))
+# plots.append(plot_transmission(transmission, countrycodes))
+#
+# head = """ <html><head>
+#             <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+#             </head> """
+#
+# plots = [p for p in plots if isinstance(p, str)]
+#
+# html = head + "<body>" + "".join(plots) + "</body></html>"
+#
+# # export to html
+# f = open(os.path.join(path, fname), 'w')
+# f.write(html)
+# f.close()
