@@ -9,6 +9,10 @@ Examples:
 
   renpass_gis_main.py -o gurobi path/to/scenario.csv path/to/scenario-seq.csv
 
+  python renpass_gis_main.py -o gurobi --remote --report
+  https://raw.githubusercontent.com/znes/FlEnS/features/ego-timeseries/open_eGo/SQ/status_quo.csv
+  https://raw.githubusercontent.com/znes/FlEnS/features/ego-timeseries/open_eGo/SQ/status_quo_seq.csv
+
 Arguments:
 
   NODE_DATA                  CSV-file containing data for nodes and flows.
@@ -26,6 +30,7 @@ Options:
                              should always reflect the number of rows in SEQ_DATA.
                              It cannot be used to select / slice the data.
                              [default: 2014-01-01 00:00:00]
+     --remote                CSV-files given as urls. [default: False]
      --date-to=TIMESTAMP     End interval. [default: 2014-12-31 23:00:00]
      --version               Show version.
 """
@@ -34,13 +39,14 @@ import os
 import logging
 import pandas as pd
 
+from misc.io import get_from_url, html_report
 from datetime import datetime
 from oemof.tools import logger
 from oemof.solph import OperationalModel, EnergySystem, GROUPINGS
 from oemof.solph import NodesFromCSV
 from oemof.outputlib import ResultsDataFrame
 from oemof.solph.network import Bus, Storage
-# from io import export_html_report
+
 try:
     from docopt import docopt
 except ImportError:
@@ -201,6 +207,9 @@ def write_results(results, es, **arguments):
         bus_data.sort_index(axis=1, inplace=True)
         bus_data.to_csv(os.path.join(results_path, file_name))
 
+    if arguments['--report']:
+        html_report(results, path=results_path)
+
     return
 
 
@@ -210,6 +219,10 @@ def main(**arguments):
     logging.info('Starting renpass_gis!')
 
     stopwatch()
+
+    # save remote csv-files in cwd
+    if arguments['--remote']:
+        arguments = get_from_url(**arguments)
 
     # create nodes from csv
     nodes = create_nodes(**arguments)
@@ -222,12 +235,6 @@ def main(**arguments):
 
     # output: create pandas dataframe with results
     results = ResultsDataFrame(energy_system=es)
-
-    # make summary
-    if arguments['--report']:
-        # export_html_report()
-        # create subfolder containing plots
-        # make HTML-report with plots
 
     # write results in output directory
     write_results(results=results, es=es, **arguments)
