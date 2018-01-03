@@ -36,7 +36,42 @@ from collections import OrderedDict
 #                                 formatted=True)
 #
 #
-#
+
+def dispatch_daily_mean(results):
+    """
+    """
+
+    # only Germany atm
+    idx = pd.IndexSlice
+    subset = results.loc[idx['DE_bus_el', ['to_bus', 'from_bus'], :, :], :]
+    subset = subset.unstack(level=['type', 'obj_label'])
+    subset.index = subset.index.droplevel('bus_label')
+    subset.columns = subset.columns.droplevel([0, 1])
+
+    fuels = ['run_of_river', 'biomass', 'solar', 'wind', 'uranium', 'lignite',
+            'hard_coal', 'gas', 'mixed_fuels', 'oil', 'shortage', 'load',
+            'excess']
+
+    df = pd.DataFrame(index=subset.index)
+
+    for f in fuels:
+        cols = [c for c in subset.columns if f in c]
+        df[f] = subset[cols].sum(axis=1)
+
+    index = df.asfreq('1D').index
+    df = df.groupby(lambda x: x.strftime('%m%d')).mean()
+    df = df / 1000
+    df.index = index
+
+    layout = go.Layout(xaxis=dict(title='Date'),
+                    yaxis=dict(title='Daily mean power production in GW'))
+
+    fig = df.iplot(kind='area', fill=True, asFigure=True, mode='none', layout=layout)
+    div = plotly.offline.plot(fig, include_plotlyjs=False, output_type='div')
+
+    return div
+
+
 def get_color_dict(results):
     """ """
 
