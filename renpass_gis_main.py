@@ -2,29 +2,22 @@
 """ renpass_gis
 
 Usage:
-  renpass_gis_main.py [options] NODE_DATA SEQ_DATA
+  renpass_gis_main.py [options] DATAPACKAGE
   renpass_gis_main.py -h | --help | --version
 
 Examples:
 
-  renpass_gis_main.py -o gurobi path/to/scenario.csv path/to/scenario-seq.csv
+  renpass_gis_main.py -o glpk path/to/datapackage.json
 
 Arguments:
 
-  NODE_DATA                  CSV-file containing data for nodes and flows.
-  SEQ_DATA                   CSV-file with data for sequences.
+  DATAPACKAGE                valid datapackage with input data
 
 Options:
 
   -h --help                  Show this screen and exit.
   -o --solver=SOLVER         Solver to be used. [default: cbc]
      --output-directory=DIR  Directory to write results to. [default: results]
-     --date-from=TIMESTAMP   Start interval of simulation. --date-from
-                             and --date-to create a DatetimeIndex, which length
-                             should always reflect the number of rows in SEQ_DATA.
-                             It cannot be used to select / slice the data.
-                             [default: 2014-01-01 00:00:00]
-     --date-to=TIMESTAMP     End interval. [default: 2014-12-31 23:00:00]
      --version               Show version.
 """
 
@@ -34,10 +27,11 @@ import pandas as pd
 
 from datetime import datetime
 from oemof.tools import logger
-from oemof.solph import OperationalModel, EnergySystem, GROUPINGS
-from oemof.solph import NodesFromCSV
-from oemof.outputlib import ResultsDataFrame
-from oemof.solph.network import Bus, Storage
+from datapackage import Package
+from oemof.solph import Model, EnergySystem
+from oemof.outputlib import processing, views
+from oemof.solph import facades
+from oemof.solph.network import Bus
 try:
     from docopt import docopt
 except ImportError:
@@ -55,44 +49,38 @@ def stopwatch():
     return str(stopwatch.now-last)[0:-4]
 
 
-def create_nodes(**arguments):
-    """Creates nodes with their respective sequences
-
-    Parameters
-    ----------
-    **arguments : key word arguments
-        Arguments passed from command line
-    """
-    nodes = NodesFromCSV(file_nodes_flows=arguments['NODE_DATA'],
-                         file_nodes_flows_sequences=arguments['SEQ_DATA'],
-                         delimiter=',')
-
-    return nodes
-
-
-def create_energysystem(nodes, **arguments):
+def create_energysystem(datapackage, **arguments):
     """Creates the energysystem.
 
     Parameters
     ----------
-    nodes:
-        A list of entities that comprise the energy system
+    datapackage: str
+        path to datapackage metadata file in JSON format
     **arguments : key word arguments
         Arguments passed from command line
     """
 
-    datetime_index = pd.date_range(arguments['--date-from'],
-                                   arguments['--date-to'],
-                                   freq='60min')
-
-    es = EnergySystem(entities=nodes,
-                      groupings=GROUPINGS,
-                      timeindex=datetime_index)
+    es = EnergySystem.from_datapackage(
+        arguments['DATAPACKAGE'],
+        attributemap={
+            facades.Demand: {"demand-profiles": "profile"},
+            facades.Generator: {"generator-profiles": "profile"},
+            facades.RunOfRiver: {"run-of-river-inflows": "inflow"}},
+        typemap={
+            'demand': facades.Demand,
+            'generator': facades.Generator,
+            'storage': facades.Storage,
+            'reservoir': facades.Reservoir,
+            'backpressure': facades.CHP,
+            'connection': facades.Connection,
+            'conversion': facades.Conversion,
+            'RunOfRiver': facades.RunOfRiver,
+            'bus': Bus})
 
     return es
 
 
-def simulate(es=None, **arguments):
+def compute(es=None, **arguments):
     """Creates the optimization model, solves it and writes back results to
     energy system object
 
@@ -105,20 +93,20 @@ def simulate(es=None, **arguments):
         Arguments passed from command line
     """
 
-    om = OperationalModel(es)
+    m = Model(es)
 
-    logging.info('OM creation time: ' + stopwatch())
+    logging.info('Model creation time: ' + stopwatch())
 
-    om.receive_duals()
+    m.receive_duals()
 
-    om.solve(solver=arguments['--solver'], solve_kwargs={'tee': True})
+    m.solve(solver=arguments['--solver'], solve_kwargs={'tee': True})
 
     logging.info('Optimization time: ' + stopwatch())
 
-    return om
+    return m
 
 
-def write_results(es, om, **arguments):
+def write_results(es, m, p, **arguments):
     """Write results to CSV-files
 
     Parameters
@@ -126,85 +114,51 @@ def write_results(es, om, **arguments):
     es : :class:`oemof.solph.network.EnergySystem` object
         Energy system holding nodes, grouping functions and other important
         information.
-    om : :class:'oemof.solph.models.OperationalModel' object for operational
-        simulation with optimized dispatch
+    m : A solved :class:'oemof.solph.models.Model' object for dispatch or
+     investment optimization
     **arguments : key word arguments
         Arguments passed from command line
-
+    p: datapackage.Package instance of the input datapackage
     """
     # output: create pandas dataframe with results
 
-    results = ResultsDataFrame(energy_system=es)
+    results = processing.results(m)
 
     # postprocessing: write complete result dataframe to file system
 
     if not os.path.isdir(arguments['--output-directory']):
         os.mkdir(arguments['--output-directory'])
 
-    results_path = arguments['--output-directory']
+    output_base_directory = arguments['--output-directory']
 
     date = datetime.now().strftime("%Y-%m-%d %H-%M-%S").replace(' ', '_')
 
-    file_name = 'scenario_' + os.path.basename(arguments['NODE_DATA'])\
-        .replace('.csv', '_') + date + '_' + 'results_complete.csv'
+    filename = p.descriptor['name'].replace(' ', '_') + '.xls'
 
-    results.to_csv(os.path.join(results_path, file_name))
+    xls_file = os.path.join(output_base_directory, filename)
 
-    # postprocessing: write dispatch and prices for all buses to file system
+    logging.info('Exporting result object to Excel.')
 
-    # rename redundant columns
-    results.reset_index(['obj_label'], inplace=True)
-    results.sortlevel(inplace=True)
-    type_to_suffix = {'to_bus': 'out', 'from_bus': 'in', 'other': 'level'}
+    writer = pd.ExcelWriter(xls_file, engine='xlsxwriter')
 
-    labels = [s.label for s in es.entities if isinstance(s, Storage)]
+    # add regular optimization results
+    nodes = sorted(set([str(item)
+                        for tup in results.keys()
+                        for item in tup]))
 
-    for k, v in type_to_suffix.items():
+    for n in nodes:
+        node_data = views.node(results, n, multiindex=True)
 
-        new_labels = [l + '_' + v for l in labels]
+        n = str(n)[:20]  # trim string length to allowed chars for a worksheet
+        if 'scalars' in node_data:
+            node_data['scalars'].to_excel(writer, sheet_name=n+'_scalars')
+        if 'sequences' in node_data:
+            node_data['sequences'].to_excel(writer, sheet_name=n+'_sequences')
 
-        idx = pd.IndexSlice[:, k, :]  # slice by type
-        results.loc[idx, 'obj_label'] = results.loc[idx, 'obj_label'].\
-            replace(dict(zip(labels, new_labels)))
+    writer.save()
 
-    # reintegrate into index
-    results.set_index(['obj_label'], inplace=True, append=True)
-    results.index = results.reorder_levels([0, 1, 3, 2]).index
-    results.sortlevel(inplace=True)
-
-    # get string representation of buses
-    buses = [b.label for b in es.entities if isinstance(b, Bus)]
-
-    for b in buses:
-
-        # build single dataframe for electric buses
-        inputs = results.slice_unstacked(bus_label=b,
-                                         type='to_bus',
-                                         date_from=arguments['--date-from'],
-                                         date_to=arguments['--date-to'],
-                                         formatted=True)
-
-        outputs = results.slice_unstacked(bus_label=b,
-                                          type='from_bus',
-                                          date_from=arguments['--date-from'],
-                                          date_to=arguments['--date-to'],
-                                          formatted=True)
-
-        other = results.slice_unstacked(bus_label=b,
-                                        type='other',
-                                        date_from=arguments['--date-from'],
-                                        date_to=arguments['--date-to'],
-                                        formatted=True)
-
-        # data from model in MWh
-        bus_data = pd.concat([inputs, outputs, other], axis=1)
-
-        # sort columns and save as csv file
-        file_name = 'scenario_' + os.path.basename(arguments['NODE_DATA'])\
-            .replace('.csv', '_') + date + '_' + b + '.csv'
-        bus_data.sort_index(axis=1, inplace=True)
-        bus_data.to_csv(os.path.join(results_path, file_name))
-
+    return True
+    
     return
 
 
@@ -215,17 +169,17 @@ def main(**arguments):
 
     stopwatch()
 
-    # create nodes from csv
-    nodes = create_nodes(**arguments)
+    p = Package(arguments['DATAPACKAGE'])
 
     # create energy system and pass nodes
-    es = create_energysystem(nodes.values(), **arguments)
+    es = create_energysystem(arguments['DATAPACKAGE'], **arguments)
 
     # create optimization model and solve it
-    om = simulate(es=es, **arguments)
+    m = compute(es=es, **arguments)
 
     # write results in output directory
-    write_results(es=es, om=om, **arguments)
+    write_results(es, m=m, p=p, **arguments)
+
     logging.info('Done! \n Check the results')
 
     return
@@ -234,6 +188,6 @@ def main(**arguments):
 ###############################################################################
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version='renpass_gis v0.1')
+    arguments = docopt(__doc__, version='renpass_gis v0.2')
     logger.define_logging()
     main(**arguments)
