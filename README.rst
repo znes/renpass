@@ -1,6 +1,6 @@
 The application renpassG!S stands for (r)enewable (en)ergy (pa)thway (s)imulation (s)ystem capable of working with data
 from geographic information systems (GIS).
-It is based on the original idea of `renpass <http://www.renpass.eu>`_ and closely linked to
+It is based on the original idea of `renpass <http://www.renpass.eu>`_ and based on
 the `Open Energy Modelling Framework (oemof) <https://github.com/oemof/oemof>`_.
 
 This documentation is meant to explain the basic functionality and is structured as follows:
@@ -25,7 +25,7 @@ The general functionality can be derived from the following figure:
 
 .. image:: /documents/model_overview_renpass_gis_en.png
     :alt: renpassG!S model model overview
-    :align: center    
+    :align: center
     :width: 100%
 
 
@@ -37,7 +37,7 @@ For questions on the data, you can use our `contact details <#contact>`_ below.
 Application Examples
 ====================
 
-The model has been used in different research projects. 
+The model has been used in different research projects.
 One application was to model future scenarios of the power plant dispatch
 and day-ahead market price formation in Germany and its interconnected neighbor
 countries based on operational and marginal costs and the assumption of an inflexible electricity demand.
@@ -48,7 +48,7 @@ Hourly power plant dispatch for a week in January
 
 .. image:: /documents/renpass_gis_dispatch.png
     :alt: power plant dispatch
-    :align: center    
+    :align: center
     :width: 100%
 
 Day-ahead market price formation for a week in May/June
@@ -56,7 +56,7 @@ Day-ahead market price formation for a week in May/June
 
 .. image:: /documents/renpass_gis_prices.png
     :alt: wholesale market price formation
-    :align: center    
+    :align: center
     :width: 100%
 
 Annual production per energy carrier for two selected scenarios
@@ -64,7 +64,7 @@ Annual production per energy carrier for two selected scenarios
 
 .. image:: /documents/renpass_gis_annual_production.png
     :alt: annual production
-    :align: center    
+    :align: center
     :width: 100%
 
 Diurnal pumped-storage dispatch in Norway for a selected scenario
@@ -72,7 +72,7 @@ Diurnal pumped-storage dispatch in Norway for a selected scenario
 
 .. image:: /documents/renpass_gis_pumped_hydro.png
     :alt: pump
-    :align: center    
+    :align: center
     :width: 100%
 
 
@@ -97,8 +97,10 @@ Just clone this repository using:
 Usage
 =====
 
-Energy supply systems can be modelled via oemof's `csv-reader <http://oemof.readthedocs.io/en/latest/oemof_solph.html#csv-reader>`_ functionality.
-There are two examples on how to use it provided in the oemof example folder.
+Energy supply systems can be modelled via oemof's `datapackage-reader` functionality
+and so called oemof `facades`. Facades allow an easy reduced, energy specific way
+to access the generic oemof solph library.
+To see how it work check out the example folder.
 
 Once the energy supply systems have been modelled, the application script can be run from the command line:
 
@@ -106,7 +108,7 @@ General usage:
 
 .. code:: bash
 
-    renpass_gis_main.py [options] NODE_DATA SEQ_DATA
+    renpass_gis_main.py [options] DATAPACKAGE
 
 Getting help:
 
@@ -118,7 +120,7 @@ Example usage with another solver (standard is `CBC <https://projects.coin-or.or
 
 .. code:: bash
 
-    renpass_gis_main.py -o gurobi path/to/scenario.csv path/to/scenario-seq.csv
+    renpass_gis_main.py -o gurobi path/to/datapackage.json
 
 Per default, all result files are written back into the subfolder *results*.
 
@@ -139,7 +141,7 @@ For questions, bugs, or possible improvements please create an `issue <https://g
 
 For all other concerns, please write us an e-mail:
 
-* Cord Kaldemeyer (Flensburg University of Applied Sciences): <cord.kaldemeyer(at)hs-flensburg.de>
+* Simon Hilpert  (University of Flensburg): <simon.hilpert(at)uni-flensburg.de>
 
 * Martin Söthe (University of Flensburg): <martin.soethe(at)uni-flensburg.de>
 
@@ -150,10 +152,8 @@ Oemof and renpassG!S are community projects and have been realised in collaborat
 We therefore thank all people who contributed to the framework and the scenario development,
 and in particular the following people for their contributions to this first version of renpassG!S:
 
-* Simon Hilpert and Uwe Krien for the effort they put in the oemof-refactoring
-* Wolf-Dieter Bunke and Marion Christ for the initial scenario development
-* Clemens Wingenbach and Stephan Günther for providing the prior version
-* Frauke Wiese and Gesine Bökenkamp for creating `renpass <http://www.renpass.eu>`_
+* Cord Kaldemeyer for the renpass_gis v0.1
+* All oemof developers
 * All people at the Center for Sustainable Energy Systems (ZNES) Flensburg
 
 Citation

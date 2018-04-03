@@ -25,13 +25,15 @@ import os
 import logging
 import pandas as pd
 
-from datetime import datetime
-from oemof.tools import logger
 from datapackage import Package
+from datetime import datetime
+
+import facades
+
+from oemof.tools import logger
 from oemof.solph import Model, EnergySystem
 from oemof.outputlib import processing, views
-from oemof.solph import facades
-from oemof.solph.network import Bus
+
 try:
     from docopt import docopt
 except ImportError:
@@ -63,7 +65,7 @@ def create_energysystem(datapackage, **arguments):
     es = EnergySystem.from_datapackage(
         arguments['DATAPACKAGE'],
         attributemap={
-            facades.Demand: {"demand-profiles": "profile"},
+            facades.Demand: {'demand-profiles': 'profile'},
             facades.Generator: {"generator-profiles": "profile"},
             facades.RunOfRiver: {"run-of-river-inflows": "inflow"}},
         typemap={
@@ -74,8 +76,7 @@ def create_energysystem(datapackage, **arguments):
             'backpressure': facades.CHP,
             'connection': facades.Connection,
             'conversion': facades.Conversion,
-            'RunOfRiver': facades.RunOfRiver,
-            'bus': Bus})
+            'runofriver': facades.RunOfRiver})
 
     return es
 
@@ -158,8 +159,7 @@ def write_results(es, m, p, **arguments):
     writer.save()
 
     return True
-    
-    return
+
 
 
 def main(**arguments):
