@@ -65,6 +65,8 @@ class Reservoir(GenericStorage, Facade):
 
         self.capacity = kwargs.get('capacity')
 
+        self.power = kwargs.get('powers')
+
         self.nominal_capacity = self.capacity
 
         self.investment_cost = kwargs.get('investment_cost')
@@ -141,28 +143,17 @@ class Generator(Source, Facade):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.bus = kwargs.get('bus', None)
+        self.bus = kwargs.get('bus')
 
-        self.capacity = kwargs.get('capacity', None)
-
-        self.amount = kwargs.get('amount', None)
-
-        if self.capacity and not self.amount:
-            nominal_value = self.capacity
-        elif self.amount and not self.capacity:
-            nominmal_value = self.amount
-        else:
-            msg = ("Either set the capacity OR the amount for the generator" +
-                  " with name {}!")
-            raise ValueError(msg.format(self.label))
+        self.capacity = kwargs.get('capacity')
 
         self.dispatchable = kwargs.get('dispatchable', True)
 
-        self.profile = kwargs.get('profile', None)
+        self.profile = kwargs.get('profile')
 
         self.marginal_cost = kwargs.get('marginal_cost', 0)
 
-        self.investment_cost = kwargs.get('investment_cost', None)
+        self.investment_cost = kwargs.get('investment_cost')
 
         self.edge_parameters = kwargs.get('edge_parameters', {})
 
@@ -218,21 +209,21 @@ class CHP(Transformer, Facade):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.bus_fuel = kwargs.get('bus_fuel', None)
+        self.bus_fuel = kwargs.get('bus_fuel')
 
-        self.bus_th = kwargs.get('bus_th', None)
+        self.bus_th = kwargs.get('bus_th')
 
-        self.bus_el = kwargs.get('bus_el', None)
+        self.bus_el = kwargs.get('bus_el')
 
-        self.capacity = kwargs.get('capacity', None)
+        self.capacity = kwargs.get('capacity')
 
-        self.efficiency_el = kwargs.get('efficiency_el', None)
+        self.efficiency_el = kwargs.get('efficiency_el')
 
-        self.efficiency_th = kwargs.get('efficiency_th', None)
+        self.efficiency_th = kwargs.get('efficiency_th')
 
         self.marginal_cost = kwargs.get('marginal_cost', 0)
 
-        self.investment_cost = kwargs.get('investment_cost', None)
+        self.investment_cost = kwargs.get('investment_cost')
 
         investment = self._investment()
 
@@ -285,7 +276,7 @@ class Conversion(Transformer, Facade):
 
         self.marginal_cost = kwargs.get('marginal_cost', 0)
 
-        self.investment_cost = kwargs.get('investment_cost', None)
+        self.investment_cost = kwargs.get('investment_cost')
 
         self.input_edge_parameters = kwargs.get('input_edge_parameters', {})
 
@@ -357,13 +348,20 @@ class Storage(GenericStorage, Facade):
 
         self.capacity = kwargs.get('capacity')
 
+        self.power = kwargs.get('power')
+
         self.nominal_capacity = self.capacity
 
-        self.nominal_input_capacity_ratio = kwargs.get('c_rate', 1/6)
-
-        self.nominal_output_capacity_ratio = kwargs.get('c_rate', 1/6)
+        if self.power and self.capacity:
+            self.nominal_input_capacity_ratio =  self.power / self.capacity
+            self.nominal_output_capacity_ratio = self.power / self.capacity
+        else:
+            self.nominal_input_capacity_ratio = kwargs.get('p_c_ratio')
+            self.nominal_output_capacity_ratio = kwargs.get('p_c_ratio')
 
         self.investment_cost = kwargs.get('investment_cost')
+
+        self.efficiency = kwargs.get('efficiency')
 
         self.bus = kwargs.get('bus')
 
