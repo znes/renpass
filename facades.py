@@ -361,7 +361,9 @@ class Storage(GenericStorage, Facade):
 
         self.investment_cost = kwargs.get('investment_cost')
 
-        self.efficiency = kwargs.get('efficiency')
+        self.capacity_loss = kwargs.get('loss', 0)
+
+        self.inflow_conversion_factor = kwargs.get('efficiency', 1)
 
         self.bus = kwargs.get('bus')
 
