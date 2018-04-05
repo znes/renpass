@@ -159,7 +159,7 @@ class Generator(Source, Facade):
 
         investment = self._investment()
 
-        f = Flow(nominal_value=nominal_value,
+        f = Flow(nominal_value=self.capacity,
                  variable_costs=self.marginal_cost,
                  actual_value=self.profile,
                  investment=investment,

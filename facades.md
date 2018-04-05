@@ -1,5 +1,5 @@
 
-Backgground
+Background
 =============
 
 Energy systems modelling requires versatile tools to model systems with
