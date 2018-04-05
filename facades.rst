@@ -1,36 +1,46 @@
 
-Introduction
+Backgground
 =============
 
 Energy systems modelling requires versatile tools to model systems with
-different degree of accuarcy, detail and thus resulting model complexiy.
-For example for some countries the lack of data may force energy system
-analysts to apply simplistic approaches.
+different levels of accuracy and detail resulting in the complexiy of the model.
+For example, for some countries the lack of data may force energy system
+analysts to apply simplistic approaches. In other cases comprehensive interlinked
+models may be applied to analyse energy systems and future pathways.
 
-The framework provides a core based on the graph description and a strong
-optimization model generator to construct individual and suitable models.
-Internally oemof uses abstract terms and own definitions based on an
-generic data model.
+The Open Energy Modelling Framework is based on graph structure at the core.
+In addition it provides an optimization model generator to construct individual
+and suitable models. The internal logic, used terminology and software
+architecture is abstract and rahter designed for model developers and
+experienced modellers.
+
+Oemof users / developers can model energy systems by leveraging different degrees
+of freedom:
+
+1. Modelling based using existing classes
+2. Add own classes
+3. Add own constraints based on the underlying algebraic modelling library
 
 However, in some cases complexity of this internal logic and full functionality
-is neither necessary nor suitable for some model users. Therefore we provide
-facade classes that are provide an energy specific and reduced access to the
-underlying oemof functionality.
+is neither necessary nor suitable for model users. Therefore we provide
+so called facade classes that provide an energy specific and reduced access to
+the underlying oemof functionality.
 
-Currentlly we provide the following facades:
+Currently we provide the following facades:
 
 * Generator
 * Demand
 * Storage
+* Reservoir
 * Connection
 * Conversion
-* Hub
 * Bus
 * CHP
 
-Modelling energy systems based on these classes is straighfoward. Parametrization
-of an energy system can either be done via python scripting or by using the
-datapackage structure described below.
+Modelling energy systems based on these classes is straightforward.
+Parametrization of an energy system can either be done via python scripting or
+by using the datapackage structure described below. Datapackages can then easily
+be processed with the command line tool.
 
 
 Datapackage
@@ -40,12 +50,13 @@ To construct a scenario based on the datapackage
 1. Add the topology of the energy system based on the components and their
   **exogenous model parameters**.
 2. Create a python script to construct the energy system and the model from
-  that data.
-3. Posprocess the data (you may use the `EnergySystem.to_datapackage()`)
+  that data or simply use the existing command line tool.
+3. (optional) Post-process the data (you may use the `EnergySystem.to_datapackage()`)
    method to store your results in datapackage.
 
 This allows you to simply publish your scenario (input data, assumptions, model
-and results) altogether in own consitent set.
+and results) altogether in own consistent block base on the datapackage
+standard.
 
 
 How to create an Datapackage
