@@ -19,6 +19,7 @@ Options:
   -o --solver=SOLVER         Solver to be used. [default: cbc]
      --output-directory=DIR  Directory to write results to. [default: results]
      --version               Show version.
+     --results=RESULTS       How should results be saved [default: all]
 """
 
 import os
@@ -148,15 +149,19 @@ def write_results(es, m, p, **arguments):
                         for tup in results.keys()
                         for item in tup]))
 
-    for n in nodes:
-        if isinstance(n, (Bus, facades.Storage)):
-            node_data = views.node(results, str(n), multiindex=True)
+    if arguments['--results'] == 'reduced':
+        nodes = [n for n in nodes if isinstance(n, (Bus, facades.Storage))]
+    if arguments['--results'] == 'all':
+        pass
 
-            n = str(n)[:20]  # trim string length to allowed chars for a worksheet
-            if 'scalars' in node_data:
-                node_data['scalars'].to_excel(writer, sheet_name=str(n)+'_scalars')
-            if 'sequences' in node_data:
-                node_data['sequences'].to_excel(writer, sheet_name=str(n)+'_sequences')
+    for n in nodes:
+        node_data = views.node(results, str(n), multiindex=True)
+
+        n = str(n)[:20]  # trim string length to allowed chars for a worksheet
+        if 'scalars' in node_data:
+            node_data['scalars'].to_excel(writer, sheet_name=str(n)+'_scalars')
+        if 'sequences' in node_data:
+            node_data['sequences'].to_excel(writer, sheet_name=str(n)+'_sequences')
 
     writer.save()
 
