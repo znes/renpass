@@ -2,6 +2,228 @@
     "profile": "tabular-data-package",
     "resources": [
       {
+          "path": "data/elements/chps.csv",
+          "profile": "tabular-data-resource",
+          "name": "chps",
+          "format": "csv",
+          "mediatype": "text/csv",
+          "encoding": "utf-8",
+          "schema": {
+              "fields": [
+                  {
+                      "name": "name",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "type",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "capacity",
+                      "type": "integer",
+                      "format": "default"
+                  },
+                  {
+                      "name": "marginal_cost",
+                      "type": "integer",
+                      "format": "default"
+                  },
+                  {
+                      "name": "investment_cost",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "bus_el",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "bus_th",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "bus_fuel",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "efficiency_el",
+                      "type": "number",
+                      "format": "default"
+                  },
+                  {
+                      "name": "efficiency_th",
+                      "type": "number",
+                      "format": "default"
+                  }
+              ],
+              "foreignKeys": [
+                    {
+                        "fields": "bus_el",
+                        "reference": {
+                            "fields": "name",
+                            "resource": "bus"
+                        }
+                    },
+                    {
+                        "fields": "bus_th",
+                        "reference": {
+                            "fields": "name",
+                            "resource": "bus"
+                        }
+                    },
+                    {
+                        "fields": "bus_fuel",
+                        "reference": {
+                            "fields": "name",
+                            "resource": "bus"
+                        }
+                    }],
+              "missingValues": [
+                  ""
+              ]
+          }
+      },
+      {
+          "path": "data/elements/conversions.csv",
+          "profile": "tabular-data-resource",
+          "name": "conversions",
+          "format": "csv",
+          "mediatype": "text/csv",
+          "encoding": "utf-8",
+          "schema": {
+              "fields": [
+                  {
+                      "name": "name",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "type",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "capacity",
+                      "type": "integer",
+                      "format": "default"
+                  },
+                  {
+                      "name": "investment_cost",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "marginal_cost",
+                      "type": "number",
+                      "format": "default"
+                  },
+                  {
+                      "name": "efficiency",
+                      "type": "number",
+                      "format": "default"
+                  },
+                  {
+                      "name": "from_bus",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "to_bus",
+                      "type": "string",
+                      "format": "default"
+                  }
+              ],
+              "foreignKeys": [
+                    {
+                        "fields": "from_bus",
+                        "reference": {
+                            "fields": "name",
+                            "resource": "bus"
+                        }
+                    },
+                    {
+                        "fields": "to_bus",
+                        "reference": {
+                            "fields": "name",
+                            "resource": "bus"
+                        }
+                    }],
+              "missingValues": [
+                  ""
+              ]
+          }
+      },
+      {
+          "path": "data/elements/connections.csv",
+          "profile": "tabular-data-resource",
+          "name": "connections",
+          "format": "csv",
+          "mediatype": "text/csv",
+          "encoding": "utf-8",
+          "schema": {
+              "fields": [
+                  {
+                      "name": "name",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "type",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "capacity",
+                      "type": "number",
+                      "format": "default"
+                  },
+                  {
+                      "name": "investment_cost",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "loss",
+                      "type": "number",
+                      "format": "default"
+                  },
+                  {
+                      "name": "from_bus",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "to_bus",
+                      "type": "string",
+                      "format": "default"
+                  }
+              ],
+              "foreignKeys": [
+                    {
+                        "fields": "from_bus",
+                        "reference": {
+                            "fields": "name",
+                            "resource": "bus"
+                        }
+                    },
+                    {
+                        "fields": "to_bus",
+                        "reference": {
+                            "fields": "name",
+                            "resource": "bus"
+                        }
+                    }],
+              "missingValues": [
+                  ""
+              ]
+          }
+      },
+      {
           "path": "data/elements/storages.csv",
           "profile": "tabular-data-resource",
           "name": "storages",

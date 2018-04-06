@@ -1,0 +1,2 @@
+name;type;capacity;investment_cost;loss;from_bus;to_bus
+conn1;connection;100;;0.05;bus0;bus1

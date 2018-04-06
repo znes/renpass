@@ -1,2 +1,5 @@
 name;type;balanced
-electricity-bus;bus;true
+bus0;bus;true
+bus1;bus;true
+heat-bus;bus;false
+gas-bus;bus;false
