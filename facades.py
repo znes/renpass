@@ -135,9 +135,6 @@ class Generator(Source, Facade):
         Investment costs per unit of capacity (e.g. Euro / MW) .
         If capacity is not set, this value will be used for optimizing the
         generators capacity.
-    amount: numeric
-        Total amount of produced energy for the time horizon of the model e.G.
-        in MWh (optional). Note: Either set `amount` or `capacity`!
     """
 
     def __init__(self, *args, **kwargs):
@@ -228,6 +225,7 @@ class CHP(Transformer, Facade):
         investment = self._investment()
 
         self.conversion_factors.update({
+            self.bus_fuel: sequence(1),
             self.bus_el: sequence(self.efficiency_el),
             self.bus_th: sequence(self.efficiency_th)})
 
@@ -283,7 +281,6 @@ class Conversion(Transformer, Facade):
         self.output_edge_parameters = kwargs.get('output_edge_parameters', {})
 
         investment = self._investment()
-
 
         self.conversion_factors.update({
             self.from_bus: sequence(1),
