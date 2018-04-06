@@ -1,6 +1,55 @@
 {   "name": "dispatch-example",
     "profile": "tabular-data-package",
     "resources": [
+      {
+          "path": "data/elements/storages.csv",
+          "profile": "tabular-data-resource",
+          "name": "storages",
+          "format": "csv",
+          "mediatype": "text/csv",
+          "encoding": "utf-8",
+          "schema": {
+              "fields": [
+                  {
+                      "name": "name",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "capacity",
+                      "type": "number",
+                      "format": "default"
+                  },
+                  {
+                      "name": "power",
+                      "type": "number",
+                      "format": "default"
+                  },
+                  {
+                      "name": "type",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "bus",
+                      "type": "string",
+                      "format": "default"
+                  }
+              ],
+              "foreignKeys": [
+                    {
+                        "fields": "bus",
+                        "reference": {
+                            "fields": "name",
+                            "resource": "bus"
+                        }
+                    }
+              ],
+              "missingValues": [
+                  ""
+              ]
+          }
+      },
         {
             "path": "data/elements/demands.csv",
             "profile": "tabular-data-resource",
@@ -82,7 +131,7 @@
                     },
                     {
                         "name": "investment_cost",
-                        "type": "string",
+                        "type": "number",
                         "format": "default"
                     },
                     {

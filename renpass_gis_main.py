@@ -31,7 +31,7 @@ from datetime import datetime
 import facades
 
 from oemof.tools import logger
-from oemof.solph import Model, EnergySystem
+from oemof.solph import Model, EnergySystem, Bus
 from oemof.outputlib import processing, views
 
 try:
@@ -69,6 +69,7 @@ def create_energysystem(datapackage, **arguments):
             facades.Generator: {"generator-profiles": "profile"},
             facades.RunOfRiver: {"run-of-river-inflows": "inflow"}},
         typemap={
+            'bus': Bus,
             'demand': facades.Demand,
             'generator': facades.Generator,
             'storage': facades.Storage,
@@ -98,7 +99,7 @@ def compute(es=None, **arguments):
 
     logging.info('Model creation time: ' + stopwatch())
 
-    m.receive_duals()
+    #m.receive_duals()
 
     m.solve(solver=arguments['--solver'], solve_kwargs={'tee': True})
 
@@ -143,18 +144,19 @@ def write_results(es, m, p, **arguments):
     writer = pd.ExcelWriter(xls_file, engine='xlsxwriter')
 
     # add regular optimization results
-    nodes = sorted(set([str(item)
+    nodes = sorted(set([item
                         for tup in results.keys()
                         for item in tup]))
 
     for n in nodes:
-        node_data = views.node(results, n, multiindex=True)
+        if isinstance(n, (Bus, facades.Storage)):
+            node_data = views.node(results, str(n), multiindex=True)
 
-        n = str(n)[:20]  # trim string length to allowed chars for a worksheet
-        if 'scalars' in node_data:
-            node_data['scalars'].to_excel(writer, sheet_name=n+'_scalars')
-        if 'sequences' in node_data:
-            node_data['sequences'].to_excel(writer, sheet_name=n+'_sequences')
+            n = str(n)[:20]  # trim string length to allowed chars for a worksheet
+            if 'scalars' in node_data:
+                node_data['scalars'].to_excel(writer, sheet_name=str(n)+'_scalars')
+            if 'sequences' in node_data:
+                node_data['sequences'].to_excel(writer, sheet_name=str(n)+'_sequences')
 
     writer.save()
 
@@ -183,6 +185,7 @@ def main(**arguments):
     logging.info('Done! \n Check the results')
 
     return
+
 
 
 ###############################################################################

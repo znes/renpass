@@ -111,7 +111,6 @@ class Reservoir(GenericStorage, Facade):
         self.subnodes = (water, water_inflow, water_spillage)
 
 
-
 class Generator(Source, Facade):
     """ Generator unit with one output, e.g. gas-turbine, wind-turbine, etc.
 
@@ -140,6 +139,7 @@ class Generator(Source, Facade):
         Total amount of produced energy for the time horizon of the model e.G.
         in MWh (optional). Note: Either set `amount` or `capacity`!
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -361,9 +361,9 @@ class Storage(GenericStorage, Facade):
 
         self.investment_cost = kwargs.get('investment_cost')
 
-        self.capacity_loss = kwargs.get('loss', 0)
+        self.capacity_loss = sequence(kwargs.get('loss', 0))
 
-        self.inflow_conversion_factor = kwargs.get('efficiency', 1)
+        self.inflow_conversion_factor = sequence(kwargs.get('efficiency', 1))
 
         self.bus = kwargs.get('bus')
 
