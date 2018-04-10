@@ -37,7 +37,11 @@ from oemof.tools import logger
 from oemof.solph import OperationalModel, EnergySystem, GROUPINGS
 from oemof.solph import NodesFromCSV
 from oemof.outputlib import ResultsDataFrame
-from docopt import docopt
+from oemof.solph.network import Bus, Storage
+try:
+    from docopt import docopt
+except ImportError:
+    print("Unable to load docopt. Is docopt installed?")
 
 
 ###############################################################################
@@ -139,75 +143,67 @@ def write_results(es, om, **arguments):
 
     results_path = arguments['--output-directory']
 
-    date = str(datetime.now())
+    date = datetime.now().strftime("%Y-%m-%d %H-%M-%S").replace(' ', '_')
 
     file_name = 'scenario_' + os.path.basename(arguments['NODE_DATA'])\
         .replace('.csv', '_') + date + '_' + 'results_complete.csv'
 
     results.to_csv(os.path.join(results_path, file_name))
 
-    # postprocessing: write dispatch and prices for all regions to file system
+    # postprocessing: write dispatch and prices for all buses to file system
 
-    # country codes
-    country_codes = ['AT', 'BE', 'CH', 'CZ', 'DE', 'DK', 'FR', 'LU', 'NL',
-                     'NO', 'PL', 'SE']
+    # rename redundant columns
+    results.reset_index(['obj_label'], inplace=True)
+    results.sortlevel(inplace=True)
+    type_to_suffix = {'to_bus': 'out', 'from_bus': 'in', 'other': 'level'}
 
-    for cc in country_codes:
+    labels = [s.label for s in es.entities if isinstance(s, Storage)]
+
+    for k, v in type_to_suffix.items():
+
+        new_labels = [l + '_' + v for l in labels]
+
+        idx = pd.IndexSlice[:, k, :]  # slice by type
+        results.loc[idx, 'obj_label'] = results.loc[idx, 'obj_label'].\
+            replace(dict(zip(labels, new_labels)))
+
+    # reintegrate into index
+    results.set_index(['obj_label'], inplace=True, append=True)
+    results.index = results.reorder_levels([0, 1, 3, 2]).index
+    results.sortlevel(inplace=True)
+
+    # get string representation of buses
+    buses = [b.label for b in es.entities if isinstance(b, Bus)]
+
+    for b in buses:
+
         # build single dataframe for electric buses
-        inputs = results.slice_unstacked(bus_label=cc + '_bus_el',
+        inputs = results.slice_unstacked(bus_label=b,
                                          type='to_bus',
                                          date_from=arguments['--date-from'],
                                          date_to=arguments['--date-to'],
                                          formatted=True)
 
-        outputs = results.slice_unstacked(bus_label=(cc + '_bus_el'),
+        outputs = results.slice_unstacked(bus_label=b,
                                           type='from_bus',
                                           date_from=arguments['--date-from'],
                                           date_to=arguments['--date-to'],
                                           formatted=True)
 
-        other = results.slice_unstacked(bus_label=cc + '_bus_el',
+        other = results.slice_unstacked(bus_label=b,
                                         type='other',
                                         date_from=arguments['--date-from'],
                                         date_to=arguments['--date-to'],
                                         formatted=True)
 
-        # AT, DE and LU are treated as one bidding area
-        if cc == 'DE':
-            for c in ['DE', 'AT', 'LU']:
-                # rename redundant columns
-                inputs.rename(columns={c + '_storage_phs':
-                                       c + '_storage_phs_out'},
-                              inplace=True)
-                outputs.rename(columns={c + '_storage_phs':
-                                        c + '_storage_phs_in'},
-                               inplace=True)
-                other.rename(columns={c + '_storage_phs':
-                                      c + '_storage_phs_level'},
-                             inplace=True)
-
-                # data from model in MWh
-                country_data = pd.concat([inputs, outputs, other], axis=1)
-        else:
-            # rename redundant columns
-            inputs.rename(columns={cc + '_storage_phs': cc +
-                                   '_storage_phs_out'},
-                          inplace=True)
-            outputs.rename(columns={cc + '_storage_phs': cc +
-                                    '_storage_phs_in'},
-                           inplace=True)
-            other.rename(columns={cc + '_storage_phs': cc +
-                                  '_storage_phs_level'},
-                         inplace=True)
-
-            # data from model in MWh
-            country_data = pd.concat([inputs, outputs, other], axis=1)
+        # data from model in MWh
+        bus_data = pd.concat([inputs, outputs, other], axis=1)
 
         # sort columns and save as csv file
         file_name = 'scenario_' + os.path.basename(arguments['NODE_DATA'])\
-            .replace('.csv', '_') + date + '_' + cc + '.csv'
-        country_data.sort_index(axis=1, inplace=True)
-        country_data.to_csv(os.path.join(results_path, file_name))
+            .replace('.csv', '_') + date + '_' + b + '.csv'
+        bus_data.sort_index(axis=1, inplace=True)
+        bus_data.to_csv(os.path.join(results_path, file_name))
 
     return
 
