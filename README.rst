@@ -153,10 +153,24 @@ and in particular the following people for their contributions to this first ver
 * Simon Hilpert and Uwe Krien for the effort they put in the oemof-refactoring
 * Wolf-Dieter Bunke and Marion Christ for the initial scenario development
 * Clemens Wingenbach and Stephan Günther for providing the prior version
-* Frauke Wiese and Gesine Bökenkamp for creating `renpass <http://www.renpass.eu>`_
+* Frauke Wiese and Gesine Bökenkamp for creating `renpass <https://github.com/fraukewiese/renpass>`_
 * All people at the Center for Sustainable Energy Systems (ZNES) Flensburg
 
 Citation
-============
+========
 
 We have an `entry <http://osf.io/kp4mh>`_ in the `Open Science Network <https://osf.io>`_ which can be used.
+
+
+
+Publication
+===========
+
+Boysen, Cnythia; Grotlüschen, Heike; Großer, Hauke; Kaldemeyer, Cord; Tuschy, Ilja ( **2017** ) Druckluftspeicherkraftwerk Schleswig-Holstein - *Untersuchung zur Eignung Schleswig-Holsteins als Modellstandort für die Energiewende*. Nr. 5 der Reihe Forschungsergebnisse des ZNES Flensburg (elektronisch: ISSN 2196-7164 / Print: ISSN 2195-4925) `Download <https://www.uni-flensburg.de/fileadmin/content/abteilungen/industrial/dokumente/downloads/veroeffentlichungen/forschungsergebnisse/dlsk-sh-forschungsbeitraege5-20170427.pdf>`_
+
+Ulf Philipp Mueller, Lukas Wienholt, David Kleinhans, IlkaCussmann, Wolf-Dieter Bunke , Guido Pleßmann and Jochen Wendiggensen (**2017**) The eGo grid model: *An open source approach towards a model of German high and extra-high voltage power grids*. SciGRID International Conference on Power Grid Modelling (submitted)
+
+Becker, Liv; Bunke, Wolf-Dieter; Christ, Marion; Degel, Melanie; Grünert, Judith; Söthe, Martin; Wiese, Frauke; Wingenbach, Clemens (**2016**) VerNetzen: *Sozial-ökologische und technisch-ökonomische Modellierung von Entwicklungspfaden der Energiewende.* der Reihe Forschungsergebnisse des ZNES Flensburg (elektronisch: ISSN 2196-7164) `Download <http://www.uni-flensburg.de/fileadmin/content/abteilungen/industrial/dokumente/downloads/veroeffentlichungen/forschungsergebnisse/vernetzen-2016-endbericht-online.pdf>`_ 
+
+Berg, Marina, Bohm, Sönke, Fink, Thomas, Hauser, Muriel, & Komendantova, Nadejda (**2016**). Summary of workshop results: *Scenario development and multi-criteria analysis for Morocco's future electricity system in 2050*. Bonn. `Download <http://menaselect.info/uploads/countries/morocco/2016_09_01_Summary_of_workshop_results_FINAL.pdf>`_
+
