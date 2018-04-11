@@ -71,6 +71,7 @@ def create_energysystem(datapackage, **arguments):
             facades.RunOfRiver: {"run-of-river-inflows": "inflow"}},
         typemap={
             'bus': facades.Hub,
+            'extraction-turbine': facades.ExtractionTurbine,
             'demand': facades.Demand,
             'generator': facades.Generator,
             'storage': facades.Storage,

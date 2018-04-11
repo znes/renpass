@@ -89,6 +89,98 @@
           }
       },
       {
+          "path": "data/elements/extraction.csv",
+          "profile": "tabular-data-resource",
+          "name": "extraction-turbines",
+          "format": "csv",
+          "mediatype": "text/csv",
+          "encoding": "utf-8",
+          "schema": {
+              "fields": [
+                  {
+                      "name": "name",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "type",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "capacity",
+                      "type": "integer",
+                      "format": "default"
+                  },
+                  {
+                      "name": "marginal_cost",
+                      "type": "integer",
+                      "format": "default"
+                  },
+                  {
+                      "name": "investment_cost",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "electricity_bus",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "heat_bus",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "fuel_bus",
+                      "type": "string",
+                      "format": "default"
+                  },
+                  {
+                      "name": "electric_efficiency",
+                      "type": "number",
+                      "format": "default"
+                  },
+                  {
+                      "name": "thermal_efficiency",
+                      "type": "number",
+                      "format": "default"
+                  },
+                  {
+                      "name": "condensing_efficiency",
+                      "type": "number",
+                      "format": "default"
+                  }
+              ],
+              "foreignKeys": [
+                    {
+                        "fields": "electricity_bus",
+                        "reference": {
+                            "fields": "name",
+                            "resource": "bus"
+                        }
+                    },
+                    {
+                        "fields": "heat_bus",
+                        "reference": {
+                            "fields": "name",
+                            "resource": "bus"
+                        }
+                    },
+                    {
+                        "fields": "fuel_bus",
+                        "reference": {
+                            "fields": "name",
+                            "resource": "bus"
+                        }
+                    }],
+              "missingValues": [
+                  ""
+              ]
+          }
+      },
+      {
           "path": "data/elements/conversions.csv",
           "profile": "tabular-data-resource",
           "name": "conversions",

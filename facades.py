@@ -7,7 +7,7 @@ application and work with the oemof datapackage - reader functionality
 SPDX-License-Identifier: GPL-3.0-or-later
 """
 from oemof.solph import Source, Flow, Investment, Sink, Transformer, Bus
-from oemof.solph.components import GenericStorage
+from oemof.solph.components import GenericStorage, ExtractionTurbineCHP
 from oemof.solph.custom import Link
 from oemof.solph.plumbing import sequence
 
@@ -177,6 +177,84 @@ class RunOfRiver(Source, Facade):
     """
     """
     pass
+
+class ExtractionTurbine(ExtractionTurbineCHP, Facade):
+    """ Combined Heat and Power (extraction) unit with one input and
+    two outputs.
+
+    Parameters
+    ----------
+    electricity_bus: oemof.solph.Bus
+        An oemof bus instance where the chp unit is connected to with its
+        electrical output
+    heat_bus: oemof.solph.Bus
+        An oemof bus instance where the chp unit is connected to with its
+        thermal output
+    fuel_bus: oemof.solph.Bus
+        An oemof bus instance where the chp unit is connected to with its
+        intput
+    capacity: numeric
+        The electrical capacity of the chp unit (e.g. in MW) in full extraction
+        mode.
+    electric_efficiency:
+        Electrical efficiency of the chp unit in full backpressure mode
+    thermal_efficiency:
+        Thermal efficiency of the chp unit in full backpressure mode
+    condensing_efficiency:
+        Electrical efficiency if turbine operates in full extraction mode
+    marginal_cost: numeric
+        Marginal cost for one unit of produced electrical output
+        E.g. for a powerplant:
+        marginal cost =fuel cost + operational cost + co2 cost (in Euro / MWh)
+        if timestep length is one hour.
+    investment_cost: numeric
+        Investment costs per unit of electrical capacity (e.g. Euro / MW) .
+        If capacity is not set, this value will be used for optimizing the
+        chp capacity.
+    """
+    required = ['fuel_bus', 'electricity_bus', 'heat_bus',
+                'thermal_efficiency', 'electric_efficiency',
+                'condensing_efficiency']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(conversion_factor_full_condensation={}, *args, **kwargs)
+
+        self.fuel_bus = kwargs.get('fuel_bus')
+
+        self.heat_bus = kwargs.get('heat_bus')
+
+        self.electricity_bus = kwargs.get('electricity_bus')
+
+        self.capacity = kwargs.get('capacity')
+
+        self.electric_efficiency = kwargs.get('electric_efficiency')
+
+        self.thermal_efficiency = kwargs.get('thermal_efficiency')
+
+        self.condesing_efficiency = sequence(kwargs.get('condensing_efficiency'))
+
+        self.marginal_cost = kwargs.get('marginal_cost', 0)
+
+        self.investment_cost = kwargs.get('investment_cost')
+
+        investment = self._investment()
+
+        self.conversion_factors.update({
+            self.fuel_bus: sequence(1),
+            self.electricity_bus: sequence(self.electric_efficiency),
+            self.heat_bus: sequence(self.thermal_efficiency)})
+
+        self.inputs.update({
+            self.fuel_bus: Flow()})
+
+        self.outputs.update({
+            self.electricity_bus: Flow(nominal_value=self.capacity,
+                                       variable_costs=self.marginal_cost,
+                                       investment=investment),
+            self.heat_bus: Flow()})
+
+        self.conversion_factor_full_condensation.update({
+            self.electricity_bus: self.condesing_efficiency})
 
 
 class Backpressure(Transformer, Facade):
