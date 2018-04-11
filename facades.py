@@ -172,11 +172,11 @@ class Generator(Source, Facade):
         self.outputs.update({self.bus: f})
 
 
-
 class RunOfRiver(Source, Facade):
     """
     """
     pass
+
 
 class ExtractionTurbine(ExtractionTurbineCHP, Facade):
     """ Combined Heat and Power (extraction) unit with one input and
@@ -430,7 +430,7 @@ class Storage(GenericStorage, Facade):
         Max in/out power of storage. Either set this attribute OR `c_rate`.
         If you do not specify `capacity` and set `investment_cost`, use
         `c_rate` instead of power
-    c_rate: numeric (optional)
+    ep_ratio: numeric (optional)
         Ratio between energy and power output of the storage. Needs to be
         set if attr `investment_cost` is set.
     investment_cost: numeric
@@ -452,8 +452,13 @@ class Storage(GenericStorage, Facade):
             self.nominal_input_capacity_ratio =  self.power / self.capacity
             self.nominal_output_capacity_ratio = self.power / self.capacity
         else:
-            self.nominal_input_capacity_ratio = kwargs.get('p_c_ratio')
-            self.nominal_output_capacity_ratio = kwargs.get('p_c_ratio')
+            if kwargs.get('ep_ratio') is None:
+                raise AttributeError(
+                    ("You need to set attr `ep_ratio` for "
+                     "component {}").format(self.label))
+            else:
+                self.nominal_input_capacity_ratio = kwargs.get('ep_ratio')
+                self.nominal_output_capacity_ratio = kwargs.get('ep_ratio')
 
         self.investment_cost = kwargs.get('investment_cost')
 

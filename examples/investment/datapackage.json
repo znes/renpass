@@ -335,7 +335,12 @@
                       "format": "default"
                   },
                   {
-                      "name": "power",
+                      "name": "investment_cost",
+                      "type": "number",
+                      "format": "default"
+                  },
+                  {
+                      "name": "ep_ratio",
                       "type": "number",
                       "format": "default"
                   },
