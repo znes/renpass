@@ -22,17 +22,17 @@
                   },
                   {
                       "name": "capacity",
-                      "type": "integer",
+                      "type": "number",
                       "format": "default"
                   },
                   {
                       "name": "marginal_cost",
-                      "type": "integer",
+                      "type": "number",
                       "format": "default"
                   },
                   {
                       "name": "investment_cost",
-                      "type": "string",
+                      "type": "number",
                       "format": "default"
                   },
                   {
@@ -109,17 +109,17 @@
                   },
                   {
                       "name": "capacity",
-                      "type": "integer",
+                      "type": "number",
                       "format": "default"
                   },
                   {
                       "name": "marginal_cost",
-                      "type": "integer",
+                      "type": "number",
                       "format": "default"
                   },
                   {
                       "name": "investment_cost",
-                      "type": "string",
+                      "type": "number",
                       "format": "default"
                   },
                   {
@@ -201,12 +201,12 @@
                   },
                   {
                       "name": "capacity",
-                      "type": "integer",
+                      "type": "number",
                       "format": "default"
                   },
                   {
                       "name": "investment_cost",
-                      "type": "string",
+                      "type": "number",
                       "format": "default"
                   },
                   {
@@ -276,7 +276,7 @@
                   },
                   {
                       "name": "investment_cost",
-                      "type": "string",
+                      "type": "number",
                       "format": "default"
                   },
                   {
@@ -380,7 +380,7 @@
                     },
                     {
                         "name": "amount",
-                        "type": "integer",
+                        "type": "number",
                         "format": "default"
                     },
                     {
@@ -440,7 +440,7 @@
                     },
                     {
                         "name": "capacity",
-                        "type": "integer",
+                        "type": "number",
                         "format": "default"
                     },
                     {
@@ -455,7 +455,7 @@
                     },
                     {
                         "name": "marginal_cost",
-                        "type": "integer",
+                        "type": "number",
                         "format": "default"
                     },
                     {
