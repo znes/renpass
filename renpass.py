@@ -70,12 +70,12 @@ def create_energysystem(datapackage, **arguments):
             facades.Generator: {"generator-profiles": "profile"},
             facades.RunOfRiver: {"run-of-river-inflows": "inflow"}},
         typemap={
-            'bus': Bus,
+            'bus': facades.Hub,
             'demand': facades.Demand,
             'generator': facades.Generator,
             'storage': facades.Storage,
             'reservoir': facades.Reservoir,
-            'backpressure': facades.CHP,
+            'backpressure': facades.Backpressure,
             'connection': facades.Connection,
             'conversion': facades.Conversion,
             'runofriver': facades.RunOfRiver})

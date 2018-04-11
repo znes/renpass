@@ -1,2 +1,0 @@
-name;type;capacity;marginal_cost;investment_cost;bus_el;bus_th;bus_fuel;efficiency_el;efficiency_th
-chp1;backpressure;100;100;;bus0;heat-bus;gas-bus;0.4;0.3

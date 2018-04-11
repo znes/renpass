@@ -2,9 +2,9 @@
     "profile": "tabular-data-package",
     "resources": [
       {
-          "path": "data/elements/chps.csv",
+          "path": "data/elements/backpressure.csv",
           "profile": "tabular-data-resource",
-          "name": "chps",
+          "name": "backpressure_units",
           "format": "csv",
           "mediatype": "text/csv",
           "encoding": "utf-8",
@@ -36,48 +36,48 @@
                       "format": "default"
                   },
                   {
-                      "name": "bus_el",
+                      "name": "electricity_bus",
                       "type": "string",
                       "format": "default"
                   },
                   {
-                      "name": "bus_th",
+                      "name": "heat_bus",
                       "type": "string",
                       "format": "default"
                   },
                   {
-                      "name": "bus_fuel",
+                      "name": "fuel_bus",
                       "type": "string",
                       "format": "default"
                   },
                   {
-                      "name": "efficiency_el",
+                      "name": "electric_efficiency",
                       "type": "number",
                       "format": "default"
                   },
                   {
-                      "name": "efficiency_th",
+                      "name": "thermal_efficiency",
                       "type": "number",
                       "format": "default"
                   }
               ],
               "foreignKeys": [
                     {
-                        "fields": "bus_el",
+                        "fields": "electricity_bus",
                         "reference": {
                             "fields": "name",
                             "resource": "bus"
                         }
                     },
                     {
-                        "fields": "bus_th",
+                        "fields": "heat_bus",
                         "reference": {
                             "fields": "name",
                             "resource": "bus"
                         }
                     },
                     {
-                        "fields": "bus_fuel",
+                        "fields": "fuel_bus",
                         "reference": {
                             "fields": "name",
                             "resource": "bus"
