@@ -21,6 +21,9 @@ Options:
      --version               Show version.
      --results=RESULTS       How should results be saved [default: all]
   -d --debug=BOOL            Debug mode False or True [default: False]
+     --t_start=T_START       Start timestep of simulation [default: 0]
+     --t_end=T_END           End timestep of simulation, default is last
+                             timestep of datapackage timeindex [default: -1]
 """
 
 import os
@@ -81,6 +84,11 @@ def create_energysystem(datapackage, **arguments):
             'connection': facades.Connection,
             'conversion': facades.Conversion,
             'runofriver': facades.RunOfRiver})
+
+
+    end = es.timeindex.get_loc(es.timeindex[int(arguments['--t_end'])]) + 1
+
+    es.timeindex = es.timeindex[int(arguments['--t_start']):end]
 
     return es
 
