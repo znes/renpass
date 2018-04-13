@@ -25,14 +25,14 @@ and with indiviual start and end timestep:
     renpass.py -o gurobi --t_start 0 --t_end 24 path/to/datapackage.json
 ```    
 
-Per default, all result files are written back into the subfolder *results*.
+Per default, all result files are written back into the sub-folder *results*.
 
 
 Background
 =============
 
 Energy systems modelling requires versatile tools to model systems with
-different levels of accuracy and detail resulting in the complexiy of the model.
+different levels of accuracy and detail resulting in the complexity of the model.
 For example, for some countries the lack of data may force energy system
 analysts to apply simplistic approaches. In other cases comprehensive interlinked
 models may be applied to analyse energy systems and future pathways.
@@ -40,10 +40,10 @@ models may be applied to analyse energy systems and future pathways.
 The Open Energy Modelling Framework is based on graph structure at the core.
 In addition it provides an optimization model generator to construct individual
 and suitable models. The internal logic, used terminology and software
-architecture is abstract and rahter designed for model developers and
+architecture is abstract and rather designed for model developers and
 experienced modellers.
 
-Oemof users / developers can model energy systems by leveraging different degrees
+Oemof users / developers can model energy systems with different degrees
 of freedom:
 
 1. Modelling based using existing classes
@@ -64,7 +64,8 @@ Currently we provide the following facades:
 * Connection
 * Conversion
 * Bus
-* CHP
+* Backpressure
+* ExtractionTurbine
 
 Modelling energy systems based on these classes is straightforward.
 Parametrization of an energy system can either be done via python scripting or
@@ -80,11 +81,11 @@ To construct a scenario based on the datapackage
   **exogenous model parameters**.
 2. Create a python script to construct the energy system and the model from
   that data or simply use the existing command line tool.
-3. (optional) Post-process the data (you may use the `EnergySystem.to_datapackage()`)
-   method to store your results in datapackage.
+3. Post-process the data (you may use the `EnergySystem.to_datapackage()`)
+   method to store your results in datapackage. [**NOTE**:NOT IMPLEMENTS YET]
 
 This allows you to simply publish your scenario (input data, assumptions, model
-and results) altogether in own consistent block base on the datapackage
+and results) altogether in one consistent block based on the datapackage
 standard.
 
 
@@ -94,7 +95,7 @@ How to create an Datapackage
 We adhere to the frictionless [(tabular) datapackage standard](https://frictionlessdata.io/specs/tabular-data-package/).
 On top of that structure we add our own logic. We require at least two things:
 
-1. A directory named *data* containting at least one subfolder called *elements*
+1. A directory named *data* containing at least one sub-folder called *elements*
  (optionally it may contain a directory *sequences* and hubs. Of course you may
  add any other directory, data or other information.)
 2. A valid meta-data `.json` file for the datapackage
@@ -184,6 +185,7 @@ this)
 
 Write results
 --------------
+
 .. code-block:: python
 
     from oemof.solph import EnergySystem
@@ -193,5 +195,4 @@ Write results
     ...
 
     # write the energy system
-    es = EnergySystem.to_datapackage(
-        'datapackage.json')
+    es = EnergySystem.to_datapackage('datapackage.json')
