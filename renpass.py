@@ -19,7 +19,7 @@ Options:
   -o --solver=SOLVER         Solver to be used. [default: cbc]
      --output-directory=DIR  Directory to write results to. [default: results]
      --version               Show version.
-     --results               How should results be saved [default: all]
+     --results=RESULTS       How should results be saved [default: all]
   -d --debug=BOOL            Debug mode False or True [default: False]
 """
 
