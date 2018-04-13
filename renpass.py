@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-""" renpass_gis
+""" renpass
 
 Usage:
-  renpass_gis_main.py [options] DATAPACKAGE
-  renpass_gis_main.py -h | --help | --version
+  renpass.py [options] DATAPACKAGE
+  renpass.py -h | --help | --version
 
 Examples:
 
@@ -19,7 +19,8 @@ Options:
   -o --solver=SOLVER         Solver to be used. [default: cbc]
      --output-directory=DIR  Directory to write results to. [default: results]
      --version               Show version.
-     --results=RESULTS       How should results be saved [default: all]
+     --results               How should results be saved [default: all]
+  -d --debug=BOOL            Debug mode False or True [default: False]
 """
 
 import os
@@ -102,6 +103,11 @@ def compute(es=None, **arguments):
     logging.info('Model creation time: ' + stopwatch())
 
     #m.receive_duals()
+    if arguments['--debug'] == 'True':
+        filename  = 'renpass_model.lp'
+        logging.info('Writing lp-file to {}.'.format(filename))
+        m.write(filename,
+                io_options={'symbolic_solver_labels': True})
 
     m.solve(solver=arguments['--solver'], solve_kwargs={'tee': True})
 
@@ -173,7 +179,7 @@ def write_results(es, m, p, **arguments):
 def main(**arguments):
     """
     """
-    logging.info('Starting renpass_gis!')
+    logging.info('Starting renpass!')
 
     stopwatch()
 
@@ -197,6 +203,6 @@ def main(**arguments):
 ###############################################################################
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version='renpass_gis v0.2')
+    arguments = docopt(__doc__, version='renpass v0.2')
     logger.define_logging()
     main(**arguments)
