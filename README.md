@@ -165,8 +165,8 @@ Just read the `.json` file to creat an `solph.EnergySystem` object from the
 datapackage. Based on this you can create the model, compute it and process
 the results.
 
-.. code-block:: python
 
+```python
     from oemof.solph import EnergySystem, Model
     from oemof.solph.facades import Demand, Generator
 
@@ -181,7 +181,7 @@ the results.
 
     m = Model(es)
     m.solve()
-
+```
 
 **Note**: You may use the `attributemap` to map your your field names to facade
 class attributes. In addition you may also use different names for types in your
@@ -191,8 +191,8 @@ this)
 Write results
 --------------
 
-.. code-block:: python
 
+```python
     from oemof.solph import EnergySystem
 
     # compute the model and write results back to energy system
@@ -201,3 +201,4 @@ Write results
 
     # write the energy system
     es = EnergySystem.to_datapackage('datapackage.json')
+```
