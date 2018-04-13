@@ -25,7 +25,7 @@ and with indiviual start and end timestep:
     renpass.py -o gurobi --t_start 0 --t_end 24 path/to/datapackage.json
 ```    
 
-Per default, all result files are written back into the sub-folder *results*.
+Per default, all result files are written back into the sub-folder */results*.
 
 
 Background
@@ -82,7 +82,8 @@ To construct a scenario based on the datapackage
 2. Create a python script to construct the energy system and the model from
   that data or simply use the existing command line tool.
 3. Post-process the data (you may use the `EnergySystem.to_datapackage()`)
-   method to store your results in datapackage. [**NOTE**:NOT IMPLEMENTS YET]
+   method to store your results in datapackage.
+   **NOTE**: This function has not been implemented in oemof yet.
 
 This allows you to simply publish your scenario (input data, assumptions, model
 and results) altogether in one consistent block based on the datapackage
@@ -100,6 +101,8 @@ On top of that structure we add our own logic. We require at least two things:
  add any other directory, data or other information.)
 2. A valid meta-data `.json` file for the datapackage
 
+**NOTE**: You **MUST** provide one file with the buses / hubs called `bus.csv`!
+
 The resulting tree of the datapackage could for example look like this:
 
 
@@ -115,11 +118,13 @@ The resulting tree of the datapackage could for example look like this:
           |-- datapackage.json
 
 
+
+
 Elements
 --------
 
 We recommend using one tabular data resource (i.e. one csv-file) for each
-type you want to model. The fields (i.e. columnnames) match the attribute
+type you want to model. The fields (i.e. column names) match the attribute
 names specified in the description of the facade classes.
 
 Example for **Demand**:
