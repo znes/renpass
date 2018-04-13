@@ -18,10 +18,11 @@ Getting help:
 ```bash
     renpass.py -h
 ```
-Example usage with another solver (standard is [CBC](https://projects.coin-or.org/Cbc);
+Example usage with another solver (standard is [CBC](https://projects.coin-or.org/Cbc)
+and with indiviual start and end timestep:
 
 ```bash
-    renpass.py -o gurobi path/to/datapackage.json
+    renpass.py -o gurobi --t_start 0 --t_end 24 path/to/datapackage.json
 ```    
 
 Per default, all result files are written back into the subfolder *results*.
