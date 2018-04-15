@@ -112,7 +112,8 @@ def compute(es=None, **arguments):
 
     logging.info('Model creation time: ' + stopwatch())
 
-    #m.receive_duals()
+    m.receive_duals()
+
     if arguments['--debug']:
         filename  = 'renpass_model.lp'
         logging.info('Writing lp-file to {}.'.format(filename))
@@ -196,9 +197,17 @@ def write_results(es, m, p, **arguments):
             else:
                 logging.warning(('Resultpath {} already exist' +
                                  ' overwriting results').format(node_path))
+        if 'scalars' in node_data:
+            if str(n) in node_data['scalars'].index.get_level_values(1):
+                investment = node_data['scalars'].\
+                    loc[(slice(None), str(n), 'invest')]
+                investment.name = 'investment'
+                investment.to_csv(os.path.join(node_path, 'investment.csv'),
+                                  header=True)
 
         if 'sequences' in node_data:
-            # TODO: Fix storage SOC
+            # TODO: Fix storage SOC, Connection (Transshipment) etc...
+
             if str(n) in node_data['sequences'].columns.get_level_values(1):
                 production = node_data['sequences'].\
                     loc[:, (slice(None), str(n), 'flow')]
@@ -213,8 +222,16 @@ def write_results(es, m, p, **arguments):
                 consumption.to_csv(os.path.join(node_path, 'consumption.csv'),
                                            sep=";")
 
-    # TODO prettify / complete package (meta-data) creation
+            # export dual variables / shadow prices for all balanced buses
+            # if bus obj is not balanced -> no constraint -> no dual variables
+            if isinstance(n, Bus) and n.balanced:
+                prices = node_data['sequences'].\
+                    loc[:, (str(n), slice(None), 'duals')]
+                prices.columns = prices.columns.droplevel([1])
+                prices.to_csv(os.path.join(node_path, 'prices.csv'),
+                              sep=";")
 
+    # TODO prettify / complete package (meta-data) creation
     if arguments['--results'] == 'datapackage':
         # results package (rp)
         rp = Package()
