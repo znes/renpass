@@ -19,8 +19,10 @@ Options:
   -o --solver=SOLVER         Solver to be used. [default: cbc]
      --output-directory=DIR  Directory to write results to. [default: results]
      --version               Show version.
-     --results=RESULTS       How should results be saved [default: all]
-  -d --debug=BOOL            Debug mode False or True [default: False]
+     --results=RESULTS       How should results be saved [default: datapackage]
+  -s --safe                  If argument --safe is set, results will not be
+                             overwritten
+  -d --debug                 If set debug mode is turned on
      --t_start=T_START       Start timestep of simulation [default: 0]
      --t_end=T_END           End timestep of simulation, default is last
                              timestep of datapackage timeindex [default: -1]
@@ -111,7 +113,7 @@ def compute(es=None, **arguments):
     logging.info('Model creation time: ' + stopwatch())
 
     #m.receive_duals()
-    if arguments['--debug'] == 'True':
+    if arguments['--debug']:
         filename  = 'renpass_model.lp'
         logging.info('Writing lp-file to {}.'.format(filename))
         m.write(filename,
@@ -122,6 +124,18 @@ def compute(es=None, **arguments):
     logging.info('Optimization time: ' + stopwatch())
 
     return m
+
+def links(es):
+    """
+    """
+    buses = [n for n in es.nodes if isinstance(n, facades.Connection)]
+    links = list()
+    for b in buses:
+        for i in b.inputs:
+            for o in b.outputs:
+                if o != i:
+                    links.append((i, o))
+    return links
 
 
 def write_results(es, m, p, **arguments):
@@ -151,34 +165,64 @@ def write_results(es, m, p, **arguments):
 
     date = datetime.now().strftime("%Y-%m-%d %H-%M-%S").replace(' ', '_')
 
-    filename = p.descriptor['name'].replace(' ', '_') + '.xls'
+    modelname = p.descriptor['name'].replace(' ', '_')
 
-    xls_file = os.path.join(output_base_directory, filename)
-
-    logging.info('Exporting result object to Excel.')
-
-    writer = pd.ExcelWriter(xls_file, engine='xlsxwriter')
+    logging.info('Exporting result object to CSV.')
 
     # add regular optimization results
     nodes = sorted(set([item
                         for tup in results.keys()
                         for item in tup]))
+    nodes = [n for n in nodes if isinstance(n, (Bus, facades.Storage))]
 
-    if arguments['--results'] == 'reduced':
-        nodes = [n for n in nodes if isinstance(n, (Bus, facades.Storage))]
-    if arguments['--results'] == 'all':
-        pass
+    package_root_directory = os.path.join(output_base_directory, modelname)
 
     for n in nodes:
         node_data = views.node(results, str(n), multiindex=True)
 
-        n = str(n)[:20]  # trim string length to allowed chars for a worksheet
-        if 'scalars' in node_data:
-            node_data['scalars'].to_excel(writer, sheet_name=str(n)+'_scalars')
-        if 'sequences' in node_data:
-            node_data['sequences'].to_excel(writer, sheet_name=str(n)+'_sequences')
+        # if 'scalars' in node_data:
+        #     node_data['scalars'].to_excel(writer, sheet_name=str(n)+'_scalars')
 
-    writer.save()
+        node_path = os.path.join(package_root_directory, 'data', str(n))
+
+        if not os.path.exists(node_path):
+            os.makedirs(node_path)
+        else:
+            if arguments['--safe']:
+                # TODO: replace this with a atrifical result name to store
+                # results at different location.
+                raise ValueError('Resultpath {} already exists!'.format(
+                                                                    node_path))
+            else:
+                logging.warning(('Resultpath {} already exist' +
+                                 ' overwriting results').format(node_path))
+
+        if 'sequences' in node_data:
+            # TODO: Fix storage SOC
+            if str(n) in node_data['sequences'].columns.get_level_values(1):
+                production = node_data['sequences'].\
+                    loc[:, (slice(None), str(n), 'flow')]
+                production.columns = production.columns.droplevel([1, 2])
+                production.to_csv(os.path.join(node_path, 'production.csv'),
+                                  sep=";")
+
+            if str(n) in node_data['sequences'].columns.get_level_values(0):
+                consumption = node_data['sequences'].\
+                    loc[:, (str(n), slice(None), 'flow')]
+                consumption.columns = consumption.columns.droplevel([0, 2])
+                consumption.to_csv(os.path.join(node_path, 'consumption.csv'),
+                                           sep=";")
+
+    # TODO prettify / complete package (meta-data) creation
+
+    if arguments['--results'] == 'datapackage':
+        # results package (rp)
+        rp = Package()
+        rp.infer(os.path.join(package_root_directory, 'data', '**/*.csv'))
+        rp.descriptor['description'] = "Model results from renpass with version..."
+        rp.descriptor['name'] = modelname + '-results'
+        rp.commit()
+        rp.save(os.path.join(package_root_directory, 'datapackage.json'))
 
     return True
 
