@@ -178,6 +178,20 @@ def write_results(es, m, p, **arguments):
 
     package_root_directory = os.path.join(output_base_directory, modelname)
 
+
+    df = views.node_weight_by_type(results, facades.Storage)
+
+    # write node weights for specific components (e.g. storages)
+    node_weight_path = os.path.join(
+        package_root_directory, 'data', 'storages')
+    if not os.path.exists(node_weight_path):
+        os.makedirs(node_weight_path)
+    
+    for level in df.columns.get_level_values(1).unique():
+        df_out = df.loc[:, (slice(None), level)]
+        df_out.columns = df_out.columns.droplevel(1)
+        df_out.to_csv(os.path.join(node_weight_path, level+'.csv'), sep=";")
+
     for n in nodes:
         node_data = views.node(results, str(n), multiindex=True)
 
