@@ -98,7 +98,7 @@ class Reservoir(GenericStorage, Facade):
         inflow = Source(
             label="inflow" + self.label,
             outputs={
-                reservoir_bus: Flow(nominal_value=max(self.inflow),
+                reservoir_bus: Flow(nominal_value=1,
                             #i/max(self.inflow) for i in self.inflow
                             actual_value=self.inflow,
                             fixed=True)})
