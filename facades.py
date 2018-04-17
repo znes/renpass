@@ -100,11 +100,11 @@ class Reservoir(GenericStorage, Facade):
             outputs={
                 reservoir_bus: Flow(nominal_value=max(self.inflow),
                             #i/max(self.inflow) for i in self.inflow
-                            actual_value=[1], 
+                            actual_value=self.inflow,
                             fixed=True)})
         if self.spillage:
             spillage = Sink(label="spillage" + self.label,
-                                  inputs={water: Flow()})
+                                  inputs={reservoir_bus: Flow()})
         else:
             water_spillage = None
 
