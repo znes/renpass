@@ -15,6 +15,7 @@ p = Package('../angus-datapackages/e-highway/datapackage.json')
 types = ['dispatchable-generator', 'volatile-generator',
          'reservoir', 'run-of-river']
 
+
 l = list()
 for t in types:
    l.extend(p.get_resource(t).read(keyed=True))
@@ -22,7 +23,6 @@ df = pd.DataFrame.from_dict(l)
 
 df['tech'] = [i[0:-3] for i in df['name']]
 buses = [r['name'] for r in p.get_resource('bus').read(keyed=True)]
-
 
 colors = {
     'pv': 'rgb(255,255,153)',
@@ -36,14 +36,26 @@ colors = {
 data= [
     go.Bar(
         marker = {
-            'color': colors[tech]},
+            'color': colors.get(tech)},
         name=tech,
         x=df.loc[df['tech']==tech, 'bus'],
         y=df.loc[df['tech'] == tech, 'capacity'])
     for tech in df['tech'].unique()]
 
 layout = go.Layout(
-    barmode='stack'
+    barmode='stack',
+    title='Installed capacities',
+    yaxis=dict(
+        title='Installed capacity in MW',
+        titlefont=dict(
+            size=16,
+            color='rgb(107, 107, 107)'
+        ),
+        tickfont=dict(
+            size=14,
+            color='rgb(107, 107, 107)'
+        )
+    )
 )
 
 fig = go.Figure(data=data, layout=layout)
