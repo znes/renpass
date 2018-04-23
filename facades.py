@@ -481,10 +481,12 @@ class Storage(GenericStorage, Facade):
             investment = None
 
         self.inputs.update({self.bus: Flow(investment=investment,
-                                            **self.input_edge_parameters)})
+                                           **self.input_edge_parameters)})
 
         self.outputs.update({self.bus: Flow(investment=investment,
                                             **self.output_edge_parameters)})
+
+        self._set_flows()
 
 
 class Connection(Link, Facade):

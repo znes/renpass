@@ -335,6 +335,11 @@
                       "format": "default"
                   },
                   {
+                      "name": "power",
+                      "type": "number",
+                      "format": "default"
+                  },
+                  {
                       "name": "investment_cost",
                       "type": "number",
                       "format": "default"
