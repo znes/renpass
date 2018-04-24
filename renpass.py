@@ -138,6 +138,17 @@ def links(es):
                     links.append((i, o))
     return links
 
+def _edges(nodes):
+    """
+    """
+    edges = {}
+    for n in nodes:
+        edges[n] = []
+        for o in n.outputs:
+            edges[n].append((n, o))
+        for i in n.inputs:
+            edges[n].append((i, n))
+    return edges
 
 def write_results(es, m, p, **arguments):
     """Write results to CSV-files
@@ -170,14 +181,31 @@ def write_results(es, m, p, **arguments):
 
     logging.info('Exporting result object to CSV.')
 
+    package_root_directory = os.path.join(output_base_directory, modelname)
+
+    #### transshipment export
+    edges = _edges([n for n in es.nodes if isinstance(n, facades.Connection)])
+
+    from itertools import chain
+
+    transshipment = pd.concat(
+        [views.node(results, n, multiindex=True)['sequences'].\
+            loc[:, (n, slice(None), 'flow')]
+         for n in edges], axis=1).groupby(level=['from'], axis=1).sum()
+
+    transshipment_path = os.path.join(
+        package_root_directory, 'data', 'transshipment')
+    if not os.path.exists(transshipment_path):
+        os.makedirs(transshipment_path)
+
+    transshipment.to_csv(
+        os.path.join(transshipment_path, 'transshipment.csv'), sep=";")
+    
     # add regular optimization results
     nodes = sorted(set([item
                         for tup in results.keys()
                         for item in tup]))
     nodes = [n for n in nodes if isinstance(n, (Bus, facades.Storage))]
-
-    package_root_directory = os.path.join(output_base_directory, modelname)
-
 
     df = views.node_weight_by_type(results, facades.Storage)
 
@@ -186,7 +214,7 @@ def write_results(es, m, p, **arguments):
         package_root_directory, 'data', 'storages')
     if not os.path.exists(node_weight_path):
         os.makedirs(node_weight_path)
-    
+
     for level in df.columns.get_level_values(1).unique():
         df_out = df.loc[:, (slice(None), level)]
         df_out.columns = df_out.columns.droplevel(1)
