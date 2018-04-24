@@ -85,7 +85,7 @@ def create_energysystem(datapackage, **arguments):
             'backpressure': facades.Backpressure,
             'connection': facades.Connection,
             'conversion': facades.Conversion,
-            'runofriver': facades.RunOfRiver})
+            'runofriver': facades.Generator})
 
 
     end = es.timeindex.get_loc(es.timeindex[int(arguments['--t_end'])]) + 1
