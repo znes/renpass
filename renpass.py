@@ -220,6 +220,8 @@ def write_results(es, m, p, **arguments):
         df_out.columns = df_out.columns.droplevel(1)
         df_out.to_csv(os.path.join(node_weight_path, level+'.csv'), sep=";")
 
+    conns = [str(i) for i in es.nodes if isinstance(i, facades.Connection)]
+
     for n in nodes:
         node_data = views.node(results, str(n), multiindex=True)
 
@@ -250,16 +252,19 @@ def write_results(es, m, p, **arguments):
         if 'sequences' in node_data:
             # TODO: Fix storage SOC, Connection (Transshipment) etc...
 
+            ix = [False if any(n in conns for n in i) else True for i in
+                  node_data['sequences'].columns.values]
+
             if str(n) in node_data['sequences'].columns.get_level_values(1):
                 production = node_data['sequences'].\
-                    loc[:, (slice(None), str(n), 'flow')]
+                    loc[:, (ix, str(n), 'flow')]
                 production.columns = production.columns.droplevel([1, 2])
                 production.to_csv(os.path.join(node_path, 'production.csv'),
                                   sep=";")
 
             if str(n) in node_data['sequences'].columns.get_level_values(0):
                 consumption = node_data['sequences'].\
-                    loc[:, (str(n), slice(None), 'flow')]
+                    loc[:, (str(n), ix, 'flow')]
                 consumption.columns = consumption.columns.droplevel([0, 2])
                 consumption.to_csv(os.path.join(node_path, 'consumption.csv'),
                                            sep=";")
