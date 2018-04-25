@@ -397,6 +397,8 @@ class Excess(Sink, Facade):
         Marginal cost for one unit of produced output. Default: 0
     """
 
+    required = ['bus']
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
