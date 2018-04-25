@@ -153,6 +153,45 @@ def _edges(nodes):
             edges[str(n)].append((i, n))
     return edges
 
+def component_results(es, results, path):
+    for k,v in es._typemap.items():
+        if type(k) == str:
+            _seq_by_type = [
+                views.node(results, n, multiindex=True)['sequences']
+                for n in es.nodes if isinstance(n, v) and not isinstance(n, Bus)]
+            if _seq_by_type:
+                seq_by_type =  pd.concat(_seq_by_type, axis=1)
+                type_path = os.path.join(path, 'sequences')
+                if not os.path.exists(type_path):
+                    os.makedirs(type_path)
+                seq_by_type.to_csv(
+                    os.path.join(type_path, str(k) + '.csv'), sep=";")
+
+            _sca_by_type = [
+                views.node(results, n, multiindex=True).get('scalars')
+                for n in es.nodes if isinstance(n, v) and not isinstance(n, Bus)]
+
+            if [x for x in _sca_by_type if x is not None]:
+                sca_by_type =  pd.concat(_sca_by_type)
+                type_path = os.path.join(path, 'scalars')
+                if not os.path.exists(type_path):
+                    os.makedirs(type_path)
+                sca_by_type.to_csv(
+                    os.path.join(type_path, str(k) + '.csv'), header=True,
+                                 sep=";")
+
+def bus_results(es, results, path):
+    buses = [b for b in es.nodes if isinstance(b, Bus)]
+    for b in buses:
+        bus_sequences = pd.concat([
+            views.node(results, b, multiindex=True)['sequences']], axis=1)
+        type_path = os.path.join(path, 'sequences')
+        if not os.path.exists(type_path):
+            os.makedirs(type_path)
+        bus_sequences.to_csv(
+            os.path.join(type_path, str(b) + '.csv'), sep=";")
+
+
 def write_results(es, m, p, **arguments):
     """Write results to CSV-files
 
@@ -190,33 +229,12 @@ def write_results(es, m, p, **arguments):
     # -----------------------------------------------------------------------
     # Default results
     # -----------------------------------------------------------------------
-    for k,v in es._typemap.items():
-        if type(k) == str:
-            _seq_by_type = [
-                views.node(results, n, multiindex=True)['sequences']
-                for n in es.nodes if isinstance(n, v) and not isinstance(n, Bus)]
-            if _seq_by_type:
-                seq_by_type =  pd.concat(_seq_by_type, axis=1)
-                type_path = os.path.join(
-                    package_root_directory, 'data', 'sequences')
-                if not os.path.exists(type_path):
-                    os.makedirs(type_path)
-                seq_by_type.to_csv(
-                    os.path.join(type_path, str(k) + '.csv'), sep=";")
+    # TODO: get option from commandline if component or bus view is exported
+    if True:
+        component_results(es, results, path=package_root_directory)
+    else:
+        bus_results(es, results, path=package_root_directory)
 
-            _sca_by_type = [
-                views.node(results, n, multiindex=True).get('scalars')
-                for n in es.nodes if isinstance(n, v) and not isinstance(n, Bus)]
-
-            if [x for x in _sca_by_type if x is not None]:
-                sca_by_type =  pd.concat(_sca_by_type)
-                type_path = os.path.join(
-                    package_root_directory, 'data', 'scalars')
-                if not os.path.exists(type_path):
-                    os.makedirs(type_path)
-                sca_by_type.to_csv(
-                    os.path.join(type_path, str(k) + '.csv'), header=True,
-                                 sep=";")
 
 
     # -----------------------------------------------------------------------
