@@ -231,14 +231,9 @@ def write_results(es, m, p, **arguments):
     # -----------------------------------------------------------------------
     # Default results
     # -----------------------------------------------------------------------
-    if arguments['--output-orient'] == 'component':
-        component_results(es, results, path=package_root_directory)
-    elif arguments['--output-orient'] == 'bus':
-        bus_results(es, results, path=package_root_directory)
-    else:
-        raise NotImplementedError('Unknown output orientation!')
-
-
+    _write_results = {'component': component_results, 'bus': bus_results} \
+        [arguments['--output-orient']]
+    _write_results(es, results, path=package_root_directory)
 
     # -----------------------------------------------------------------------
     # Derived results
