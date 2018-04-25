@@ -143,11 +143,11 @@ def _edges(nodes):
     """
     edges = {}
     for n in nodes:
-        edges[n] = []
+        edges[str(n)] = []
         for o in n.outputs:
-            edges[n].append((n, o))
+            edges[str(n)].append((n, o))
         for i in n.inputs:
-            edges[n].append((i, n))
+            edges[str(n)].append((i, n))
     return edges
 
 def write_results(es, m, p, **arguments):
@@ -184,14 +184,15 @@ def write_results(es, m, p, **arguments):
     package_root_directory = os.path.join(output_base_directory, modelname)
 
     #### transshipment export
-    edges = _edges([n for n in es.nodes if isinstance(n, facades.Connection)])
+    conns = _edges([n for n in es.nodes
+                    if isinstance(n, facades.Connection)])
 
     from itertools import chain
 
     transshipment = pd.concat(
         [views.node(results, n, multiindex=True)['sequences'].\
             loc[:, (n, slice(None), 'flow')]
-         for n in edges], axis=1).groupby(level=['from'], axis=1).sum()
+         for n in conns], axis=1).groupby(level=['from'], axis=1).sum()
 
     transshipment_path = os.path.join(
         package_root_directory, 'data', 'transshipment')
@@ -200,12 +201,6 @@ def write_results(es, m, p, **arguments):
 
     transshipment.to_csv(
         os.path.join(transshipment_path, 'transshipment.csv'), sep=";")
-    
-    # add regular optimization results
-    nodes = sorted(set([item
-                        for tup in results.keys()
-                        for item in tup]))
-    nodes = [n for n in nodes if isinstance(n, (Bus, facades.Storage))]
 
     df = views.node_weight_by_type(results, facades.Storage)
 
@@ -220,13 +215,14 @@ def write_results(es, m, p, **arguments):
         df_out.columns = df_out.columns.droplevel(1)
         df_out.to_csv(os.path.join(node_weight_path, level+'.csv'), sep=";")
 
-    conns = [str(i) for i in es.nodes if isinstance(i, facades.Connection)]
+    # add regular optimization results
+    nodes = sorted(set([item
+                        for tup in results.keys()
+                        for item in tup]))
+    nodes = [n for n in nodes if isinstance(n, (Bus, facades.Storage))]
 
     for n in nodes:
         node_data = views.node(results, str(n), multiindex=True)
-
-        # if 'scalars' in node_data:
-        #     node_data['scalars'].to_excel(writer, sheet_name=str(n)+'_scalars')
 
         node_path = os.path.join(package_root_directory, 'data', str(n))
 
@@ -254,7 +250,7 @@ def write_results(es, m, p, **arguments):
 
             ix = [False if any(n in conns for n in i) else True for i in
                   node_data['sequences'].columns.values]
-
+            
             if str(n) in node_data['sequences'].columns.get_level_values(1):
                 production = node_data['sequences'].\
                     loc[:, (ix, str(n), 'flow')]
