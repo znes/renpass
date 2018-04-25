@@ -18,6 +18,7 @@ Options:
   -h --help                  Show this screen and exit.
   -o --solver=SOLVER         Solver to be used. [default: cbc]
      --output-directory=DIR  Directory to write results to. [default: results]
+     --output-orient=ORIENT  Bus- or component-oriented results. [default: component]
      --version               Show version.
      --results=RESULTS       How should results be saved [default: datapackage]
   -s --safe                  If argument --safe is set, results will not be
@@ -229,11 +230,12 @@ def write_results(es, m, p, **arguments):
     # -----------------------------------------------------------------------
     # Default results
     # -----------------------------------------------------------------------
-    # TODO: get option from commandline if component or bus view is exported
-    if True:
+    if arguments['--output-orient'] == 'component':
         component_results(es, results, path=package_root_directory)
-    else:
+    elif arguments['--output-orient'] == 'bus':
         bus_results(es, results, path=package_root_directory)
+    else:
+        raise NotImplementedError('Unknown output orientation!')
 
 
 
