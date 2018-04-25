@@ -28,12 +28,12 @@ Options:
                              timestep of datapackage timeindex [default: -1]
 """
 
-import os
-import logging
-import pandas as pd
-
 from datapackage import Package
 from datetime import datetime
+from itertools import chain
+import logging
+import os
+import pandas as pd
 
 import facades
 
@@ -69,24 +69,27 @@ def create_energysystem(datapackage, **arguments):
         Arguments passed from command line
     """
 
+    typemap = {
+        'bus': facades.Hub,
+        'extraction-turbine': facades.ExtractionTurbine,
+        'demand': facades.Demand,
+        'generator': facades.Generator,
+        'storage': facades.Storage,
+        'reservoir': facades.Reservoir,
+        'backpressure': facades.Backpressure,
+        'connection': facades.Connection,
+        'conversion': facades.Conversion,
+        'runofriver': facades.Generator}
+
     es = EnergySystem.from_datapackage(
         arguments['DATAPACKAGE'],
         attributemap={
             facades.Demand: {'demand-profiles': 'profile'},
             facades.Generator: {"generator-profiles": "profile"},
             facades.RunOfRiver: {"run-of-river-inflows": "inflow"}},
-        typemap={
-            'bus': facades.Hub,
-            'extraction-turbine': facades.ExtractionTurbine,
-            'demand': facades.Demand,
-            'generator': facades.Generator,
-            'storage': facades.Storage,
-            'reservoir': facades.Reservoir,
-            'backpressure': facades.Backpressure,
-            'connection': facades.Connection,
-            'conversion': facades.Conversion,
-            'runofriver': facades.Generator})
+        typemap=typemap)
 
+    es._typemap = typemap
 
     end = es.timeindex.get_loc(es.timeindex[int(arguments['--t_end'])]) + 1
 
@@ -183,11 +186,45 @@ def write_results(es, m, p, **arguments):
 
     package_root_directory = os.path.join(output_base_directory, modelname)
 
-    #### transshipment export
+
+    # -----------------------------------------------------------------------
+    # Default results
+    # -----------------------------------------------------------------------
+    for k,v in es._typemap.items():
+        if type(k) == str:
+            _seq_by_type = [
+                views.node(results, n, multiindex=True)['sequences']
+                for n in es.nodes if isinstance(n, v) and not isinstance(n, Bus)]
+            if _seq_by_type:
+                seq_by_type =  pd.concat(_seq_by_type, axis=1)
+                type_path = os.path.join(
+                    package_root_directory, 'data', 'sequences')
+                if not os.path.exists(type_path):
+                    os.makedirs(type_path)
+                seq_by_type.to_csv(
+                    os.path.join(type_path, str(k) + '.csv'), sep=";")
+
+            _sca_by_type = [
+                views.node(results, n, multiindex=True).get('scalars')
+                for n in es.nodes if isinstance(n, v) and not isinstance(n, Bus)]
+
+            if [x for x in _sca_by_type if x is not None]:
+                sca_by_type =  pd.concat(_sca_by_type)
+                type_path = os.path.join(
+                    package_root_directory, 'data', 'scalars')
+                if not os.path.exists(type_path):
+                    os.makedirs(type_path)
+                sca_by_type.to_csv(
+                    os.path.join(type_path, str(k) + '.csv'), header=True,
+                                 sep=";")
+
+
+    # -----------------------------------------------------------------------
+    # Derived results
+    # -----------------------------------------------------------------------
+    # transshipment / network export
     conns = _edges([n for n in es.nodes
                     if isinstance(n, facades.Connection)])
-
-    from itertools import chain
 
     transshipment = pd.concat(
         [views.node(results, n, multiindex=True)['sequences'].\
@@ -195,90 +232,90 @@ def write_results(es, m, p, **arguments):
          for n in conns], axis=1).groupby(level=['from'], axis=1).sum()
 
     transshipment_path = os.path.join(
-        package_root_directory, 'data', 'transshipment')
+        package_root_directory, 'data', 'derived')
     if not os.path.exists(transshipment_path):
         os.makedirs(transshipment_path)
 
     transshipment.to_csv(
         os.path.join(transshipment_path, 'transshipment.csv'), sep=";")
 
-    df = views.node_weight_by_type(results, facades.Storage)
-
-    # write node weights for specific components (e.g. storages)
-    node_weight_path = os.path.join(
-        package_root_directory, 'data', 'storages')
-    if not os.path.exists(node_weight_path):
-        os.makedirs(node_weight_path)
-
-    for level in df.columns.get_level_values(1).unique():
-        df_out = df.loc[:, (slice(None), level)]
-        df_out.columns = df_out.columns.droplevel(1)
-        df_out.to_csv(os.path.join(node_weight_path, level+'.csv'), sep=";")
-
-    # add regular optimization results
-    nodes = sorted(set([item
-                        for tup in results.keys()
-                        for item in tup]))
-    nodes = [n for n in nodes if isinstance(n, (Bus, facades.Storage))]
-
-    for n in nodes:
-        node_data = views.node(results, str(n), multiindex=True)
-
-        node_path = os.path.join(package_root_directory, 'data', str(n))
-
-        if not os.path.exists(node_path):
-            os.makedirs(node_path)
-        else:
-            if arguments['--safe']:
-                # TODO: replace this with a atrifical result name to store
-                # results at different location.
-                raise ValueError('Resultpath {} already exists!'.format(
-                                                                    node_path))
-            else:
-                logging.warning(('Resultpath {} already exist' +
-                                 ' overwriting results').format(node_path))
-        if 'scalars' in node_data:
-            if str(n) in node_data['scalars'].index.get_level_values(1):
-                investment = node_data['scalars'].\
-                    loc[(slice(None), str(n), 'invest')]
-                investment.name = 'investment'
-                investment.to_csv(os.path.join(node_path, 'investment.csv'),
-                                  header=True)
-
-        if 'sequences' in node_data:
-            # TODO: Fix storage SOC, Connection (Transshipment) etc...
-
-            ix = [False if any(n in conns for n in i) else True for i in
-                  node_data['sequences'].columns.values]
-            
-            if str(n) in node_data['sequences'].columns.get_level_values(1):
-                production = node_data['sequences'].\
-                    loc[:, (ix, str(n), 'flow')]
-                production.columns = production.columns.droplevel([1, 2])
-                production.to_csv(os.path.join(node_path, 'production.csv'),
-                                  sep=";")
-
-            if str(n) in node_data['sequences'].columns.get_level_values(0):
-                consumption = node_data['sequences'].\
-                    loc[:, (str(n), ix, 'flow')]
-                consumption.columns = consumption.columns.droplevel([0, 2])
-                consumption.to_csv(os.path.join(node_path, 'consumption.csv'),
-                                           sep=";")
-
-            # export dual variables / shadow prices for all balanced buses
-            # if bus obj is not balanced -> no constraint -> no dual variables
-            if isinstance(n, Bus) and n.balanced:
-                prices = node_data['sequences'].\
-                    loc[:, (str(n), slice(None), 'duals')]
-                prices.columns = prices.columns.droplevel([1])
-                prices.to_csv(os.path.join(node_path, 'prices.csv'),
-                              sep=";")
+    # df = views.node_weight_by_type(results, facades.Storage)
+    #
+    # # write node weights for specific components (e.g. storages)
+    # node_weight_path = os.path.join(
+    #     package_root_directory, 'data', 'storages')
+    # if not os.path.exists(node_weight_path):
+    #     os.makedirs(node_weight_path)
+    #
+    # for level in df.columns.get_level_values(1).unique():
+    #     df_out = df.loc[:, (slice(None), level)]
+    #     df_out.columns = df_out.columns.droplevel(1)
+    #     df_out.to_csv(os.path.join(node_weight_path, level+'.csv'), sep=";")
+    #
+    # # add regular optimization results
+    # nodes = sorted(set([item
+    #                     for tup in results.keys()
+    #                     for item in tup]))
+    # nodes = [n for n in nodes if isinstance(n, (Bus, facades.Storage))]
+    #
+    # for n in nodes:
+    #     node_data = views.node(results, str(n), multiindex=True)
+    #
+    #     node_path = os.path.join(package_root_directory, 'data', str(n))
+    #
+    #     if not os.path.exists(node_path):
+    #         os.makedirs(node_path)
+    #     else:
+    #         if arguments['--safe']:
+    #             # TODO: replace this with a atrifical result name to store
+    #             # results at different location.
+    #             raise ValueError('Resultpath {} already exists!'.format(
+    #                                                                 node_path))
+    #         else:
+    #             logging.warning(('Resultpath {} already exist' +
+    #                              ' overwriting results').format(node_path))
+    #     if 'scalars' in node_data:
+    #         if str(n) in node_data['scalars'].index.get_level_values(1):
+    #             investment = node_data['scalars'].\
+    #                 loc[(slice(None), str(n), 'invest')]
+    #             investment.name = 'investment'
+    #             investment.to_csv(os.path.join(node_path, 'investment.csv'),
+    #                               header=True)
+    #
+    #     if 'sequences' in node_data:
+    #         # TODO: Fix storage SOC, Connection (Transshipment) etc...
+    #
+    #         ix = [False if any(n in conns for n in i) else True for i in
+    #               node_data['sequences'].columns.values]
+    #
+    #         if str(n) in node_data['sequences'].columns.get_level_values(1):
+    #             production = node_data['sequences'].\
+    #                 loc[:, (ix, str(n), 'flow')]
+    #             production.columns = production.columns.droplevel([1, 2])
+    #             production.to_csv(os.path.join(node_path, 'production.csv'),
+    #                               sep=";")
+    #
+    #         if str(n) in node_data['sequences'].columns.get_level_values(0):
+    #             consumption = node_data['sequences'].\
+    #                 loc[:, (str(n), ix, 'flow')]
+    #             consumption.columns = consumption.columns.droplevel([0, 2])
+    #             consumption.to_csv(os.path.join(node_path, 'consumption.csv'),
+    #                                        sep=";")
+    #
+    #         # export dual variables / shadow prices for all balanced buses
+    #         # if bus obj is not balanced -> no constraint -> no dual variables
+    #         if isinstance(n, Bus) and n.balanced:
+    #             prices = node_data['sequences'].\
+    #                 loc[:, (str(n), slice(None), 'duals')]
+    #             prices.columns = prices.columns.droplevel([1])
+    #             prices.to_csv(os.path.join(node_path, 'prices.csv'),
+    #                           sep=";")
 
     # TODO prettify / complete package (meta-data) creation
     if arguments['--results'] == 'datapackage':
         # results package (rp)
         rp = Package()
-        rp.infer(os.path.join(package_root_directory, 'data', '**/*.csv'))
+        rp.infer(os.path.join(package_root_directory, 'data', 'derived', '**/*.csv'))
         rp.descriptor['description'] = "Model results from renpass with version..."
         rp.descriptor['name'] = modelname + '-results'
         rp.commit()
