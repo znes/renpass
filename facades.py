@@ -386,6 +386,29 @@ class Conversion(Transformer, Facade):
                               **self.output_edge_parameters)})
 
 
+class Excess(Sink, Facade):
+    """ Excess slack with one input
+
+    Parameters
+    ----------
+    bus: oemof.solph.Bus
+        An oemof bus instance where the demand is connected to.
+    marginal_cost: numeric
+        Marginal cost for one unit of produced output. Default: 0
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.bus = kwargs.get('bus')
+
+        self.marginal_costs = kwargs.get('marginal_costs', 0)
+
+        self.inputs.update(
+            {self.bus: Flow(variable_costs=self.marginal_costs)})
+
+
+
 class Demand(Sink, Facade):
     """ Demand object with one input
 

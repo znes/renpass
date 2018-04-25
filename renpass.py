@@ -80,7 +80,8 @@ def create_energysystem(datapackage, **arguments):
         'backpressure': facades.Backpressure,
         'connection': facades.Connection,
         'conversion': facades.Conversion,
-        'runofriver': facades.Generator}
+        'runofriver': facades.Generator,
+        'excess': facades.Excess}
 
     es = EnergySystem.from_datapackage(
         arguments['DATAPACKAGE'],
