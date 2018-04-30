@@ -245,14 +245,20 @@ def write_results(es, m, p, **arguments):
     transshipment = pd.concat(
         [views.node(results, n, multiindex=True)['sequences'].\
             loc[:, (n, slice(None), 'flow')]
-         for n in conns], axis=1).groupby(level=['from'], axis=1).sum()
+         for n in conns], axis=1)
+
+    net_transshipment = pd.concat([
+        transshipment.loc[:, (c, str(es.groups[c].from_bus), 'flow')] -
+        transshipment.loc[:, (c, str(es.groups[c].to_bus), 'flow')]
+        for c in conns], axis=1)
+    net_transshipment.columns = conns.keys()
 
     transshipment_path = os.path.join(
-        package_root_directory, 'data', 'derived')
+        package_root_directory, 'data')
     if not os.path.exists(transshipment_path):
         os.makedirs(transshipment_path)
 
-    transshipment.to_csv(
+    net_transshipment.to_csv(
         os.path.join(transshipment_path, 'transshipment.csv'), sep=";")
 
     # storage output
@@ -271,6 +277,10 @@ def write_results(es, m, p, **arguments):
             else:
                 new_columns.append('level')
         v.columns = new_columns
+        net_storage = v.input - v.output
+        v.input = net_storage.apply(lambda row: row if row > 0 else 0)
+        v.output = net_storage.apply(lambda row: abs(row) if row < 0 else 0)
+
         v.to_csv(
             os.path.join(transshipment_path, str(k) + '.csv'), sep=";")
 
@@ -278,7 +288,7 @@ def write_results(es, m, p, **arguments):
     if arguments['--results'] == 'datapackage':
         # results package (rp)
         rp = Package()
-        rp.infer(os.path.join(package_root_directory, 'data', 'derived', '**/*.csv'))
+        rp.infer(os.path.join(package_root_directory, 'data', '**/*.csv'))
         rp.descriptor['description'] = "Model results from renpass with version..."
         rp.descriptor['name'] = modelname + '-results'
         rp.commit()
