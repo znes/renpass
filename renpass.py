@@ -258,8 +258,10 @@ def write_results(es, m, p, **arguments):
     if not os.path.exists(transshipment_path):
         os.makedirs(transshipment_path)
 
+    net_transshipment.index.name = 'timeindex'
     net_transshipment.to_csv(
-        os.path.join(transshipment_path, 'transshipment.csv'), sep=";")
+        os.path.join(transshipment_path, 'transshipment.csv'),
+                     sep=";", date_format='%Y-%m-%dT%H:%M:%SZ')
 
     # storage output
     storages = {
@@ -280,9 +282,10 @@ def write_results(es, m, p, **arguments):
         net_storage = v.input - v.output
         v.input = net_storage.apply(lambda row: row if row > 0 else 0)
         v.output = net_storage.apply(lambda row: abs(row) if row < 0 else 0)
-
+        v.index.name = 'timeindex'
         v.to_csv(
-            os.path.join(transshipment_path, str(k) + '.csv'), sep=";")
+            os.path.join(transshipment_path, str(k) + '.csv'), sep=";",
+            date_format='%Y-%m-%dT%H:%M:%SZ')
 
     # TODO prettify / complete package (meta-data) creation
     if arguments['--results'] == 'datapackage':
