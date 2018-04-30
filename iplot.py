@@ -19,6 +19,10 @@ conns = pd.read_csv(
     '../angus-datapackages/e-highway/data/elements/transshipment.csv',
     sep=";", index_col='name')
 
+demand = pd.read_csv(
+    '../angus-datapackages/e-highway/data/elements/demand.csv',
+    sep=";", index_col='name')
+
 conns_geo = conns.copy()
 
 conns_geo['geometry'] = conns_geo.apply(
@@ -53,6 +57,7 @@ layout = go.Layout(
 )
 
 
+
 lines = [
     go.Scattergeo(
         lon=row.geometry.xy[0],
@@ -60,7 +65,7 @@ lines = [
         hoverinfo = 'skip',
         name=ix,
         line = {
-            'width': row.capacity/1000, 'color': 'blue'},
+            'width': row.capacity/1000, 'color': 'darkgray'},
         mode='lines')
     for ix, row in conns_geo.iterrows()]
 
@@ -72,10 +77,27 @@ mid_edge_trace = [
         text="Line " + ix + " has capacity %.1f MW" % row.capacity,
         mode='markers',
         hoverinfo='text',
+        showlegend=False,
         opacity=0)
     for ix, row in conns_geo.iterrows()]
 
+# for hover infor on mid one lines
+demand_traces = [
+    go.Scattergeo(
+        lon=[row.geometry.centroid.xy[0][0]],
+        lat=[row.geometry.centroid.xy[1][0]],
+        mode='markers',
+        marker = dict(
+            size = demand.loc[demand.bus == ix].amount/1e6,
+            color = 'skyblue',
+            line = dict(width=0.5, color='rgb(40,40,40)'),
+            sizemode = 'area'),
+        hoverinfo='text',
+        text="Demand " + str(float(demand.loc[demand.bus == ix].amount / 1e6)) + " TWh",
+        showlegend=False,
+        opacity=0.75)
+    for ix, row in regions.iterrows()]
 
-fig = go.Figure(layout=layout, data=lines+mid_edge_trace)
+fig = go.Figure(layout=layout, data=lines+mid_edge_trace+demand_traces)
 
 off.iplot(fig, filename='e-highway-transshipment-capacities.html')

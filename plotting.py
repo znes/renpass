@@ -32,7 +32,6 @@ colors = {
     'run-of-river': 'rgb(138,43,226)',
     'reservoir': 'rgb(127,255,212)'}
 
-
 data= [
     go.Bar(
         marker = {
@@ -60,4 +59,4 @@ layout = go.Layout(
 
 fig = go.Figure(data=data, layout=layout)
 
-off.iplot(fig, filename='e-highway-capacities.html')
+off.plot(fig, filename='e-highway-capacities.html')
