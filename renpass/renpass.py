@@ -208,26 +208,20 @@ def write_results(es, m, p, **arguments):
         Arguments passed from command line
     p: datapackage.Package instance of the input datapackage
     """
-    # output: create pandas dataframe with results
-
+    logging.info('Processing results...')
     results = processing.results(m)
-
-    # postprocessing: write complete result dataframe to file system
 
     if not os.path.isdir(arguments['--output-directory']):
         os.mkdir(arguments['--output-directory'])
 
     output_base_directory = arguments['--output-directory']
 
-    date = datetime.now().strftime("%Y-%m-%d %H-%M-%S").replace(' ', '_')
-
     modelname = p.descriptor['name'].replace(' ', '_')
-
-    logging.info('Exporting result object to CSV.')
 
     package_root_directory = os.path.join(output_base_directory, modelname)
 
 
+    logging.info('Exporting result object to CSV.')
     # -----------------------------------------------------------------------
     # Default results
     # -----------------------------------------------------------------------
