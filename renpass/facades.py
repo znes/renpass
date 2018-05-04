@@ -309,6 +309,8 @@ class Backpressure(Transformer, Facade):
 
         self.marginal_cost = kwargs.get('marginal_cost', 0)
 
+        self.fuel_cost = kwargs.get('fuel_cost', 0)
+
         self.investment_cost = kwargs.get('investment_cost')
 
         investment = self._investment()
@@ -319,7 +321,7 @@ class Backpressure(Transformer, Facade):
             self.heat_bus: sequence(self.thermal_efficiency)})
 
         self.inputs.update({
-            self.fuel_bus: Flow()})
+            self.fuel_bus: Flow(variable_costs=self.fuel_cost})
 
         self.outputs.update({
             self.electricity_bus: Flow(nominal_value=self.capacity,
