@@ -321,7 +321,7 @@ class Backpressure(Transformer, Facade):
             self.heat_bus: sequence(self.thermal_efficiency)})
 
         self.inputs.update({
-            self.fuel_bus: Flow(variable_costs=self.fuel_cost})
+            self.fuel_bus: Flow(variable_costs=self.fuel_cost)})
 
         self.outputs.update({
             self.electricity_bus: Flow(nominal_value=self.capacity,
