@@ -27,6 +27,7 @@ Options:
      --t_start=T_START       Start timestep of simulation [default: 0]
      --t_end=T_END           End timestep of simulation, default is last
                              timestep of datapackage timeindex [default: -1]
+     --t_cluster=T_CLUSTER   Time series cluster hours [default: ]
 """
 
 from datapackage import Package
@@ -37,6 +38,7 @@ import os
 import pandas as pd
 
 import facades
+from clustering import temporal_clustering
 
 from oemof.tools import logger
 from oemof.solph import Model, EnergySystem, Bus
@@ -58,7 +60,17 @@ def stopwatch():
     stopwatch.now = datetime.now()
     return str(stopwatch.now-last)[0:-4]
 
+def preprocessing(datapackage, **arguments):
+    """
+    """
+    if arguments['--t_cluster']:
+        logging.info('Applying temporal clustering with {} clusters'.format(
+                     arguments['--t_cluster']))
 
+        weights = temporal_clustering(datapackage,
+                                      int(arguments['--t_cluster']))
+        import pdb; pdb.set_trace()
+        
 def create_energysystem(datapackage, **arguments):
     """Creates the energysystem.
 
@@ -303,6 +315,8 @@ def main(**arguments):
     stopwatch()
 
     p = Package(arguments['DATAPACKAGE'])
+
+    preprocessing(arguments['DATAPACKAGE'], **arguments)
 
     # create energy system and pass nodes
     es = create_energysystem(arguments['DATAPACKAGE'], **arguments)
