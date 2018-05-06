@@ -50,35 +50,40 @@ def temporal_clustering(datapackage, n_cluster):
          if d.dayofyear in aggregation.clusterCenterIndices}, name='weighting')
     clustered_timeindex.index.name = 'timeindex'
 
-    #for r in sequence_resources:
-#        dfs[r.name].loc[clustered_timeindex.index].to_csv(
-#            os.path.join(package_root_path, r.descriptor['path']))
+    for r in sequence_resources:
+        dfs[r.name].loc[clustered_timeindex.index].to_csv(
+            os.path.join(package_root_path, r.descriptor['path']))
 
     clustered_timeindex.to_csv(
-        os.path.join(package_root_path, 'data/sequences', 'timeindex_weights.csv'),
+        os.path.join(package_root_path, 'data', 'timeindex.csv'),
         header=True, sep=";", date_format='%Y-%m-%dT%H:%M:%SZ')
 
     return clustered_timeindex
 
 
-def cluster_period(m, period_length=24):
+def temporal_cluster_constraints(m, period_length=24):
     """ Set the storage level of every storage to it's initial capacity
     at every first hour of a cluster period.
     """
 
-    m.PERDIOD_STARTS = m.timeindex.index[0::period_length]
+    m.PERIOD_STARTS = m.es.timeindex[0::period_length]
+    m.START_END = {
+        m.es.timeindex.get_loc(t):
+        m.es.timeindex.get_loc(t + pd.Timedelta(hours=period_length-1))
+        for t in m.PERIOD_STARTS}
 
-    def day_rule(m, n, t):
-        """
-        Sets the soc of the every first hour to the soc of the last hour
-        of the day (i.e. + 23 hours)
-        """
-        return (
-            m.GenericInvestmentStorageBlock.capacity[n, t] ==
-            m.GenericInvestmentStorageBlock.capacity[n, t + pd.Timedelta(hours=period_length-1)])
+    m.STORAGES = (m.GenericInvestmentStorageBlock.INVESTSTORAGES |
+                  m.GenericStorageBlock.STORAGES)
 
-        return expr
-    m.temporal_cluster_period_bounds = po.Constraint(
-        m.GenericInvestmentStorageBlock.INVESTSTORAGES,
-        m.PERIOD_STARTS,
-        rule=rule)
+    m.period_bounds = po.Constraint(m.STORAGES, m.START_END.keys())
+    def _period_bounds(m):
+        for t in m.START_END:
+            for n in m.STORAGES:
+                if n.capacity is None:
+                    lhs = m.GenericInvestmentStorageBlock.capacity[n, t]
+                    rhs = m.GenericInvestmentStorageBlock.capacity[n, m.START_END[t]]
+                else:
+                    lhs = m.GenericStorageBlock.capacity[n, t]
+                    rhs = m.GenericStorageBlock.capacity[n, m.START_END[t]]
+                m.period_bounds.add((n, t), (lhs == rhs))
+    m.period_bounds_build = po.BuildAction(rule=_period_bounds)

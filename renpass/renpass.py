@@ -38,7 +38,7 @@ import os
 import pandas as pd
 
 import facades
-from clustering import temporal_clustering
+from clustering import temporal_clustering, temporal_cluster_constraints
 
 from oemof.tools import logger
 from oemof.solph import Model, EnergySystem, Bus
@@ -70,7 +70,7 @@ def preprocessing(datapackage, **arguments):
         weights = temporal_clustering(datapackage,
                                       int(arguments['--t_cluster']))
         import pdb; pdb.set_trace()
-        
+
 def create_energysystem(datapackage, **arguments):
     """Creates the energysystem.
 
@@ -123,9 +123,17 @@ def compute(es=None, **arguments):
         information.
     **arguments : key word arguments
         Arguments passed from command line
-    """
+    """    
+    if arguments['--t_cluster']:
+        ow = es.temporal['weighting']
+    else:
+        ow = None
 
-    m = Model(es)
+    m = Model(es, objective_weightings=ow)
+
+    if arguments['t_cluster']:
+        temporal_cluster_constraints(m, 24)
+
 
     logging.info('Model creation time: ' + stopwatch())
 
