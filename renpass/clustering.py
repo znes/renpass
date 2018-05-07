@@ -55,7 +55,7 @@ def temporal_clustering(datapackage, n_cluster):
             os.path.join(package_root_path, r.descriptor['path']))
 
     clustered_timeindex.to_csv(
-        os.path.join(package_root_path, 'data', 'timeindex.csv'),
+        os.path.join(package_root_path, 'data', 'temporal.csv'),
         header=True, sep=";", date_format='%Y-%m-%dT%H:%M:%SZ')
 
     return clustered_timeindex
