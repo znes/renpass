@@ -27,7 +27,7 @@ Options:
      --t_start=T_START       Start timestep of simulation [default: 0]
      --t_end=T_END           End timestep of simulation, default is last
                              timestep of datapackage timeindex [default: -1]
-     --t_cluster=T_CLUSTER   Time series cluster hours [default: ]
+     --t_cluster=T_CLUSTER   Time series cluster period type [default: ]
 """
 
 from datapackage import Package
@@ -38,7 +38,7 @@ import os
 import pandas as pd
 
 import facades
-from clustering import temporal_clustering, temporal_cluster_constraints
+from clustering import temporal_cluster_constraints
 
 from oemof.tools import logger
 from oemof.solph import Model, EnergySystem, Bus
@@ -59,17 +59,6 @@ def stopwatch():
     last = stopwatch.now
     stopwatch.now = datetime.now()
     return str(stopwatch.now-last)[0:-4]
-
-def preprocessing(datapackage, **arguments):
-    """
-    """
-    if arguments['--t_cluster']:
-        logging.info('Applying temporal clustering with {} clusters'.format(
-                     arguments['--t_cluster']))
-
-        weights = temporal_clustering(datapackage,
-                                      int(arguments['--t_cluster']))
-        import pdb; pdb.set_trace()
 
 def create_energysystem(datapackage, **arguments):
     """Creates the energysystem.
@@ -123,17 +112,19 @@ def compute(es=None, **arguments):
         information.
     **arguments : key word arguments
         Arguments passed from command line
-    """    
-    if arguments['--t_cluster']:
+    """
+
+    if es.temporal is not None:
         ow = es.temporal['weighting']
+        m = Model(es, objective_weighting=ow)
     else:
-        ow = None
+        m = Model(es)
 
-    m = Model(es, objective_weightings=ow)
-
-    if arguments['t_cluster']:
+    if arguments['--t_cluster'] == 'daily':
+        logging.info('Adding period bounds for daily clustering...')
         temporal_cluster_constraints(m, 24)
-
+    else:
+        pass
 
     logging.info('Model creation time: ' + stopwatch())
 
@@ -323,8 +314,6 @@ def main(**arguments):
     stopwatch()
 
     p = Package(arguments['DATAPACKAGE'])
-
-    preprocessing(arguments['DATAPACKAGE'], **arguments)
 
     # create energy system and pass nodes
     es = create_energysystem(arguments['DATAPACKAGE'], **arguments)
