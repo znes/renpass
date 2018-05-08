@@ -219,7 +219,17 @@ def write_results(es, m, p, **arguments):
     modelname = p.descriptor['name'].replace(' ', '_')
 
     package_root_directory = os.path.join(output_base_directory, modelname)
+    if not os.path.exists(package_root_directory):
+        os.makedirs(package_root_directory)
 
+    meta_results = processing.meta_results(m)
+
+    pd.Series({
+        'objective': meta_results['objective'],
+        'solver_time': meta_results['solver']['Time'],
+        'constraints': meta_results['problem']['Number of constraints'],
+        'variables': meta_results['problem']['Number of variables']}).to_csv(
+            os.path.join(package_root_directory, 'problem.csv'))
 
     logging.info('Exporting result object to CSV.')
     # -----------------------------------------------------------------------
