@@ -223,7 +223,7 @@ def write_results(es, m, p, **arguments):
     results = processing.results(m)
 
     if not os.path.isdir(arguments['--output-directory']):
-        os.mkdir(arguments['--output-directory'])
+        os.makedirs(arguments['--output-directory'])
 
     output_base_directory = arguments['--output-directory']
 
@@ -317,8 +317,6 @@ def write_results(es, m, p, **arguments):
 
     return True
 
-
-
 def main(**arguments):
     """
     """
@@ -333,7 +331,7 @@ def main(**arguments):
 
     # create optimization model and solve it
     m = compute(es=es, **arguments)
-    import pdb;pdb.set_trace()
+
     # write results in output directory
     write_results(es, m=m, p=p, **arguments)
 
