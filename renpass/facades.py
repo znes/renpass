@@ -21,6 +21,12 @@ class Facade:
         """
         self.subnodes = []
 
+        # for r in required:
+        #     if getattr(self, r) is None:
+        #         raise ValueError(
+        #             ("Missing attribute `{}` for facade of type `{}` with" +
+        #              " name/label `{}`.").format(r, type(self), self.label)
+
     def _investment(self):
         if self.capacity is None:
             if self.investment_cost is None:

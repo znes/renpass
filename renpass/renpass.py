@@ -38,7 +38,7 @@ import os
 import pandas as pd
 
 import facades
-from clustering import temporal_cluster_constraints
+from constraints import temporal_cluster_constraints
 
 from oemof.tools import logger
 from oemof.solph import Model, EnergySystem, Bus
@@ -115,15 +115,14 @@ def compute(es=None, **arguments):
     """
 
     if es.temporal is not None:
-        ow = es.temporal['weighting']
-        m = Model(es, objective_weighting=ow)
+        m = Model(es, objective_weighting=es.temporal['weighting'])
     else:
         m = Model(es)
 
     if arguments['--t_cluster'] == 'daily':
         logging.info('Adding period bounds for daily clustering...')
-        temporal_cluster_constraints(m, 24)
-    else:
+        temporal_cluster_constraints(m, 24, end='open')
+    elif arguments['--t_cluster'] == 'hourly':
         pass
 
     logging.info('Model creation time: ' + stopwatch())
@@ -235,12 +234,16 @@ def write_results(es, m, p, **arguments):
 
     meta_results = processing.meta_results(m)
 
-    pd.Series({
-        'objective': meta_results['objective'],
-        'solver_time': meta_results['solver']['Time'],
-        'constraints': meta_results['problem']['Number of constraints'],
-        'variables': meta_results['problem']['Number of variables']}).to_csv(
-            os.path.join(package_root_directory, 'problem.csv'))
+    pd.DataFrame({
+        'objective': {
+            modelname: meta_results['objective']},
+        'solver_time': {
+            modelname: meta_results['solver']['Time']},
+        'constraints': {
+            modelname: meta_results['problem']['Number of constraints']},
+        'variables': {
+            modelname: meta_results['problem']['Number of variables']}})\
+                .to_csv(os.path.join(package_root_directory, 'problem.csv'))
 
     logging.info('Exporting result object to CSV.')
     # -----------------------------------------------------------------------

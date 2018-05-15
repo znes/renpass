@@ -10,7 +10,7 @@ from datapackage import Package
 import pandas as pd
 import pyomo.environ as po
 
-def temporal_cluster_constraints(m, period_length=24):
+def temporal_cluster_constraints(m, period_length=24, end='open'):
     """ Set the storage level of every storage to it's initial capacity
     at every first hour of a cluster period.
     """
@@ -33,9 +33,15 @@ def temporal_cluster_constraints(m, period_length=24):
             for n in m.STORAGES:
                 if n.capacity is None:
                     lhs = m.GenericInvestmentStorageBlock.capacity[n, t]
-                    rhs = m.GenericInvestmentStorageBlock.capacity[n, m.START_END[t]]
+                    if end == 'open':
+                        rhs = 0
+                    else:
+                        rhs = m.GenericInvestmentStorageBlock.capacity[n, m.START_END[t]]
                 else:
                     lhs = m.GenericStorageBlock.capacity[n, t]
-                    rhs = m.GenericStorageBlock.capacity[n, m.START_END[t]]
+                    if end == 'open':
+                        rhs = 0
+                    else:
+                        rhs = m.GenericStorageBlock.capacity[n, m.START_END[t]]
                 m.period_bounds.add((n, t), (lhs == rhs))
     m.period_bounds_build = po.BuildAction(rule=_period_bounds)
