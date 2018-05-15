@@ -203,6 +203,32 @@ Write results
     es = EnergySystem.to_datapackage('datapackage.json')
 ```
 
+Debugging
+=============
+
+Debugging can sometimes with tricky, here are some things you might want to
+consider:
+
+**Components do not end up in the model**
+* Does the data resource (i.e. csv-file) for your components exist in the
+`datapackage.json` file.
+* Did you set the `attributemap` and `typemap` arguments of the
+`EnergySystem.from_datapackge()` method of correctly? Make sure all classes
+with their types are present.
+
+**Cast errors when reading a datapackage**
+* Does the column order match the order of fields in the (tabular) data
+resource?
+* Does the type match the types in of the columns (i.e. for integer, obviously
+  only integer values should be in the respective column)
+
+**oemof related errors**
+If you encounter errors from oemof, the objects are not instantiated correctly
+which may happen if something of the following is wrong in your metadata file:
+
+* foreign-keys
+
+
 Contributors
 ============
 
@@ -230,4 +256,4 @@ Mueller, U. P., Wienholt, L., Kleinhans, D., Cussmann, I., Bunke, W.-D., Pleßma
 
 Becker, L., Bunke, W., Christ, M., Degel, M., Grünert, J., Söthe, M., Wiese, F. and Wingenbach, C. (2016). VerNetzen: *Sozial-ökologische und technisch-ökonomische Modellierung von Entwicklungspfaden der Energiewende.* Nr. 4 der Reihe Forschungsergebnisse des ZNES Flensburg (elektronisch: ISSN 2196-7164)
 
-Berg, M., Bohm, S., Fink, T., Hauser, M., Komendantova, N. and Soukup, O. (2016). 'Scenario development and multi-criteria analysis for Morocco’s future electricity system in 2050. Summary of workshop results.' *Elaboration et évaluation des différents scénarios du mix électrique futur du Maroc*, 23-24 May 2016, Rabat, Morocco. 
+Berg, M., Bohm, S., Fink, T., Hauser, M., Komendantova, N. and Soukup, O. (2016). 'Scenario development and multi-criteria analysis for Morocco’s future electricity system in 2050. Summary of workshop results.' *Elaboration et évaluation des différents scénarios du mix électrique futur du Maroc*, 23-24 May 2016, Rabat, Morocco.

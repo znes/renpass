@@ -87,7 +87,9 @@ def create_energysystem(datapackage, **arguments):
     es = EnergySystem.from_datapackage(
         arguments['DATAPACKAGE'],
         attributemap={
-            facades.Demand: {'demand-profiles': 'profile'},
+            facades.Demand: {
+                'demand-profiles': 'profile',
+                'heat-demand-profiles': 'profile'},
             facades.Generator: {"generator-profiles": "profile"},
             facades.RunOfRiver: {"run-of-river-inflows": "inflow"}},
         typemap=typemap)
