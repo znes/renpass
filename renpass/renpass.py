@@ -81,7 +81,7 @@ def create_energysystem(datapackage, **arguments):
         'backpressure': facades.Backpressure,
         'connection': facades.Connection,
         'conversion': facades.Conversion,
-        'runofriver': facades.Generator,
+        'runofriver': facades.RunOfRiver,
         'excess': facades.Excess}
 
     es = EnergySystem.from_datapackage(
@@ -169,6 +169,7 @@ def _edges(nodes):
 
 def component_results(es, results, path):
     for k,v in es._typemap.items():
+        
         if type(k) == str:
             _seq_by_type = [
                 views.node(results, n, multiindex=True)['sequences']

@@ -179,12 +179,6 @@ class Generator(Source, Facade):
         self.outputs.update({self.bus: f})
 
 
-class RunOfRiver(Source, Facade):
-    """
-    """
-    pass
-
-
 class ExtractionTurbine(ExtractionTurbineCHP, Facade):
     """ Combined Heat and Power (extraction) unit with one input and
     two outputs.
@@ -573,3 +567,16 @@ class Connection(Link, Facade):
         self.conversion_factors.update({
             (self.from_bus, self.to_bus): sequence((1 - self.loss)),
             (self.to_bus, self.from_bus): sequence((1 - self.loss))})
+
+
+class RunOfRiver(Generator):
+    """
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+class Boiler(Generator):
+    """
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
