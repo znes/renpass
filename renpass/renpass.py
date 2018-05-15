@@ -7,7 +7,7 @@ Usage:
 
 Examples:
 
-  renpass_gis_main.py -o glpk path/to/datapackage.json
+  renpass.py -o glpk path/to/datapackage.json
 
 Arguments:
 
