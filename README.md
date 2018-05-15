@@ -90,7 +90,7 @@ and results) altogether in one consistent block based on the datapackage
 standard.
 
 
-How to create an Datapackage
+How to create a Datapackage
 -----------------------------
 
 We adhere to the frictionless [(tabular) datapackage standard](https://frictionlessdata.io/specs/tabular-data-package/).
@@ -152,14 +152,14 @@ Example:
 
 | timeindex        |  demand-profile1 |  demand-profile2 |
 |------------------|------------------|------------------|
-| 2016-01-01:00:00 |     0.1          |      0.05        |
-| 2016-01-01:01:00 |     0.2          |      0.1         |
+| 2016-01-01T00:00 |     0.1          |      0.05        |
+| 2016-01-01T01:00 |     0.2          |      0.1         |
 
 
-Create model and compute
--------------------------
-Currently the only way to construct a model and compute it is by using the
-solph library.
+Scripting
+=========================
+Currently the only way to construct a model and compute it is by using the `oemof.solph` library. As described above, you can simply use the command line tool on your created datapackage. However, you may also use the `facades.py` module
+and write your on application.
 
 Just read the `.json` file to create an `solph.EnergySystem` object from the
 datapackage. Based on this you can create the model, compute it and process
