@@ -6,20 +6,38 @@ application and work with the oemof datapackage - reader functionality
 
 SPDX-License-Identifier: GPL-3.0-or-later
 """
+from oemof.network import Node
 from oemof.solph import Source, Flow, Investment, Sink, Transformer, Bus
 from oemof.solph.components import GenericStorage, ExtractionTurbineCHP
 from oemof.solph.custom import Link
 from oemof.solph.plumbing import sequence
 
 
-class Facade:
+class Facade(Node):
     """
+    Parameters
+    ----------
+    _facade_requires_ : list of str
+        A list of required attributes. The constructor checks whether these are
+        present as keywort arguments or whether they are already present on
+        self (which means they have been set by constructors of subclasses) and
+        raises an error if he doesn't find them.
     """
-    required = []
     def __init__(self, *args, **kwargs):
         """
         """
+        required = kwargs.pop("_facade_requires_", [])
+        super().__init__(*args, **kwargs)
         self.subnodes = []
+        try:
+            for r in required:
+                setattr(self, r, kwargs.get(r, getattr(self, r)))
+        except (AttributeError, KeyError) as e:
+            raise AttributeError(
+                    ("Missing required attribute `{}` for `{}` object with" +
+                     " name/label `{}`.")
+                    .format(e, type(self).__name__, self.label))
+
 
     def _investment(self):
         if self.capacity is None:
