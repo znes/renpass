@@ -54,13 +54,6 @@ class Facade(Node):
         return investment
 
 
-class Hub(Bus, Facade):
-    """
-    """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
 class Reservoir(GenericStorage, Facade):
     """ Reservoir storage unit
 
@@ -106,7 +99,6 @@ class Reservoir(GenericStorage, Facade):
         else:
             investment = None
 
-        # TODO: Ensure automatic adding of
         reservoir_bus = Bus(label="reservoir-bus-" + self.label)
         inflow = Source(
             label="inflow" + self.label,
@@ -117,15 +109,17 @@ class Reservoir(GenericStorage, Facade):
                             fixed=True)})
         if self.spillage:
             spillage = Sink(label="spillage" + self.label,
-                                  inputs={reservoir_bus: Flow()})
+                            inputs={reservoir_bus: Flow()})
         else:
             water_spillage = None
 
-        self.inputs.update({reservoir_bus: Flow(investment=investment,
-                                        **self.input_edge_parameters)})
+        self.inputs.update({
+            reservoir_bus: Flow(investment=investment,
+                                **self.input_edge_parameters)})
 
-        self.outputs.update({self.bus: Flow(investment=investment,
-                                            **self.output_edge_parameters)})
+        self.outputs.update({
+            self.bus: Flow(investment=investment,
+                            **self.output_edge_parameters)})
 
         self.subnodes = (reservoir_bus, inflow, spillage)
 
@@ -140,7 +134,7 @@ class Generator(Source, Facade):
     capacity: numeric
         The capacity of the generator (e.g. in MW).
     dispatchable: boolean
-        If False the generator will be must run based on the specified
+        If False the generator will be a must run unit based on the specified
         `profile` and (default is True).
     profile: array-like
         Profile of the output such that profile[t] * capacity yields output for
@@ -223,9 +217,6 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
         If capacity is not set, this value will be used for optimizing the
         chp capacity.
     """
-    required = ['fuel_bus', 'electricity_bus', 'heat_bus',
-                'thermal_efficiency', 'electric_efficiency',
-                'condensing_efficiency']
 
     def __init__(self, *args, **kwargs):
         super().__init__(conversion_factor_full_condensation={},
@@ -295,8 +286,6 @@ class Backpressure(Transformer, Facade):
         If capacity is not set, this value will be used for optimizing the
         chp capacity.
     """
-    required = ['fuel_bus', 'electricity_bus', 'heat_bus',
-                'thermal_efficiency', 'electric_efficiency']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs,
@@ -351,7 +340,6 @@ class Conversion(Transformer, Facade):
         If capacity is not set, this value will be used for optimizing the
         conversion output capacity.
     """
-    required = ['from_bus', 'to_bus']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs,
@@ -395,12 +383,10 @@ class Excess(Sink, Facade):
         Marginal cost for one unit of produced output. Default: 0
     """
 
-    required = ['bus']
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, _facade_requires_=['bus'])
 
-        self.marginal_costs = kwargs.get('marginal_costs', 0)
+        self.marginal_cost = kwargs.get('marginal_cost', 0)
 
         self.inputs.update(
             {self.bus: Flow(variable_costs=self.marginal_costs)})
