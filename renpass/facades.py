@@ -80,11 +80,10 @@ class Reservoir(GenericStorage, Facade):
         If True, spillage of water will be possible, otherwise water is forced
         to storage. Default: True
     """
-    required = ['bus', 'inflow']
 
     def __init__(self, *args, **kwargs):
 
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs, _facade_requires_=['bus', 'inflow'])
 
         self.capacity = kwargs.get('capacity')
 
@@ -93,10 +92,6 @@ class Reservoir(GenericStorage, Facade):
         self.nominal_capacity = self.capacity
 
         self.investment_cost = kwargs.get('investment_cost')
-
-        self.bus = kwargs.get('bus')
-
-        self.inflow = kwargs.get('inflow')
 
         self.spillage = kwargs.get('spillage', True)
 
@@ -160,12 +155,9 @@ class Generator(Source, Facade):
         If capacity is not set, this value will be used for optimizing the
         generators capacity.
     """
-    required = ['bus']
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.bus = kwargs.get('bus')
+        super().__init__(*args, **kwargs, _facade_requires_=['bus'])
 
         self.profile = kwargs.get('profile')
 
@@ -236,21 +228,17 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
                 'condensing_efficiency']
 
     def __init__(self, *args, **kwargs):
-        super().__init__(conversion_factor_full_condensation={}, *args, **kwargs)
-
-        self.fuel_bus = kwargs.get('fuel_bus')
-
-        self.heat_bus = kwargs.get('heat_bus')
-
-        self.electricity_bus = kwargs.get('electricity_bus')
+        super().__init__(conversion_factor_full_condensation={},
+                         *args,
+                         **kwargs,
+                         _facade_requires_=[
+                             'fuel_bus', 'electricity_bus', 'heat_bus',
+                             'thermal_efficiency', 'electric_efficiency',
+                             'condensing_efficiency'])
 
         self.capacity = kwargs.get('capacity')
 
-        self.electric_efficiency = kwargs.get('electric_efficiency')
-
-        self.thermal_efficiency = kwargs.get('thermal_efficiency')
-
-        self.condesing_efficiency = sequence(kwargs.get('condensing_efficiency'))
+        self.condesing_efficiency = sequence(self.condensing_efficiency)
 
         self.marginal_cost = kwargs.get('marginal_cost', 0)
 
@@ -311,19 +299,12 @@ class Backpressure(Transformer, Facade):
                 'thermal_efficiency', 'electric_efficiency']
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fuel_bus = kwargs.get('fuel_bus')
-
-        self.heat_bus = kwargs.get('heat_bus')
-
-        self.electricity_bus = kwargs.get('electricity_bus')
+        super().__init__(*args, **kwargs,
+                         _facade_requires_=[
+                             'fuel_bus', 'electricity_bus', 'heat_bus',
+                             'thermal_efficiency', 'electric_efficiency'])
 
         self.capacity = kwargs.get('capacity')
-
-        self.electric_efficiency = kwargs.get('electric_efficiency')
-
-        self.thermal_efficiency = kwargs.get('thermal_efficiency')
 
         self.marginal_cost = kwargs.get('marginal_cost', 0)
 
@@ -373,13 +354,10 @@ class Conversion(Transformer, Facade):
     required = ['from_bus', 'to_bus']
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs,
+                         _facade_requires_=['from_bus', 'to_bus'])
 
         self.capacity = kwargs.get('capacity')
-
-        self.from_bus = kwargs.get('from_bus')
-
-        self.to_bus = kwargs.get('to_bus')
 
         self.efficiency = kwargs.get('efficiency', 1)
 
@@ -420,9 +398,7 @@ class Excess(Sink, Facade):
     required = ['bus']
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.bus = kwargs.get('bus')
+        super().__init__(*args, **kwargs, _facade_requires_=['bus'])
 
         self.marginal_costs = kwargs.get('marginal_costs', 0)
 
@@ -444,16 +420,10 @@ class Demand(Sink, Facade):
           Demand profile with normed values such that `profile[t] * amount`
           yields the demand in timestep t (e.g. in MWh)
     """
-    required = ['bus', 'amount', 'profile']
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.amount = kwargs.get('amount')
-
-        self.bus = kwargs.get('bus')
-
-        self.profile = kwargs.get('profile')
+        super().__init__(*args, **kwargs,
+                         _facade_requires_=['bus', 'amount', 'profile'])
 
         self.edge_parameters = kwargs.get('edge_parameters', {})
 
@@ -482,11 +452,10 @@ class Storage(GenericStorage, Facade):
     investment_cost: numeric
         Investment costs for the storage unit e.g in €/MWh-capacity
     """
-    required = ['bus']
 
     def __init__(self, *args, **kwargs):
 
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs, _facade_requires_=['bus'])
 
         self.capacity = kwargs.get('capacity')
 
@@ -511,8 +480,6 @@ class Storage(GenericStorage, Facade):
         self.capacity_loss = sequence(kwargs.get('loss', 0))
 
         self.inflow_conversion_factor = sequence(kwargs.get('efficiency', 1))
-
-        self.bus = kwargs.get('bus')
 
         self.investment = self._investment()
 
@@ -555,16 +522,12 @@ class Connection(Link, Facade):
         If capacity is not set, this value will be used for optimizing the
         chp capacity.
     """
-    required = ['from_bus', 'to_bus']
+
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
-        self.from_bus = kwargs.get('from_bus')
+        super().__init__(*args, **kwargs,
+                         _facade_requires_=['from_bus', 'to_bus'])
 
         self.capacity = kwargs.get('capacity')
-
-        self.to_bus = kwargs.get('to_bus')
 
         self.loss = kwargs.get('loss', 0)
 
