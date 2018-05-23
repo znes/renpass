@@ -39,10 +39,14 @@ class Facade(Node):
             #          kwargs["_facade_requires_"],
             #          self)
         except (AttributeError, KeyError) as e:
+            omega = str(e).rfind("'")
+            omega = omega if omega != -1 else len(str(e))
+            alpha = str(e)[:omega].rfind("'")
+            attribute = str(e)[alpha+1:omega]
             raise AttributeError(
                     ("Missing required attribute `{}` for `{}` object with" +
-                     " name/label `{}`.")
-                    .format(e, type(self).__name__, self.label))
+                     " name/label `{!r}`.")
+                    .format(attribute, type(self).__name__, self.label))
 
 
     def _investment(self):
