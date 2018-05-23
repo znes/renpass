@@ -29,24 +29,14 @@ class Facade(Node):
         required = kwargs.pop("_facade_requires_", [])
         super().__init__(*args, **kwargs)
         self.subnodes = []
-        try:
-            for r in required:
-                setattr(self, r, kwargs.get(r, getattr(self, r)))
-            # Just for fun: this should have the same effect as the two lines
-            # above but isn't quite as obvious and readable.
-            #
-            #   reduce(lambda s, r: (setattr(s, r, kwargs.getattr(s, r)), s)[1],
-            #          kwargs["_facade_requires_"],
-            #          self)
-        except (AttributeError, KeyError) as e:
-            omega = str(e).rfind("'")
-            omega = omega if omega != -1 else len(str(e))
-            alpha = str(e)[:omega].rfind("'")
-            attribute = str(e)[alpha+1:omega]
-            raise AttributeError(
-                    ("Missing required attribute `{}` for `{}` object with" +
-                     " name/label `{!r}`.")
-                    .format(attribute, type(self).__name__, self.label))
+        for r in required:
+            if r in kwargs:
+                setattr(self, r, kwargs[r])
+            elif not hasattr(self, r):
+                raise AttributeError(
+                        ("Missing required attribute `{}` for `{}` " +
+                         "object with name/label `{!r}`.")
+                        .format(r, type(self).__name__, self.label))
 
 
     def _investment(self):
