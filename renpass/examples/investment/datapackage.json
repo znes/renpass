@@ -574,15 +574,16 @@
                         "format": "default"
                     },
                     {
-                        "name": "wind-profile",
+                        "name": "pv-profile",
                         "type": "number",
                         "format": "default"
                     },
                     {
-                        "name": "pv-profile",
+                        "name": "wind-profile",
                         "type": "number",
                         "format": "default"
                     }
+                   
                 ],
                 "missingValues": [
                     ""

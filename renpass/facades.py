@@ -39,6 +39,12 @@ class Facade(Node):
                         .format(r, type(self).__name__, self.label))
 
 
+        # for r in required:
+        #     if getattr(self, r) is None:
+        #         raise ValueError(
+        #             ("Missing attribute `{}` for facade of type `{}` with" +
+        #              " name/label `{}`.").format(r, type(self), self.label)
+
     def _investment(self):
         if self.capacity is None:
             if self.investment_cost is None:
@@ -175,12 +181,6 @@ class Generator(Source, Facade):
                  **self.edge_parameters)
 
         self.outputs.update({self.bus: f})
-
-
-class RunOfRiver(Source, Facade):
-    """
-    """
-    pass
 
 
 class ExtractionTurbine(ExtractionTurbineCHP, Facade):
@@ -534,3 +534,16 @@ class Connection(Link, Facade):
         self.conversion_factors.update({
             (self.from_bus, self.to_bus): sequence((1 - self.loss)),
             (self.to_bus, self.from_bus): sequence((1 - self.loss))})
+
+
+class RunOfRiver(Generator):
+    """
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+class Boiler(Generator):
+    """
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

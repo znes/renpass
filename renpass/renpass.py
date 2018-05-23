@@ -7,7 +7,7 @@ Usage:
 
 Examples:
 
-  renpass_gis_main.py -o glpk path/to/datapackage.json
+  renpass.py -o glpk path/to/datapackage.json
 
 Arguments:
 
@@ -27,6 +27,7 @@ Options:
      --t_start=T_START       Start timestep of simulation [default: 0]
      --t_end=T_END           End timestep of simulation, default is last
                              timestep of datapackage timeindex [default: -1]
+     --t_cluster=T_CLUSTER   Time series cluster period type [default: ]
 """
 
 from datapackage import Package
@@ -37,6 +38,7 @@ import os
 import pandas as pd
 
 import facades
+from constraints import temporal_cluster_constraints
 
 from oemof.tools import logger
 from oemof.solph import Model, EnergySystem, Bus
@@ -57,7 +59,6 @@ def stopwatch():
     last = stopwatch.now
     stopwatch.now = datetime.now()
     return str(stopwatch.now-last)[0:-4]
-
 
 def create_energysystem(datapackage, **arguments):
     """Creates the energysystem.
@@ -80,7 +81,7 @@ def create_energysystem(datapackage, **arguments):
         'backpressure': facades.Backpressure,
         'connection': facades.Connection,
         'conversion': facades.Conversion,
-        'runofriver': facades.Generator,
+        'runofriver': facades.RunOfRiver,
         'excess': facades.Excess}
 
     es = EnergySystem.from_datapackage(
@@ -115,7 +116,16 @@ def compute(es=None, **arguments):
         Arguments passed from command line
     """
 
-    m = Model(es)
+    if es.temporal is not None:
+        m = Model(es, objective_weighting=es.temporal['weighting'])
+    else:
+        m = Model(es)
+
+    if arguments['--t_cluster'] == 'daily':
+        logging.info('Adding period bounds for daily clustering...')
+        temporal_cluster_constraints(m, 24, end='open')
+    elif arguments['--t_cluster'] == 'hourly':
+        pass
 
     logging.info('Model creation time: ' + stopwatch())
 
@@ -159,6 +169,7 @@ def _edges(nodes):
 
 def component_results(es, results, path):
     for k,v in es._typemap.items():
+        
         if type(k) == str:
             _seq_by_type = [
                 views.node(results, n, multiindex=True)['sequences']
@@ -214,7 +225,7 @@ def write_results(es, m, p, **arguments):
     results = processing.results(m)
 
     if not os.path.isdir(arguments['--output-directory']):
-        os.mkdir(arguments['--output-directory'])
+        os.makedirs(arguments['--output-directory'])
 
     output_base_directory = arguments['--output-directory']
 
@@ -226,12 +237,16 @@ def write_results(es, m, p, **arguments):
 
     meta_results = processing.meta_results(m)
 
-    pd.Series({
-        'objective': meta_results['objective'],
-        'solver_time': meta_results['solver']['Time'],
-        'constraints': meta_results['problem']['Number of constraints'],
-        'variables': meta_results['problem']['Number of variables']}).to_csv(
-            os.path.join(package_root_directory, 'problem.csv'))
+    pd.DataFrame({
+        'objective': {
+            modelname: meta_results['objective']},
+        'solver_time': {
+            modelname: meta_results['solver']['Time']},
+        'constraints': {
+            modelname: meta_results['problem']['Number of constraints']},
+        'variables': {
+            modelname: meta_results['problem']['Number of variables']}})\
+                .to_csv(os.path.join(package_root_directory, 'problem.csv'))
 
     logging.info('Exporting result object to CSV.')
     # -----------------------------------------------------------------------
@@ -248,50 +263,53 @@ def write_results(es, m, p, **arguments):
     conns = _edges([n for n in es.nodes
                     if isinstance(n, facades.Connection)])
 
-    transshipment = pd.concat(
-        [views.node(results, n, multiindex=True)['sequences'].\
-            loc[:, (n, slice(None), 'flow')]
-         for n in conns], axis=1)
-
-    net_transshipment = pd.concat([
-        transshipment.loc[:, (c, str(es.groups[c].from_bus), 'flow')] -
-        transshipment.loc[:, (c, str(es.groups[c].to_bus), 'flow')]
-        for c in conns], axis=1)
-    net_transshipment.columns = conns.keys()
-
-    transshipment_path = os.path.join(
+    data_path = os.path.join(
         package_root_directory, 'data')
-    if not os.path.exists(transshipment_path):
-        os.makedirs(transshipment_path)
+    if not os.path.exists(data_path):
+        os.makedirs(data_path)
 
-    net_transshipment.index.name = 'timeindex'
-    net_transshipment.to_csv(
-        os.path.join(transshipment_path, 'transshipment.csv'),
-                     sep=";", date_format='%Y-%m-%dT%H:%M:%SZ')
+    if conns:
+        transshipment = pd.concat(
+            [views.node(results, n, multiindex=True)['sequences'].\
+                loc[:, (n, slice(None), 'flow')]
+             for n in conns], axis=1)
+
+        net_transshipment = pd.concat([
+            transshipment.loc[:, (c, str(es.groups[c].from_bus), 'flow')] -
+            transshipment.loc[:, (c, str(es.groups[c].to_bus), 'flow')]
+            for c in conns], axis=1)
+        net_transshipment.columns = conns.keys()
+
+        net_transshipment.index.name = 'timeindex'
+        net_transshipment.to_csv(
+            os.path.join(data_path, 'transshipment.csv'),
+                         sep=";", date_format='%Y-%m-%dT%H:%M:%SZ')
 
     # storage output
     storages = {
         n: views.node(results, n, multiindex=True)['sequences']
         for n in es.nodes if isinstance(n, facades.Storage)}
-    storage_edges = _edges(storages.keys())
-    for k, v in storages.items():
-        # TODO: prettify column renaming
-        new_columns = []
-        for tup in tuple(v.columns):
-            if k == tup[0] and tup[2] == 'flow':
-                new_columns.append('output')
-            elif k == tup[1] and tup[2] == 'flow':
-                new_columns.append('input')
-            else:
-                new_columns.append('level')
-        v.columns = new_columns
-        net_storage = v.input - v.output
-        v.input = net_storage.apply(lambda row: row if row > 0 else 0)
-        v.output = net_storage.apply(lambda row: abs(row) if row < 0 else 0)
-        v.index.name = 'timeindex'
-        v.to_csv(
-            os.path.join(transshipment_path, str(k) + '.csv'), sep=";",
-            date_format='%Y-%m-%dT%H:%M:%SZ')
+
+    if storages:
+        storage_edges = _edges(storages.keys())
+        for k, v in storages.items():
+            # TODO: prettify column renaming
+            new_columns = []
+            for tup in tuple(v.columns):
+                if k == tup[0] and tup[2] == 'flow':
+                    new_columns.append('output')
+                elif k == tup[1] and tup[2] == 'flow':
+                    new_columns.append('input')
+                else:
+                    new_columns.append('level')
+            v.columns = new_columns
+            net_storage = v.input - v.output
+            v.input = net_storage.apply(lambda row: row if row > 0 else 0)
+            v.output = net_storage.apply(lambda row: abs(row) if row < 0 else 0)
+            v.index.name = 'timeindex'
+            v.to_csv(
+                os.path.join(data_path, str(k) + '.csv'), sep=";",
+                date_format='%Y-%m-%dT%H:%M:%SZ')
 
     # TODO prettify / complete package (meta-data) creation
     if arguments['--results'] == 'datapackage':
@@ -304,8 +322,6 @@ def write_results(es, m, p, **arguments):
         rp.save(os.path.join(package_root_directory, 'datapackage.json'))
 
     return True
-
-
 
 def main(**arguments):
     """
