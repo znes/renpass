@@ -389,7 +389,7 @@ class Excess(Sink, Facade):
         self.marginal_cost = kwargs.get('marginal_cost', 0)
 
         self.inputs.update(
-            {self.bus: Flow(variable_costs=self.marginal_costs)})
+            {self.bus: Flow(variable_costs=self.marginal_cost)})
 
 
 
