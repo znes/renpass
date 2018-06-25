@@ -449,18 +449,6 @@ class Storage(GenericStorage, Facade):
 
         self.nominal_capacity = self.capacity
 
-        if self.power and self.capacity:
-            self.nominal_input_capacity_ratio =  self.power / self.capacity
-            self.nominal_output_capacity_ratio = self.power / self.capacity
-        else:
-            if kwargs.get('ep_ratio') is None:
-                raise AttributeError(
-                    ("You need to set attr `ep_ratio` for "
-                     "component {}").format(self.label))
-            else:
-                self.nominal_input_capacity_ratio = kwargs.get('ep_ratio')
-                self.nominal_output_capacity_ratio = kwargs.get('ep_ratio')
-
         self.investment_cost = kwargs.get('investment_cost')
 
         self.capacity_loss = sequence(kwargs.get('loss', 0))
@@ -474,17 +462,35 @@ class Storage(GenericStorage, Facade):
         self.output_edge_parameters = kwargs.get('output_edge_parameters', {})
 
         if self.investment:
+            if kwargs.get('ep_ratio') is None:
+                raise AttributeError(
+                    ("You need to set attr `ep_ratio` for "
+                     "component {}").format(self.label))
+            else:
+                self.invest_relation_input_capacity =  kwargs.get('ep_ratio')
+                self.invest_relation_output_capacity = kwargs.get('ep_ratio')
+
             investment = Investment()
+            fi = Flow(investment=investment,
+                 **self.input_edge_parameters)
+            fo = Flow(investment=investment,
+                      **self.output_edge_parameters)
+            # required for correct grouping in oemof.solph.components
+            self._invest_group = True
         else:
             investment = None
+            fi = Flow(investment=investment, nominal_value=self.power,
+                      **self.input_edge_parameters)
+            fo = Flow(investment=investment, nominal_value=self.power,
+                      **self.output_edge_parameters)
 
-        self.inputs.update({self.bus: Flow(investment=investment,
-                                           **self.input_edge_parameters)})
+        self.inputs.update({self.bus: fi})
 
-        self.outputs.update({self.bus: Flow(investment=investment,
-                                            **self.output_edge_parameters)})
+        self.outputs.update({self.bus: fo})
 
-        self._set_flows()
+        # annoying oemof stuff, that requires _set_flows() to provide a
+        # drepreciated warning
+        self._set_flows('Ignore this warning...')
 
 
 class Connection(Link, Facade):
