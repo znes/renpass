@@ -255,7 +255,7 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
             self.electricity_bus: self.condesing_efficiency})
 
 
-class Backpressure(Transformer, Facade):
+class BackpressureTurbine(Transformer, Facade):
     """ Combined Heat and Power (backpressure) unit with one input and
     two outputs.
 

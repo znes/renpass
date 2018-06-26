@@ -75,7 +75,7 @@ def create_energysystem(datapackage, **arguments):
         'generator': facades.Generator,
         'storage': facades.Storage,
         'reservoir': facades.Reservoir,
-        'backpressure': facades.Backpressure,
+        'backpressure': facades.BackpressureTurbine,
         'connection': facades.Connection,
         'conversion': facades.Conversion,
         'runofriver': facades.RunOfRiver,
