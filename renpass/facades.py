@@ -453,7 +453,11 @@ class Storage(GenericStorage, Facade):
 
         self.capacity_loss = sequence(kwargs.get('loss', 0))
 
-        self.inflow_conversion_factor = sequence(kwargs.get('efficiency', 1))
+        self.inflow_conversion_factor = sequence(
+            kwargs.get('charge_efficiency', 1))
+
+        self.outflow_conversion_factor = sequence(
+            kwargs.get('discharge_efficiency', 1))
 
         self.investment = self._investment()
 
