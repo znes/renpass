@@ -36,12 +36,11 @@ import logging
 import os
 import pandas as pd
 
-import facades
-from constraints import temporal_cluster_constraints
-
 from oemof.tools import logger
 from oemof.solph import Model, EnergySystem, Bus
 from oemof.outputlib import processing, views
+
+import facades
 
 try:
     from docopt import docopt
@@ -87,10 +86,15 @@ def create_energysystem(datapackage, **arguments):
         arguments['DATAPACKAGE'],
         attributemap={
             facades.Demand: {
-                'demand-profiles': 'profile',
-                'heat-demand-profiles': 'profile'},
-            facades.Generator: {"generator-profiles": "profile"},
-            facades.RunOfRiver: {"run-of-river-inflows": "inflow"}},
+                'electricity-demand-profiles': 'profile',
+                'heat-demand-profiles': 'profile',
+                'demand-profiles': 'profile'},
+            facades.Generator: {
+                'generator-profiles': 'profile',
+                'wind-profiles': 'profile',
+                'pv-profiles': 'profile'},
+            facades.RunOfRiver: {
+                'run-of-river-inflows': 'inflow'}},
         typemap=typemap)
 
     es._typemap = typemap
