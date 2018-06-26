@@ -1,0 +1,6 @@
+name;type;capacity;investment_cost;bus;marginal_cost;profile;dispatchable;edge_parameters
+gas-gt;generator;100;;bus1;40;;true;{"summed_max": 2000}
+coal-st;generator;100;;bus0;40;;true; {}
+lignite-st;generator;50;;bus0;20;;true; {}
+wind;generator;50;;bus0;0;wind-profile;false; {}
+pv;generator;20;;bus1;0;pv-profile;false; {}
