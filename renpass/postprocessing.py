@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """ This module contains functions to postprocess (aggregate, etc.) results
-from the renpass model.
+from the model.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 """
+
 
 def links(es):
     """

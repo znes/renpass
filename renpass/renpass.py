@@ -143,7 +143,9 @@ def compute(es=None, **arguments):
 
     return m
 
-def component_results(es, results, path):
+def component_results(es, results, path, model):
+    """ Writes results aggregated by component type
+    """
     for k,v in es._typemap.items():
 
         if type(k) == str:
@@ -171,7 +173,9 @@ def component_results(es, results, path):
                     os.path.join(type_path, str(k) + '.csv'), header=True,
                                  sep=";")
 
-def bus_results(es, results, path):
+def bus_results(es, results, path, model):
+    """ Writes results aggregated for every bus of the energy system
+    """
     buses = [b for b in es.nodes if isinstance(b, Bus)]
     for b in buses:
         bus_sequences = pd.concat([
@@ -182,8 +186,11 @@ def bus_results(es, results, path):
         bus_sequences.to_csv(
             os.path.join(type_path, str(b) + '.csv'), sep=";")
 
-def default_results(es, results, path):
-    raise NotImplementedError('Default option for results not implemented..')
+def default_results(es, results, path, model):
+    """ Write multiindex dataframe with all results from the solved `model`
+    """
+    processing.create_dataframe(model).to_csv(
+        os.path.join(path, 'results.csv'), sep=";")
 
 def write_results(es, m, p, **arguments):
     """Write results to CSV-files
@@ -195,15 +202,12 @@ def write_results(es, m, p, **arguments):
         information.
     m : A solved :class:'oemof.solph.models.Model' object for dispatch or
      investment optimization
+    p: datapackage.Package instance of the input datapackage
     **arguments : key word arguments
         Arguments passed from command line
-    p: datapackage.Package instance of the input datapackage
     """
-    results = processing.results(m)
 
-    # if not os.path.isdir(arguments['--output-directory']):
-    #     os.makedirs(arguments['--output-directory'])
-
+    # get the model name for processing and storing results from input dpkg
     modelname = p.descriptor['name'].replace(' ', '_')
 
     output_base_directory = os.path.join(
@@ -216,7 +220,8 @@ def write_results(es, m, p, **arguments):
 
     meta_results_path = os.path.join(output_base_directory, 'problem.csv')
 
-    logging.info('Exporting solver information to {}'.format(meta_results_path))
+    logging.info('Exporting solver information to {}'.format(
+        os.path.abspath(meta_results_path)))
 
     pd.DataFrame({
         'objective': {
@@ -229,13 +234,18 @@ def write_results(es, m, p, **arguments):
             modelname: meta_results['problem']['Number of variables']}})\
                 .to_csv(meta_results_path)
 
-    logging.info('Exporting result object to CSV...')
+    results = processing.results(m)
+
     _write_results = {
         'default': default_results,
         'component': component_results,
         'bus': bus_results} \
         [arguments['--output-orient']]
-    _write_results(es, results, path=output_base_directory)
+
+    logging.info('Exporting results to {}'.format(
+        os.path.abspath(output_base_directory)))
+
+    _write_results(es, results, path=output_base_directory, model=m)
 
     return True
 
