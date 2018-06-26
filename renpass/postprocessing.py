@@ -33,6 +33,16 @@ for s in storages:
     # os.path.join(data_path, str(k) + '.csv'), sep=";",
     # date_format='%Y-%m-%dT%H:%M:%SZ')
 
+connection_results = pd.read_csv(
+    'renpass/results/e-highway-X7-simple/sequences/connection.csv',
+    sep=";", header=[0, 1, 2], index_col=0, parse_dates=True)
+
+connections = ['BE-electricity-NL-electricity']
+
+for c in connections:
+
+    df = connection_results.loc[:, (c, slice(None), 'flow')]
+
 def links(es):
     """
     """
