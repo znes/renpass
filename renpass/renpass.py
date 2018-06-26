@@ -27,7 +27,6 @@ Options:
      --t_start=T_START       Start timestep of simulation [default: 0]
      --t_end=T_END           End timestep of simulation, default is last
                              timestep of datapackage timeindex [default: -1]
-     --t_cluster=T_CLUSTER   Time series cluster period type [default: ]
 """
 
 from datapackage import Package
@@ -120,12 +119,6 @@ def compute(es=None, **arguments):
         m = Model(es, objective_weighting=es.temporal['weighting'])
     else:
         m = Model(es)
-
-    if arguments['--t_cluster'] == 'daily':
-        logging.info('Adding period bounds for daily clustering...')
-        temporal_cluster_constraints(m, 24, end='open')
-    elif arguments['--t_cluster'] == 'hourly':
-        pass
 
     logging.info('Model creation time: ' + stopwatch())
 
