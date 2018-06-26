@@ -6,6 +6,37 @@ from the model.
 SPDX-License-Identifier: GPL-3.0-or-later
 """
 
+import pandas as pd
+
+
+storage_results = pd.read_csv(
+    'renpass/results/e-highway-X7-simple/sequences/storage.csv',
+    sep=";", header=[0, 1, 2], index_col=0, parse_dates=True)
+
+storages = ['pumped-storage-DE']
+
+for s in storages:
+    df = pd.DataFrame()
+
+    outputs = storage_results.loc[:, (s, slice(None), 'flow')]
+    outputs.columns = storage_results.loc[:, (s, slice(None), 'flow')].columns.droplevel([0,1])
+
+    inputs = storage_results.loc[:, (slice(None), s, 'flow')]
+    inputs.columns = storage_results.loc[:, (slice(None), s, 'flow')].columns.droplevel([0,1])
+
+    level = storage_results.loc[:, (s, slice(None), 'capacity')]
+    level.columns = storage_results.loc[:, (s, slice(None), 'capacity')].columns.droplevel([0,1])
+
+    net_storage = inputs - outputs
+
+    df['input'] = net_storage.apply(lambda row: row if row > 0 else 0)
+    df['output'] = net_storage.apply(lambda row: abs(row) if row < 0 else 0)
+    df['level'] = level
+
+
+    # output.to_csv(
+    # os.path.join(data_path, str(k) + '.csv'), sep=";",
+    # date_format='%Y-%m-%dT%H:%M:%SZ')
 
 def links(es):
     """
