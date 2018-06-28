@@ -7,7 +7,8 @@ application and work with the oemof datapackage - reader functionality
 SPDX-License-Identifier: GPL-3.0-or-later
 """
 from oemof.network import Node
-from oemof.solph import Source, Flow, Investment, Sink, Transformer, Bus
+from oemof.solph import (Source, Flow, Investment, NonCovex, Sink, Transformer,
+                         Bus)
 from oemof.solph.components import GenericStorage, ExtractionTurbineCHP
 from oemof.solph.custom import Link
 from oemof.solph.plumbing import sequence
@@ -428,10 +429,10 @@ class Storage(GenericStorage, Facade):
         An oemof bus instance where the storage unit is connected to.
     capacity: numeric
         The total capacity of the storage (e.g. in MWh)
-    power: numeric
-        Max in/out power of storage. Either set this attribute OR `c_rate`.
-        If you do not specify `capacity` and set `investment_cost`, use
-        `c_rate` instead of power
+    p_max: numeric
+        Max in/out power of storage.
+    p_min: numeric
+        Min in/out power of storage
     ep_ratio: numeric (optional)
         Ratio between energy and power output of the storage. Needs to be
         set if attr `investment_cost` is set.
@@ -445,7 +446,9 @@ class Storage(GenericStorage, Facade):
 
         self.capacity = kwargs.get('capacity')
 
-        self.power = kwargs.get('power')
+        self.p_max = kwargs.get('p_max')
+
+        self.p_min = kwargs.get('p_min', 0)
 
         self.nominal_capacity = self.capacity
 
@@ -454,10 +457,10 @@ class Storage(GenericStorage, Facade):
         self.capacity_loss = sequence(kwargs.get('loss', 0))
 
         self.inflow_conversion_factor = sequence(
-            kwargs.get('charge_efficiency', 1))
+            kwargs.get('charging_efficiency', 1))
 
         self.outflow_conversion_factor = sequence(
-            kwargs.get('discharge_efficiency', 1))
+            kwargs.get('discharging_efficiency', 1))
 
         self.investment = self._investment()
 
@@ -483,9 +486,15 @@ class Storage(GenericStorage, Facade):
             self._invest_group = True
         else:
             investment = None
+            if self.p_min > 0:
+                nonconvex = NonConvex(min=self.p_min)
+            else:
+                nonconvex = None
             fi = Flow(investment=investment, nominal_value=self.power,
+                      nonconvex=nonconvex,
                       **self.input_edge_parameters)
             fo = Flow(investment=investment, nominal_value=self.power,
+                      nonconvex=nonconvex,
                       **self.output_edge_parameters)
 
         self.inputs.update({self.bus: fi})
