@@ -108,12 +108,12 @@ The resulting tree of the datapackage could for example look like this:
 
       |-- datapackage
           |-- data
-          |-- elements
-              |-- demand.csv
-              |-- generator.csv
-              |-- storage.csv
-              |-- bus.csv
-          |-- sequences
+              |-- elements
+                  |-- demand.csv
+                  |-- generator.csv
+                  |-- storage.csv
+                  |-- bus.csv
+              |-- sequences
           |-- scripts
           |-- datapackage.json
 

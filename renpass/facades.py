@@ -7,7 +7,7 @@ application and work with the oemof datapackage - reader functionality
 SPDX-License-Identifier: GPL-3.0-or-later
 """
 from oemof.network import Node
-from oemof.solph import (Source, Flow, Investment, NonCovex, Sink, Transformer,
+from oemof.solph import (Source, Flow, Investment, NonConvex, Sink, Transformer,
                          Bus)
 from oemof.solph.components import GenericStorage, ExtractionTurbineCHP
 from oemof.solph.custom import Link
@@ -490,10 +490,10 @@ class Storage(GenericStorage, Facade):
                 nonconvex = NonConvex(min=self.p_min)
             else:
                 nonconvex = None
-            fi = Flow(investment=investment, nominal_value=self.power,
+            fi = Flow(investment=investment, nominal_value=self.p_max,
                       nonconvex=nonconvex,
                       **self.input_edge_parameters)
-            fo = Flow(investment=investment, nominal_value=self.power,
+            fo = Flow(investment=investment, nominal_value=self.p_max,
                       nonconvex=nonconvex,
                       **self.output_edge_parameters)
 
