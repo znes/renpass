@@ -93,7 +93,9 @@ def create_energysystem(datapackage, **arguments):
                 'wind-profiles': 'profile',
                 'pv-profiles': 'profile'},
             facades.RunOfRiver: {
-                'run-of-river-inflows': 'inflow'}},
+                'hydro-profiles': 'profile'},
+            facades.Reservoir: {
+                'hydro-profiles': 'inflow'}},
         typemap=typemap)
 
     es._typemap = typemap
