@@ -46,15 +46,34 @@ def storage_net_results(path, label=[]):
 
 
 
-connection_results = pd.read_csv(
-    'renpass/results/e-highway-X7-simple/sequences/connection.csv',
-    sep=";", header=[0, 1, 2], index_col=0, parse_dates=True)
 
-connections = ['BE-electricity-NL-electricity']
 
-for c in connections:
 
-    df = connection_results.loc[:, (c, slice(None), 'flow')]
+
+def connection_net_results(path, hubs=[]):
+    """ Writes net results for connection components.
+
+    path: str
+        Path to connection component results.
+    label: list
+        List of hub labels.
+    """
+
+    connection_results = pd.read_csv(
+        path, sep=";", header=[0, 1, 2], index_col=0, parse_dates=True)
+
+    df = pd.DataFrame()
+
+    for hub in hubs:
+        ex = connection_results.loc[:, (hub, slice(None), 'flow')].sum(axis=1)
+        im = connection_results.loc[:, (slice(None), hub, 'flow')].sum(axis=1)
+
+        df[hub + '-' + 'net-import'] = im - ex
+
+    df.to_csv(
+        os.path.join(os.path.dirname(path), 'connection-processed' + '.csv'),
+        sep=";", date_format='%Y-%m-%dT%H:%M:%SZ')
+
 
 def links(es):
     """
