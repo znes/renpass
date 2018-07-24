@@ -5,33 +5,46 @@ from the model.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 """
+import os
 
 import pandas as pd
 
 
-storage_results = pd.read_csv(
-    'renpass/results/e-highway-X7-simple/sequences/storage.csv',
-    sep=";", header=[0, 1, 2], index_col=0, parse_dates=True)
+def storage_net_results(path, label=[]):
+    """ Writes net results for storage components.
 
-storages = ['pumped-storage-DE']
+    path: str
+        Path to storage component results.
+    label: list
+        List of storage component labels.
+    """
 
-for s in storages:
+    storage_results = pd.read_csv(
+        path, sep=";", header=[0, 1, 2], index_col=0, parse_dates=True)
 
-    grouper = lambda x: (lambda fr, to, ty:
-                         'output' if (fr == s and ty == 'flow') else
-                         'input' if (to == s and ty == 'flow') else
-                         'level' if (fr == s and ty != 'flow') else
-                         None) (*x)
+    dataframes = []
 
-    df = storage_results.groupby(grouper, axis=1).sum()
+    for l in label:
 
-    df['net_storage'] = df['input'] - df['output']
-    df['input'] = df['net_storage'].apply(lambda row: row if row > 0 else 0)
-    df['output'] = df['net_storage'].apply(lambda row: abs(row) if row < 0 else 0)
+        grouper = lambda x: (lambda fr, to, ty:
+                            'output' if (fr == l and ty == 'flow') else
+                            'input' if (to == l and ty == 'flow') else
+                            'level' if (fr == l and ty != 'flow') else
+                            None) (*x)
 
-    # output.to_csv(
-    # os.path.join(data_path, str(k) + '.csv'), sep=";",
-    # date_format='%Y-%m-%dT%H:%M:%SZ')
+        subset = storage_results.groupby(grouper, axis=1).sum()
+        subset['net_input'] = subset['input'] - subset['output']
+        subset['input'] = subset['net_input'].apply(lambda row: row if row > 0 else 0)
+        subset['output'] = subset['net_input'].apply(lambda row: abs(row) if row < 0 else 0)
+        subset.columns = pd.MultiIndex.from_product([[l], subset.columns])
+
+        dataframes.append(subset)
+
+    pd.concat(dataframes, axis=1).to_csv(
+        os.path.join(os.path.dirname(path), 'storage-processed' + '.csv'),
+        sep=";", date_format='%Y-%m-%dT%H:%M:%SZ')
+
+
 
 connection_results = pd.read_csv(
     'renpass/results/e-highway-X7-simple/sequences/connection.csv',
