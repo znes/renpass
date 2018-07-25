@@ -243,7 +243,22 @@ def write_results(es, m, p, **arguments):
     logging.info('Exporting results to {}'.format(
         os.path.abspath(output_base_directory)))
 
-    _write_results(es, results, path=output_base_directory, model=m)
+    output_directory = os.path.join(
+        output_base_directory, arguments['--output-orient'] + '-orient')
+
+    os.makedirs(output_directory, exist_ok=True)
+
+    _write_results(es, results, path=output_directory, model=m)
+
+    if arguments['--results'] == 'datapackage':
+        rp = Package()
+        rp.infer(os.path.join(output_directory, '**/*.csv'))
+        rp.descriptor['description'] = \
+            'Model results from renpass with version {}'.format(
+                arguments['--version'])
+        rp.descriptor['name'] = modelname + '-results'
+        rp.commit()
+        rp.save(os.path.join(output_directory, 'datapackage.json'))
 
     return True
 
@@ -272,7 +287,10 @@ def main(**arguments):
 ###############################################################################
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version='renpass v0.2')
+
+    ver = 'renpass v0.2'
+    arguments = docopt(__doc__, version=ver)
+    arguments.update({'--version': ver})
 
     logger.define_logging(logpath=arguments['--output-directory'])
 
