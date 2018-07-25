@@ -14,5 +14,5 @@ setup(name='renpass',
       packages=find_packages(),
       package_data={'oemof': [
           os.path.join('tools', 'default_files', '*.ini')]},
-      install_requires=['oemof >= git+https://github.com/oemof/oemof/tree/features/data-package-reader#egg=oemof',
+      install_requires=['oemof >= git+https://github.com/oemof/oemof/releases/tag/v0.2.2#egg=oemof',
                         'datapackage'])
