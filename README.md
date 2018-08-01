@@ -66,6 +66,10 @@ Currently we provide the following facades:
 * Bus
 * Backpressure
 * ExtractionTurbine
+* Excess
+* Shortage
+* Boiler
+* RunOfRiver
 
 Modelling energy systems based on these classes is straightforward.
 Parametrization of an energy system can either be done via python scripting or

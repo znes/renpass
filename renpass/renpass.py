@@ -79,7 +79,8 @@ def create_energysystem(datapackage, **arguments):
         'connection': facades.Connection,
         'conversion': facades.Conversion,
         'runofriver': facades.RunOfRiver,
-        'excess': facades.Excess}
+        'excess': facades.Excess,
+        'shortage': facades.Shortage}
 
     es = EnergySystem.from_datapackage(
         arguments['DATAPACKAGE'],

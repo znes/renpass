@@ -393,6 +393,12 @@ class Excess(Sink, Facade):
             {self.bus: Flow(variable_costs=self.marginal_cost)})
 
 
+class Shortage(Generator):
+    """
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
 
 class Demand(Sink, Facade):
     """ Demand object with one input
