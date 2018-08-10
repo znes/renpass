@@ -15,4 +15,5 @@ setup(name='renpass',
       package_data={'oemof': [
           os.path.join('tools', 'default_files', '*.ini')]},
       install_requires=['oemof >= git+https://github.com/oemof/oemof/releases/tag/v0.2.2#egg=oemof',
-                        'datapackage'])
+                        'datapackage',
+                        'docopt'])
