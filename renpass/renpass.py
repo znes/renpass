@@ -71,8 +71,9 @@ def create_energysystem(datapackage, **arguments):
     typemap = {
         'bus': Bus,
         'extraction-turbine': facades.ExtractionTurbine,
-        'demand': facades.Demand,
-        'generator': facades.Generator,
+        'demand': facades.Load,
+        'dispatchable': facades.Dispatchable,
+        'volatile': facades.Volatile,
         'storage': facades.Storage,
         'reservoir': facades.Reservoir,
         'backpressure': facades.BackpressureTurbine,
