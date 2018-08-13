@@ -1,3 +1,0 @@
-name;capacity;power;investment_cost;ep_ratio;type;bus
-el-storage1;100;10;10;0.2;storage;bus0
-el-storage2;200;20;15;0.2;storage;bus0
