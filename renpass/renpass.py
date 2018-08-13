@@ -41,6 +41,7 @@ from oemof.solph import Model, EnergySystem, Bus
 from oemof.outputlib import processing, views
 
 import facades
+from options import typemap
 
 try:
     from docopt import docopt
@@ -48,6 +49,7 @@ except ImportError:
     print("Unable to load docopt. Is docopt installed?")
 
 ###############################################################################
+
 
 def stopwatch():
     if not hasattr(stopwatch, 'now'):
@@ -67,21 +69,6 @@ def create_energysystem(datapackage, **arguments):
     **arguments : key word arguments
         Arguments passed from command line
     """
-
-    typemap = {
-        'bus': Bus,
-        'extraction-turbine': facades.ExtractionTurbine,
-        'demand': facades.Load,
-        'dispatchable': facades.Dispatchable,
-        'volatile': facades.Volatile,
-        'storage': facades.Storage,
-        'reservoir': facades.Reservoir,
-        'backpressure': facades.BackpressureTurbine,
-        'connection': facades.Connection,
-        'conversion': facades.Conversion,
-        'runofriver': facades.RunOfRiver,
-        'excess': facades.Excess,
-        'shortage': facades.Shortage}
 
     es = EnergySystem.from_datapackage(
         arguments['DATAPACKAGE'],
