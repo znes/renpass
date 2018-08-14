@@ -285,8 +285,8 @@
         {
             "mediatype": "text/csv",
             "encoding": "utf-8",
-            "name": "demand",
-            "path": "data/elements/demand.csv",
+            "name": "load",
+            "path": "data/elements/load.csv",
             "schema": {
                 "fields": [
                     {
