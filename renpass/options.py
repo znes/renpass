@@ -4,8 +4,8 @@ import facades
 
 typemap = {
     'bus': Bus,
-    'extraction-turbine': facades.ExtractionTurbine,
-    'demand': facades.Load,
+    'extraction': facades.ExtractionTurbine,
+    'load': facades.Load,
     'dispatchable': facades.Dispatchable,
     'volatile': facades.Volatile,
     'storage': facades.Storage,

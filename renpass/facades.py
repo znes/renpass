@@ -77,12 +77,14 @@ class Reservoir(GenericStorage, Facade):
     ----------
     bus: oemof.solph.Bus
         An oemof bus instance where the storage unit is connected to.
-
     storage_capacity: numeric
         The total storage capacity of the storage (e.g. in MWh)
     capacity: numeric
         Installed production capacity of the turbine installed at the
         reservoir
+    efficiency: numeric
+        Efficiency of the turbine converting inflow (in MWel) to electricity
+        production
     inflow: array-like
         Absolute profile of water inflow into the storage
     capacity_cost: numeric
@@ -95,11 +97,14 @@ class Reservoir(GenericStorage, Facade):
 
     def __init__(self, *args, **kwargs):
 
-        super().__init__(*args, **kwargs, _facade_requires_=['bus', 'inflow'])
+        super().__init__(*args, **kwargs,
+                        _facade_requires_=['bus', 'inflow', 'efficiency'])
 
         self.storage_capacity = kwargs.get('storage_capacity')
 
         self.capacity = kwargs.get('capacity')
+
+        self.efficiency = kwargs.get('efficiency')
 
         self.nominal_capacity = self.storage_capacity
 
@@ -107,16 +112,11 @@ class Reservoir(GenericStorage, Facade):
 
         self.spillage = kwargs.get('spillage', True)
 
-        self.investment = self._investment()
-
         self.input_edge_parameters = kwargs.get('input_edge_parameters', {})
 
         self.output_edge_parameters = kwargs.get('output_edge_parameters', {})
 
-        if self.investment:
-            investment = Investment()
-        else:
-            investment = None
+        investment = self._investment()
 
         reservoir_bus = Bus(label="reservoir-bus-" + self.label)
         inflow = Source(
@@ -126,15 +126,14 @@ class Reservoir(GenericStorage, Facade):
                                     actual_value=self.inflow,
                                     fixed=True)})
         if self.spillage:
-            Flow()
+            f = Flow()
         else:
-            Flow(actual_value=0, fixed=True)
+            f = Flow(actual_value=0, fixed=True)
 
         spillage = Sink(label="spillage" + self.label,
-                        inputs={reservoir_bus: Flow()})
+                        inputs={reservoir_bus: f})
         self.inputs.update({
-            reservoir_bus: Flow(investment=investment,
-                                **self.input_edge_parameters)})
+            reservoir_bus: Flow(**self.input_edge_parameters)})
 
         self.outputs.update({
             self.bus: Flow(investment=investment,

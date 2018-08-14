@@ -1,12 +1,14 @@
 
-from oemof.solph import EnergySystem, Bus
+from oemof.solph import EnergySystem,Model
 import options
-
-typemap = options.typemap
+import pprint
 
 es = EnergySystem.from_datapackage(
     'examples/dispatch/datapackage.json',
     attributemap={},
-    typemap=typemap)
+    typemap=options.typemap)
 
-es.nodes
+for n in es.nodes:
+    pprint.pprint(n.__dict__)
+
+m = Model(es)

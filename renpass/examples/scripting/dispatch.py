@@ -27,8 +27,9 @@ biomass = fc.Bus('biomass', balanced=False)
 gas = fc.Bus('gas', balanced=False)
 
 # components
-res = fc.Reservoir('res', bus=el1, storage_capacity=100, capacity=1,
-                inflow=[1,2,3], spillage=False)
+res = fc.Reservoir('res', bus=el1, storage_capacity=100, capacity=None,
+                inflow=[1,2,3], efficiency=0.5,
+                spillage=False, capacity_cost=10)
 
 st = fc.Dispatchable('st', bus=el1, carrier='biogas', tech='st', capacity=10,
                    marginal_cost=[0.1, 5, 100],

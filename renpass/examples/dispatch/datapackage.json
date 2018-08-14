@@ -55,6 +55,12 @@
                               "fields": "name",
                               "resource": "bus"
                           }
+                      },
+                      {
+                          "fields": "profile",
+                          "reference": {
+                              "resource": "volatile-profiles"
+                          }
                       }
                 ],
                 "missingValues": [
@@ -322,6 +328,12 @@
                               "fields": "name",
                               "resource": "bus"
                           }
+                      },
+                      {
+                          "fields": "profile",
+                          "reference": {
+                              "resource": "electricity-load-profiles"
+                          }
                       }
                 ],
                 "missingValues": [
@@ -334,8 +346,8 @@
         {
             "mediatype": "text/csv",
             "encoding": "utf-8",
-            "name": "electricity-demand-profiles",
-            "path": "data/sequences/electricity-demand-profiles.csv",
+            "name": "electricity-load-profiles",
+            "path": "data/sequences/electricity-load-profiles.csv",
             "schema": {
                 "fields": [
                     {
@@ -344,7 +356,7 @@
                         "type": "datetime"
                     },
                     {
-                        "name": "electricity-demand-profile",
+                        "name": "electricity-load-profile",
                         "format": "default",
                         "type": "number"
                     }
@@ -359,8 +371,8 @@
         {
             "mediatype": "text/csv",
             "encoding": "utf-8",
-            "name": "generator-profiles",
-            "path": "data/sequences/generator-profiles.csv",
+            "name": "volatile-profiles",
+            "path": "data/sequences/volatile-profiles.csv",
             "schema": {
                 "fields": [
                     {
