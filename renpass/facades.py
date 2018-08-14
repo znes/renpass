@@ -123,15 +123,15 @@ class Reservoir(GenericStorage, Facade):
             label="inflow" + self.label,
             outputs={
                 reservoir_bus: Flow(nominal_value=1,
-                            #i/max(self.inflow) for i in self.inflow
-                            actual_value=self.inflow,
-                            fixed=True)})
+                                    actual_value=self.inflow,
+                                    fixed=True)})
         if self.spillage:
-            spillage = Sink(label="spillage" + self.label,
-                            inputs={reservoir_bus: Flow()})
+            Flow()
         else:
-            water_spillage = None
+            Flow(actual_value=0, fixed=True)
 
+        spillage = Sink(label="spillage" + self.label,
+                        inputs={reservoir_bus: Flow()})
         self.inputs.update({
             reservoir_bus: Flow(investment=investment,
                                 **self.input_edge_parameters)})
@@ -308,7 +308,7 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
 
         self.capacity = kwargs.get('capacity')
 
-        self.condesing_efficiency = sequence(self.condensing_efficiency)
+        self.condensing_efficiency = sequence(self.condensing_efficiency)
 
         self.marginal_cost = kwargs.get('marginal_cost', 0)
 
@@ -330,7 +330,7 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
             self.heat_bus: Flow()})
 
         self.conversion_factor_full_condensation.update({
-            self.electricity_bus: self.condesing_efficiency})
+            self.electricity_bus: self.condensing_efficiency})
 
 
 class BackpressureTurbine(Transformer, Facade):
