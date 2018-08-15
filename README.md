@@ -4,7 +4,7 @@ Welcome
 To get the repository go to your terminal an do:
 
 ```bash
-    git clone https://github.com/znes/renpass_gis.git
+    git clone https://github.com/znes/renpass.git
 ```
 
 To test, run the example with the commandline tool `renpass.py`:
