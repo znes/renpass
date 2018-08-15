@@ -245,22 +245,22 @@
                     },
                     {
                         "format": "default",
+                        "name": "storage_capacity",
+                        "type": "string"
+                    },
+                    {
+                        "format": "default",
                         "name": "capacity",
                         "type": "string"
                     },
                     {
                         "format": "default",
-                        "name": "power",
-                        "type": "string"
-                    },
-                    {
-                        "format": "default",
-                        "name": "investment_cost",
+                        "name": "capacity_cost",
                         "type": "integer"
                     },
                     {
                         "format": "default",
-                        "name": "ep_ratio",
+                        "name": "capacity_ratio",
                         "type": "number"
                     },
                     {
