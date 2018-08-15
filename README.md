@@ -231,6 +231,12 @@ which may happen if something of the following is wrong in your metadata file:
 
 * foreign-keys
 
+**pyomo related errors**
+
+If you encounter an error for writing a lp-file, you might want to check if
+your foreign-keys are set correctly. In particular for resources with fk's for
+sequences. If this is missing, you will get unsupported operation string and
+numeric. This will unfortunately only be happen on the pyomo level currently.
 
 Contributors
 ============
