@@ -27,6 +27,13 @@ class Facade(Node):
     def __init__(self, *args, **kwargs):
         """
         """
+
+        self.type = type(self)
+
+        self.tech = kwargs.get('tech')
+
+        self.carrier = kwargs.get('carrier')
+
         required = kwargs.pop("_facade_requires_", [])
         super().__init__(*args, **kwargs)
         self.subnodes = []
@@ -39,26 +46,28 @@ class Facade(Node):
                          "object with name/label `{!r}`.")
                         .format(r, type(self).__name__, self.label))
 
-
-        # for r in required:
-        #     if getattr(self, r) is None:
-        #         raise ValueError(
-        #             ("Missing attribute `{}` for facade of type `{}` with" +
-        #              " name/label `{}`.").format(r, type(self), self.label)
-
     def _investment(self):
         if self.capacity is None:
-            if self.investment_cost is None:
+            if self.capacity_cost is None:
                 msg = ("If you don't set `capacity`, you need to set attribute " +
-                       "`investment_cost` of component {}!")
+                       "`capacity_cost` of component {}!")
                 raise ValueError(msg.format(self.label))
             else:
                 # TODO: calculate ep_costs from specific capex
-                investment = Investment(ep_costs=self.investment_cost)
+                self.investment = Investment(ep_costs=self.capacity_cost)
         else:
-            investment = None
+            self.investment = None
+        return self.investment
 
-        return investment
+    def _commitable(self):
+        if getattr(self, 'commitable', False):
+            nonconvex = NonConvex(
+                            min=getattr(self, 'min', 0),
+                            max=getattr(self, 'max', self.capacity)
+                        )
+        else:
+            nonconvex = None
+        return nonconvex
 
 
 class Reservoir(GenericStorage, Facade):
@@ -68,14 +77,19 @@ class Reservoir(GenericStorage, Facade):
     ----------
     bus: oemof.solph.Bus
         An oemof bus instance where the storage unit is connected to.
+    storage_capacity: numeric
+        The total storage capacity of the storage (e.g. in MWh)
     capacity: numeric
-        The total capacity of the storage (e.g. in MWh)
-    power: numeric
-        Power of ther turbine installed at the reservoir
+        Installed production capacity of the turbine installed at the
+        reservoir
+    efficiency: numeric
+        Efficiency of the turbine converting inflow (in MWel) to electricity
+        production
     inflow: array-like
         Absolute profile of water inflow into the storage
-    investment_cost: numeric
-        Investment costs for the storage capacity! unit e.g in €/MW-capacity
+    capacity_cost: numeric
+        Investment costs for the storage capacity! i.e. unit for example
+        €/MW installed capacity not per MWh
     spillage: boolean
         If True, spillage of water will be possible, otherwise water is forced
         to storage. Default: True
@@ -83,46 +97,43 @@ class Reservoir(GenericStorage, Facade):
 
     def __init__(self, *args, **kwargs):
 
-        super().__init__(*args, **kwargs, _facade_requires_=['bus', 'inflow'])
+        super().__init__(*args, **kwargs,
+                        _facade_requires_=['bus', 'inflow', 'efficiency'])
+
+        self.storage_capacity = kwargs.get('storage_capacity')
 
         self.capacity = kwargs.get('capacity')
 
-        self.power = kwargs.get('power')
+        self.efficiency = kwargs.get('efficiency')
 
-        self.nominal_capacity = self.capacity
+        self.nominal_capacity = self.storage_capacity
 
-        self.investment_cost = kwargs.get('investment_cost')
+        self.capacity_cost = kwargs.get('capacity_cost')
 
         self.spillage = kwargs.get('spillage', True)
-
-        self.investment = self._investment()
 
         self.input_edge_parameters = kwargs.get('input_edge_parameters', {})
 
         self.output_edge_parameters = kwargs.get('output_edge_parameters', {})
 
-        if self.investment:
-            investment = Investment()
-        else:
-            investment = None
+        investment = self._investment()
 
         reservoir_bus = Bus(label="reservoir-bus-" + self.label)
         inflow = Source(
             label="inflow" + self.label,
             outputs={
                 reservoir_bus: Flow(nominal_value=1,
-                            #i/max(self.inflow) for i in self.inflow
-                            actual_value=self.inflow,
-                            fixed=True)})
+                                    actual_value=self.inflow,
+                                    fixed=True)})
         if self.spillage:
-            spillage = Sink(label="spillage" + self.label,
-                            inputs={reservoir_bus: Flow()})
+            f = Flow()
         else:
-            water_spillage = None
+            f = Flow(actual_value=0, fixed=True)
 
+        spillage = Sink(label="spillage" + self.label,
+                        inputs={reservoir_bus: f})
         self.inputs.update({
-            reservoir_bus: Flow(investment=investment,
-                                **self.input_edge_parameters)})
+            reservoir_bus: Flow(**self.input_edge_parameters)})
 
         self.outputs.update({
             self.bus: Flow(investment=investment,
@@ -131,54 +142,112 @@ class Reservoir(GenericStorage, Facade):
         self.subnodes = (reservoir_bus, inflow, spillage)
 
 
-class Generator(Source, Facade):
-    """ Generator unit with one output, e.g. gas-turbine, wind-turbine, etc.
+class Dispatchable(Source, Facade):
+    """ Dispatchable elements with one output for example a gas-turbine
 
     Parameters
     ----------
     bus: oemof.solph.Bus
         An oemof bus instance where the generator is connected to
+    tech: string
+        Description of technoglogy (for example: ST, GT, OCGT, ...)
+    carrier: string
+        Carrier of input used for production (for example gas, coal, ...)
     capacity: numeric
-        The capacity of the generator (e.g. in MW).
-    dispatchable: boolean
-        If False the generator will be a must run unit based on the specified
-        `profile` and (default is True).
+        The installed power of the generator (e.g. in MW).
     profile: array-like
-        Profile of the output such that profile[t] * capacity yields output for
-        timestep t
+        Profile of the output such that profile[t] * installed yields output
+        for timestep t
     marginal_cost: numeric
-        Marginal cost for one unit of produced output
-        E.g. for a powerplant:
-        marginal cost =fuel cost + operational cost + co2 cost (in Euro / MWh)
-        if timestep length is one hour.
-    investment_cost: numeric
+        Marginal cost for one unit of produced output, i.e. for a powerplant:
+        mc = fuel_cost + co2_cost + ... (in Euro / MWh) if timestep length is
+        one hour.
+    capacity_cost: numeric (optional)
         Investment costs per unit of capacity (e.g. Euro / MW) .
         If capacity is not set, this value will be used for optimizing the
         generators capacity.
+    commitable: boolean
+        Indicates if element is commitable
+    edge_paramerters: dict (optional)
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, _facade_requires_=['bus'])
+        super().__init__(*args, **kwargs,
+                         _facade_requires_=['bus', 'carrier', 'tech'])
+
+        self.carrier = kwargs.get('carrier')
 
         self.profile = kwargs.get('profile')
 
         self.capacity = kwargs.get('capacity')
 
-        self.dispatchable = kwargs.get('dispatchable', True)
-
         self.marginal_cost = kwargs.get('marginal_cost', 0)
 
-        self.investment_cost = kwargs.get('investment_cost')
+        self.capacity_cost = kwargs.get('capacity_cost')
 
         self.edge_parameters = kwargs.get('edge_parameters', {})
 
-        investment = self._investment()
+        self.commitable = kwargs.get('commitable', False)
 
         f = Flow(nominal_value=self.capacity,
                  variable_costs=self.marginal_cost,
                  actual_value=self.profile,
-                 investment=investment,
-                 fixed=not self.dispatchable,
+                 investment=self._investment(),
+                 nonconex=self._commitable(),
+                 **self.edge_parameters)
+
+        self.outputs.update({self.bus: f})
+
+
+class Volatile(Source, Facade):
+    """ Dispatchable elements with one output for example a gas-turbine
+
+    Parameters
+    ----------
+    bus: oemof.solph.Bus
+        An oemof bus instance where the generator is connected to
+    tech: string
+        Description of technoglogy (for example: ST, GT, OCGT, ...)
+    carrier: string
+        Carrier of input used for production (for example gas, coal, ...)
+    capacity: numeric
+        The installed power of the generator (e.g. in MW).
+    profile: array-like
+        Profile of the output such that profile[t] * installed yields output
+        for timestep t
+    marginal_cost: numeric
+        Marginal cost for one unit of produced output, i.e. for a powerplant:
+        mc = fuel_cost + co2_cost + ... (in Euro / MWh) if timestep length is
+        one hour.
+    capacity_cost: numeric (optional)
+        Investment costs per unit of capacity (e.g. Euro / MW) .
+        If capacity is not set, this value will be used for optimizing the
+        generators capacity.
+    edge_paramerters: dict (optional)
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs,
+                         _facade_requires_=['bus', 'carrier', 'tech'])
+
+        self.carrier = kwargs.get('carrier')
+
+        self.profile = kwargs.get('profile')
+
+        self.capacity = kwargs.get('capacity')
+
+        self.marginal_cost = kwargs.get('marginal_cost', 0)
+
+        self.capacity_cost = kwargs.get('capacity_cost')
+
+        self.edge_parameters = kwargs.get('edge_parameters', {})
+
+
+        f = Flow(nominal_value=self.capacity,
+                 variable_costs=self.marginal_cost,
+                 actual_value=self.profile,
+                 investment=self._investment(),
+                 fixed=True,
                  **self.edge_parameters)
 
         self.outputs.update({self.bus: f})
@@ -196,9 +265,11 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
     heat_bus: oemof.solph.Bus
         An oemof bus instance where the chp unit is connected to with its
         thermal output
-    fuel_bus: oemof.solph.Bus
+    carrier: oemof.solph.Bus
         An oemof bus instance where the chp unit is connected to with its
-        intput
+        input
+    carrier_cost: numeric
+        Cost per unit of used input carrier
     capacity: numeric
         The electrical capacity of the chp unit (e.g. in MW) in full extraction
         mode.
@@ -213,7 +284,9 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
         E.g. for a powerplant:
         marginal cost =fuel cost + operational cost + co2 cost (in Euro / MWh)
         if timestep length is one hour.
-    investment_cost: numeric
+    commitable: boolean
+        Indicates whether unit is commitable
+    capacity_cost: numeric
         Investment costs per unit of electrical capacity (e.g. Euro / MW) .
         If capacity is not set, this value will be used for optimizing the
         chp capacity.
@@ -224,36 +297,39 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
                          *args,
                          **kwargs,
                          _facade_requires_=[
-                             'fuel_bus', 'electricity_bus', 'heat_bus',
+                             'carrier', 'electricity_bus', 'heat_bus',
                              'thermal_efficiency', 'electric_efficiency',
                              'condensing_efficiency'])
 
+        self.carrier = kwargs.get('carrier')
+
+        self.carrier_cost = kwargs.get('carrier_cost', 0)
+
         self.capacity = kwargs.get('capacity')
 
-        self.condesing_efficiency = sequence(self.condensing_efficiency)
+        self.condensing_efficiency = sequence(self.condensing_efficiency)
 
         self.marginal_cost = kwargs.get('marginal_cost', 0)
 
-        self.investment_cost = kwargs.get('investment_cost')
-
-        investment = self._investment()
+        self.capacity_cost = kwargs.get('capacity_cost')
 
         self.conversion_factors.update({
-            self.fuel_bus: sequence(1),
+            self.carrier: sequence(1),
             self.electricity_bus: sequence(self.electric_efficiency),
             self.heat_bus: sequence(self.thermal_efficiency)})
 
         self.inputs.update({
-            self.fuel_bus: Flow()})
+            self.carrier: Flow(variable_cost=self.carrier_cost)})
 
         self.outputs.update({
             self.electricity_bus: Flow(nominal_value=self.capacity,
                                        variable_costs=self.marginal_cost,
-                                       investment=investment),
+                                       nonconvex=self._commitable(),
+                                       investment=self._investment()),
             self.heat_bus: Flow()})
 
         self.conversion_factor_full_condensation.update({
-            self.electricity_bus: self.condesing_efficiency})
+            self.electricity_bus: self.condensing_efficiency})
 
 
 class BackpressureTurbine(Transformer, Facade):
@@ -268,9 +344,11 @@ class BackpressureTurbine(Transformer, Facade):
     heat_bus: oemof.solph.Bus
         An oemof bus instance where the chp unit is connected to with its
         thermal output
-    fuel_bus: oemof.solph.Bus
+    carrier: oemof.solph.Bus
         An oemof bus instance where the chp unit is connected to with its
-        intput
+        input
+    carrier_cost: numeric
+        Input carrier cost of the backpressure unit
     capacity: numeric
         The electrical capacity of the chp unit (e.g. in MW).
     electric_efficiency:
@@ -282,40 +360,45 @@ class BackpressureTurbine(Transformer, Facade):
         E.g. for a powerplant:
         marginal cost =fuel cost + operational cost + co2 cost (in Euro / MWh)
         if timestep length is one hour.
-    investment_cost: numeric
+    capacity_cost: numeric
         Investment costs per unit of electrical capacity (e.g. Euro / MW) .
         If capacity is not set, this value will be used for optimizing the
         chp capacity.
+    commitable: boolean
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs,
                          _facade_requires_=[
-                             'fuel_bus', 'electricity_bus', 'heat_bus',
+                             'carrier', 'electricity_bus', 'heat_bus',
                              'thermal_efficiency', 'electric_efficiency'])
+
 
         self.capacity = kwargs.get('capacity')
 
         self.marginal_cost = kwargs.get('marginal_cost', 0)
 
-        self.fuel_cost = kwargs.get('fuel_cost', 0)
+        self.carrier = kwargs.get('carrier')
 
-        self.investment_cost = kwargs.get('investment_cost')
+        self.carrier_cost = kwargs.get('carrier_cost', 0)
 
-        investment = self._investment()
+        self.capacity_cost = kwargs.get('capacity_cost')
+
+        self.commitable = kwargs.get('commitable', False)
 
         self.conversion_factors.update({
-            self.fuel_bus: sequence(1),
+            self.carrier: sequence(1),
             self.electricity_bus: sequence(self.electric_efficiency),
             self.heat_bus: sequence(self.thermal_efficiency)})
 
         self.inputs.update({
-            self.fuel_bus: Flow(variable_costs=self.fuel_cost)})
+            self.carrier: Flow(variable_costs=self.carrier_cost)})
 
         self.outputs.update({
             self.electricity_bus: Flow(nominal_value=self.capacity,
                                        variable_costs=self.marginal_cost,
-                                       investment=investment),
+                                       investment=self._investment(),
+                                       nonconvex=self._commitable()),
             self.heat_bus: Flow()})
 
 
@@ -332,11 +415,11 @@ class Conversion(Transformer, Facade):
         its output.
     capacity: numeric
         The conversion capacity (output side) of the unit.
-    efficiency:
+    efficiency: numeric
         Efficiency of the conversion unit (0 <= efficiency <= 1). Default: 1
     marginal_cost: numeric
         Marginal cost for one unit of produced output. Default: 0
-    investment_cost: numeric
+    capacity_cost: numeric
         Investment costs per unit of output capacity.
         If capacity is not set, this value will be used for optimizing the
         conversion output capacity.
@@ -346,19 +429,19 @@ class Conversion(Transformer, Facade):
         super().__init__(*args, **kwargs,
                          _facade_requires_=['from_bus', 'to_bus'])
 
+
         self.capacity = kwargs.get('capacity')
 
         self.efficiency = kwargs.get('efficiency', 1)
 
         self.marginal_cost = kwargs.get('marginal_cost', 0)
 
-        self.investment_cost = kwargs.get('investment_cost')
+        self.capacity_cost = kwargs.get('capacity_cost')
 
         self.input_edge_parameters = kwargs.get('input_edge_parameters', {})
 
         self.output_edge_parameters = kwargs.get('output_edge_parameters', {})
 
-        investment = self._investment()
 
         self.conversion_factors.update({
             self.from_bus: sequence(1),
@@ -370,6 +453,8 @@ class Conversion(Transformer, Facade):
         self.outputs.update({
             self.to_bus: Flow(nominal_value=self.capacity,
                               variable_costs=self.marginal_cost,
+                              investment=self._investment(),
+                              nonconex=self._commitable(),
                               **self.output_edge_parameters)})
 
 
@@ -393,15 +478,20 @@ class Excess(Sink, Facade):
             {self.bus: Flow(variable_costs=self.marginal_cost)})
 
 
-class Shortage(Generator):
+class Shortage(Dispatchable):
     """
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.marginal_cost = kwargs.get('marginal_cost', 0)
 
-class Demand(Sink, Facade):
-    """ Demand object with one input
+        self.outputs.update(
+            {self.bus: Flow(variable_costs=self.marginal_cost)})
+
+
+class Load(Sink, Facade):
+    """ Load object with one input
 
      Parameters
      ----------
@@ -410,13 +500,18 @@ class Demand(Sink, Facade):
      amount: numeric
          The total amount for the timehorzion (e.g. in MWh)
      profile: array-like
-          Demand profile with normed values such that `profile[t] * amount`
-          yields the demand in timestep t (e.g. in MWh)
+          Load profile with normed values such that `profile[t] * amount`
+          yields the load in timestep t (e.g. in MWh)
+    edge_parameters: dirct (optional)
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs,
                          _facade_requires_=['bus', 'amount', 'profile'])
+
+        self.amount = kwargs.get('amount')
+
+        self.profile = kwargs.get('profile')
 
         self.edge_parameters = kwargs.get('edge_parameters', {})
 
@@ -433,34 +528,31 @@ class Storage(GenericStorage, Facade):
     ----------
     bus: oemof.solph.Bus
         An oemof bus instance where the storage unit is connected to.
-    capacity: numeric
+    storage_capacity: numeric
         The total capacity of the storage (e.g. in MWh)
-    p_max: numeric
-        Max in/out power of storage.
-    p_min: numeric
-        Min in/out power of storage
-    ep_ratio: numeric (optional)
-        Ratio between energy and power output of the storage. Needs to be
-        set if attr `investment_cost` is set.
+    capacity: numeric
+        Maximum production capacity (e.g. in MW)
+    capacity_ratio: numeric
+        Ratio between `storage_capacity` and `capacity`
     investment_cost: numeric
         Investment costs for the storage unit e.g in €/MWh-capacity
+    commitable: boolean
+        If True, Unit commitment is enforce with BigM-constraint
     """
 
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs, _facade_requires_=['bus'])
 
+        self.storage_capacity = kwargs.get('storage_capacity')
+
         self.capacity = kwargs.get('capacity')
 
-        self.p_max = kwargs.get('p_max')
+        self.nominal_capacity = self.storage_capacity
 
-        self.p_min = kwargs.get('p_min', 0)
+        self.capacity_cost = kwargs.get('capacity_cost')
 
-        self.nominal_capacity = self.capacity
-
-        self.investment_cost = kwargs.get('investment_cost')
-
-        self.capacity_loss = sequence(kwargs.get('loss', 0))
+        self.loss = sequence(kwargs.get('loss', 0))
 
         self.inflow_conversion_factor = sequence(
             kwargs.get('charging_efficiency', 1))
@@ -470,18 +562,22 @@ class Storage(GenericStorage, Facade):
 
         self.investment = self._investment()
 
+        self.commitable = kwargs.get('commitable', False)
+
         self.input_edge_parameters = kwargs.get('input_edge_parameters', {})
 
         self.output_edge_parameters = kwargs.get('output_edge_parameters', {})
 
         if self.investment:
-            if kwargs.get('ep_ratio') is None:
+            if self._commitable():
+                raise AttributeError('Commitment and Investment not compatible!')
+            if kwargs.get('capacity_ratio') is None:
                 raise AttributeError(
-                    ("You need to set attr `ep_ratio` for "
+                    ("You need to set attr `capacity_ratio` for "
                      "component {}").format(self.label))
             else:
-                self.invest_relation_input_capacity =  kwargs.get('ep_ratio')
-                self.invest_relation_output_capacity = kwargs.get('ep_ratio')
+                self.invest_relation_input_capacity =  kwargs.get('capacity_ratio')
+                self.invest_relation_output_capacity = kwargs.get('capacity_ratio')
 
             investment = Investment()
             fi = Flow(investment=investment,
@@ -492,15 +588,12 @@ class Storage(GenericStorage, Facade):
             self._invest_group = True
         else:
             investment = None
-            if self.p_min > 0:
-                nonconvex = NonConvex(min=self.p_min)
-            else:
-                nonconvex = None
-            fi = Flow(investment=investment, nominal_value=self.p_max,
-                      nonconvex=nonconvex,
+
+            fi = Flow(nominal_value=self.capacity,
+                      nonconvex=self._commitable(),
                       **self.input_edge_parameters)
-            fo = Flow(investment=investment, nominal_value=self.p_max,
-                      nonconvex=nonconvex,
+            fo = Flow(nominal_value=self.capacity,
+                      nonconvex=self._commitable(),
                       **self.output_edge_parameters)
 
         self.inputs.update({self.bus: fi})
@@ -528,7 +621,7 @@ class Connection(Link, Facade):
         `investment_cost` needs to be set.
     loss:
         Relative loss through the connection (default: 0)
-    investment_cost: numeric
+    capacity_cost: numeric
         Investment costs per unit of output capacity.
         If capacity is not set, this value will be used for optimizing the
         chp capacity.
@@ -542,7 +635,7 @@ class Connection(Link, Facade):
 
         self.loss = kwargs.get('loss', 0)
 
-        self.investment_cost = kwargs.get('investment_cost')
+        self.capacity_cost = kwargs.get('capacity_cost')
 
         investment = self._investment()
 
@@ -559,16 +652,3 @@ class Connection(Link, Facade):
         self.conversion_factors.update({
             (self.from_bus, self.to_bus): sequence((1 - self.loss)),
             (self.to_bus, self.from_bus): sequence((1 - self.loss))})
-
-
-class RunOfRiver(Generator):
-    """
-    """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-class Boiler(Generator):
-    """
-    """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)

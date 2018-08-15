@@ -1,2 +1,0 @@
-name;type;capacity;marginal_cost;investment_cost;electricity_bus;heat_bus;fuel_bus;electric_efficiency;thermal_efficiency;condensing_efficiency
-chp2;extraction-turbine;;100;60;bus0;heat-bus;gas-bus;0.4;0.3;0.5

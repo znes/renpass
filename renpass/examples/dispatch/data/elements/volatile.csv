@@ -1,0 +1,3 @@
+name;type;capacity;capacity_cost;bus;marginal_cost;profile;edge_parameters
+wind;volatile;50;;bus0;0;wind-profile;{}
+pv;volatile;20;;bus1;0;pv-profile;{}
