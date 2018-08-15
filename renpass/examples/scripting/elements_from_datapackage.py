@@ -27,3 +27,6 @@ if investment:
         pprint.pprint(n.__dict__)
 
     m = Model(es2)
+
+
+m.solve()

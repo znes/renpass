@@ -251,6 +251,6 @@ def main(**arguments):
 if __name__ == '__main__':
     arguments = docopt(__doc__, version='renpass v0.2')
 
-    logger.define_logging(logpath=arguments['--output-directory'])
+    logger.define_logging()
 
     main(**arguments)

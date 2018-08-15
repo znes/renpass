@@ -399,5 +399,6 @@
             "profile": "tabular-data-resource"
         }
     ],
-    "profile": "tabular-data-package"
+    "profile": "tabular-data-package",
+    "name": "renpass-dispatch-example"
 }
