@@ -57,19 +57,15 @@ the underlying oemof functionality.
 
 Currently we provide the following facades:
 
-* Generator
-* Demand
-* Storage
-* Reservoir
+* Dispatchable
+* Volatile
 * Connection
 * Conversion
-* Bus
-* Backpressure
+* Storage
 * ExtractionTurbine
-* Excess
-* Shortage
-* Boiler
-* RunOfRiver
+* BackpressureTurbine
+* Reservoir
+* Load
 
 Modelling energy systems based on these classes is straightforward.
 Parametrization of an energy system can either be done via python scripting or
@@ -122,7 +118,10 @@ The resulting tree of the datapackage could for example look like this:
           |-- datapackage.json
 
 
-
+To simplifiy the process of creating and processing datapackage you may
+also use the [(datapackage-utilities)](https://github.com/znes/datapackage-utilities-utitiles).
+The datamodel used for creating facades and examples is also based on the datamodel
+described there.
 
 Elements
 --------
@@ -140,7 +139,7 @@ Example for **Demand**:
 
 Example for **Generator**:
 
-| name  | type      | capacity | investment_cost | bus             | marginal_cost |
+| name  | type      | capacity | capacity_cost   | bus             | marginal_cost |
 |-------|-----------|----------|-----------------|-----------------|---------------|
 | gen   | generator | null     | 800             | electricity-bus | 75            |
 | ...   |     ...   |    ...   |     ...         |     ...         |  ...          |
@@ -179,9 +178,9 @@ the results.
         attributemap={
             Demand: {"demand-profiles": "profile"}},
         typemap={
-            'demand': Demand,
-            'generator': Generator,
-            'bus': Bus})
+            'load': demand,
+            'dispatchable': generator,
+            'bus': bus})
 
     m = Model(es)
     m.solve()
