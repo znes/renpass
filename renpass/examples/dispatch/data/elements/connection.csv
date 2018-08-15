@@ -1,0 +1,3 @@
+name;type;capacity;capacity_cost;loss;from_bus;to_bus
+conn1;connection;100;10;0.05;bus0;bus1
+conn2;connection;10;0;0.05;heat-bus;gas-bus

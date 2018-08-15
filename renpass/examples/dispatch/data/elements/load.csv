@@ -1,0 +1,3 @@
+name;amount;profile;type;bus
+demand0;5000;electricity-load-profile;load;bus0
+demand1;1000;electricity-load-profile;load;bus1
