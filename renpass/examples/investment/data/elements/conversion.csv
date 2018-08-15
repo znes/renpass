@@ -1,0 +1,2 @@
+name;type;capacity;capacity_cost;marginal_cost;efficiency;from_bus;to_bus
+power2heat;conversion;;20;2;0.99;bus1;heat-bus

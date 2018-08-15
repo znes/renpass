@@ -1,5 +1,5 @@
 
-from oemof.solph import EnergySystem,Model
+from oemof.solph import EnergySystem, Model
 import options
 import pprint
 
@@ -12,3 +12,5 @@ for n in es.nodes:
     pprint.pprint(n.__dict__)
 
 m = Model(es)
+
+m.pprint()
