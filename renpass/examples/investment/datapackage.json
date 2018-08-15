@@ -198,7 +198,7 @@
                     {
                         "format": "default",
                         "name": "condensing_efficiency",
-                        "type": "string"
+                        "type": "number"
                     }
                 ],
                 "foreignKeys": [
@@ -420,14 +420,7 @@
                 ],
                 "foreignKeys": [
                       {
-                          "fields": "from_bus",
-                          "reference": {
-                              "fields": "name",
-                              "resource": "bus"
-                          }
-                      },
-                      {
-                          "fields": "to_bus",
+                          "fields": "bus",
                           "reference": {
                               "fields": "name",
                               "resource": "bus"
@@ -481,7 +474,7 @@
                     {
                         "format": "default",
                         "name": "pv-profile",
-                        "type": "integer"
+                        "type": "number"
                     },
                     {
                         "format": "default",
