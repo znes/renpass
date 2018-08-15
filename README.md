@@ -238,18 +238,7 @@ your foreign-keys are set correctly. In particular for resources with fk's for
 sequences. If this is missing, you will get unsupported operation string and
 numeric. This will unfortunately only be happen on the pyomo level currently.
 
-Contributors
-============
 
-* Gesine Bökenkamp
-* Wolf-Dieter Bunke
-* Stephan Günther
-* Simon Hilpert
-* Cord Kaldemeyer
-* Martin Soethe
-* Frauke Wiese
-* Clemens Wingenbach
-* Marion Wingenbach
 
 Other ressources
 ================
