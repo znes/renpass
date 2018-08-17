@@ -32,15 +32,15 @@ gas = fc.Bus('gas', balanced=False)
 #                 spillage=False, capacity_cost=10)
 
 st = fc.Dispatchable('st', bus=el1, carrier='biogas', tech='st', capacity=10,
-                   marginal_cost=[0.1, 5, 100],
-                   edge_parameters={'flow': 10}, commitable=False)
+                     marginal_cost=[0.1, 5, 100],
+                     edge_parameters={'flow': 10}, commitable=False)
 
 wind = fc.Volatile('wt', bus=el1, carrier='wind', tech='wind', capacity=10,
-                profile=[0.1, 0.2, 0])
+                   profile=[0.1, 0.2, 0])
 
 sto = fc.Storage('sto', bus=el2, carrier='electricity', tech='battery',
-              commitable=False,
-              storage_capacity=10, capacity=1)
+                 commitable=False,
+                 storage_capacity=10, capacity=1)
 
 bp = fc.BackpressureTurbine('bp', carrier=biomass,
                             tech='bp',
@@ -49,15 +49,15 @@ bp = fc.BackpressureTurbine('bp', carrier=biomass,
                             capacity=10,
                             thermal_efficiency=0.4,
                             electric_efficiency=0.44)
-# # still oemof buggy
-# ext = fc.ExtractionTurbine(label='ext', carrier=gas,
-#                            tech='ext',
-#                            commitable=False,
-#                            electricity_bus=el1, heat_bus=heat,
-#                            capacity=10,
-#                            thermal_efficiency=0.4,
-#                            electric_efficiency=0.4,
-#                            condensing_efficiency=0.5)
+# still oemof buggy
+ext = fc.ExtractionTurbine(label='ext', carrier=gas,
+                           tech='ext',
+                           commitable=False,
+                           electricity_bus=el1, heat_bus=heat,
+                           capacity=10,
+                           thermal_efficiency=0.4,
+                           electric_efficiency=0.4,
+                           condensing_efficiency=0.5)
 
 conv = fc.Conversion('conv', from_bus=el2, to_bus=heat, efficiency=0.95,
                      capacity=2)
@@ -67,9 +67,9 @@ load = fc.Load('load', bus=el1, amount=1000, profile=[0.005, 0.00034, 0.0434])
 # Connection
 conn = fc.Connection('conn', from_bus=el1, to_bus=el2, loss=0.07, capacity=100)
 
-es.add(el1, el2, heat, biomass, bp, st, wind, sto, conv, load, conn)
+es.add(el1, el2, heat, biomass, bp, st, wind, sto, conv, load, conn, ext)
 
-es.nodes
+
 m = Model(es)
 
 m.pprint()

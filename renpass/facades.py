@@ -313,6 +313,10 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
 
         self.capacity_cost = kwargs.get('capacity_cost')
 
+        self.electricity_bus = kwargs.get('electricity_bus')
+
+        self.heat_bus = kwargs.get('heat_bus')
+
         self.conversion_factors.update({
             self.carrier: sequence(1),
             self.electricity_bus: sequence(self.electric_efficiency),
@@ -373,6 +377,9 @@ class BackpressureTurbine(Transformer, Facade):
                              'carrier', 'electricity_bus', 'heat_bus',
                              'thermal_efficiency', 'electric_efficiency'])
 
+        self.electricity_bus = kwargs.get('electricity_bus')
+
+        self.heat_bus = kwargs.get('heat_bus')
 
         self.capacity = kwargs.get('capacity')
 
