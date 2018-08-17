@@ -1,6 +1,6 @@
 
 from oemof.solph import EnergySystem, Model
-import options
+from renpass import options
 import pprint
 
 
@@ -9,7 +9,7 @@ investment = True
 
 if dispatch:
     es1 = EnergySystem.from_datapackage(
-        'examples/dispatch/datapackage.json',
+        'renpass/examples/dispatch/datapackage.json',
         attributemap={},
         typemap=options.typemap)
 
@@ -19,7 +19,7 @@ if dispatch:
 
 if investment:
     es2 = EnergySystem.from_datapackage(
-        'examples/investment/datapackage.json',
+        'renpass/examples/investment/datapackage.json',
         attributemap={},
         typemap=options.typemap)
 

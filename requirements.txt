@@ -1,3 +1,0 @@
--e git+https://github.com/FZJ-IEK3-VSA/tsam.git#egg=tsam
-
-

@@ -1,6 +1,6 @@
 
 from oemof.solph import Bus
-import facades
+from renpass import facades
 
 typemap = {
     'bus': Bus,
