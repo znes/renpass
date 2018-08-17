@@ -5,7 +5,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(name='renpass',
-      version='0.2',
+      version='0.3',
       author='Simon Hilpert, Cord Kaldemeyer, Martin Söthe, Clemens Wingenbach',
       author_email='simon.hilpert@uni-flensburg.de',
       description='renpass',
@@ -15,5 +15,6 @@ setup(name='renpass',
       package_data={'oemof': [
           os.path.join('tools', 'default_files', '*.ini')]},
       install_requires=['oemof >= git+https://github.com/oemof/oemof/releases/tag/v0.2.2#egg=oemof',
+                        'dill',
                         'datapackage',
                         'docopt'])
