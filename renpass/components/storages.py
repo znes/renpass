@@ -49,5 +49,5 @@ class Storage(Source, Facade):
 
         self.outputs.update({
             self.bus: Flow(nominal_value=self.capacity,
-                      bidirectional=True,
-                      min=-1)})
+                           bidirectional=True,
+                           min=-1)})

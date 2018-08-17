@@ -4,8 +4,8 @@ import facades, components
 
 typemap = {
     'bus': Bus,
-    'line': components.Line,
-    'electricalbus': components.ElectricalBus,
+    'line': components.electrical.Line,
+    'electricalbus': components.electrical.ElectricalBus,
     'extraction': facades.ExtractionTurbine,
     'load': facades.Load,
     'dispatchable': facades.Dispatchable,
