@@ -1,15 +1,17 @@
 Welcome
 =========
 
-To get the repository go to your terminal an do:
+To install you need to get the repository and install. Do:
 
 ```bash
     git clone https://github.com/znes/renpass_gis.git
+    pip install renpass
 ```
 
 To test, run the example with the commandline tool `renpass.py`:
 
 ```bash
+    cd renpass/renpass
     python renpass.py examples/investment/datapackage.json
 ```
 
