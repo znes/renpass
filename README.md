@@ -173,16 +173,16 @@ the results.
 
 ```python
     from oemof.solph import EnergySystem, Model
-    from oemof.solph.facades import Demand, Generator
+    from renpass.facades import Load, Dispatchable, Bus
 
     es = EnergySystem.from_datapackage(
         'datapackage.json',
         attributemap={
             Demand: {"demand-profiles": "profile"}},
         typemap={
-            'load': demand,
-            'dispatchable': generator,
-            'bus': bus})
+            'load': Load,
+            'dispatchable': Dispatchable,
+            'bus': Bus})
 
     m = Model(es)
     m.solve()
