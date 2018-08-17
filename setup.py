@@ -5,7 +5,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(name='renpass',
-      version='0.3',
+      version='0.2.1',
       author='Simon Hilpert, Cord Kaldemeyer, Martin Söthe, Clemens Wingenbach',
       author_email='simon.hilpert@uni-flensburg.de',
       description='renpass',

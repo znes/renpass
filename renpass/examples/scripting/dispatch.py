@@ -26,10 +26,10 @@ heat = fc.Bus('heat')
 biomass = fc.Bus('biomass', balanced=False)
 gas = fc.Bus('gas', balanced=False)
 
-# components
-res = fc.Reservoir('res', bus=el1, storage_capacity=100, capacity=None,
-                inflow=[1,2,3], efficiency=0.5,
-                spillage=False, capacity_cost=10)
+# also buggy do to subnodes
+# res = fc.Reservoir('res', bus=el1, storage_capacity=100, capacity=None,
+#                 inflow=[1,2,3], efficiency=0.5,
+#                 spillage=False, capacity_cost=10)
 
 st = fc.Dispatchable('st', bus=el1, carrier='biogas', tech='st', capacity=10,
                    marginal_cost=[0.1, 5, 100],
@@ -49,11 +49,11 @@ bp = fc.BackpressureTurbine('bp', carrier=biomass,
                             capacity=10,
                             thermal_efficiency=0.4,
                             electric_efficiency=0.44)
-# still oemof buggy
+# # still oemof buggy
 # ext = fc.ExtractionTurbine(label='ext', carrier=gas,
 #                            tech='ext',
 #                            commitable=False,
-#                            electricity_bus=el, heat_bus=heat,
+#                            electricity_bus=el1, heat_bus=heat,
 #                            capacity=10,
 #                            thermal_efficiency=0.4,
 #                            electric_efficiency=0.4,
@@ -67,7 +67,7 @@ load = fc.Load('load', bus=el1, amount=1000, profile=[0.005, 0.00034, 0.0434])
 # Connection
 conn = fc.Connection('conn', from_bus=el1, to_bus=el2, loss=0.07, capacity=100)
 
-es.add(el1, el2, heat, biomass, bp, st, wind, sto, res, conv, load, conn)
+es.add(el1, el2, heat, biomass, bp, st, wind, sto, conv, load, conn)
 
 es.nodes
 m = Model(es)
