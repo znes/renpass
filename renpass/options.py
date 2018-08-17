@@ -1,9 +1,11 @@
 
 from oemof.solph import Bus
-import facades
+import facades, components
 
 typemap = {
     'bus': Bus,
+    'line': components.Line,
+    'electricalbus': components.ElectricalBus,
     'extraction': facades.ExtractionTurbine,
     'load': facades.Load,
     'dispatchable': facades.Dispatchable,

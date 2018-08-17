@@ -79,6 +79,7 @@ class Line(Flow):
     def constraint_group(self):
         return ElectricalLineConstraints
 
+
 class ElectricalLineConstraints(SimpleBlock):
     """
     """

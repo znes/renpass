@@ -6,11 +6,11 @@ application and work with the oemof datapackage - reader functionality
 
 SPDX-License-Identifier: GPL-3.0-or-later
 
-This example is take from the PyPSA examples:
+This example is based on one of the PyPSA examples:
 
 https://www.pypsa.org/examples/minimal_example_lopf.html
 
-Thanks at Tom and Jonas and others!
+Thanks at Tom, Jonas and others!
 """
 
 
@@ -34,9 +34,9 @@ line0 = cp.Line(from_bus=el0, to_bus=el1, capacity=60, reactance=0.0001)
 line1 = cp.Line(from_bus=el1, to_bus=el2, capacity=60, reactance=0.0001)
 line2 = cp.Line(from_bus=el2, to_bus=el0, capacity=60, reactance=0.0001)
 
-gen0 = fc.Dispatchable("generator0", capacity=100, bus=el0, marginal_cost=50,
+gen0 = fc.Dispatchable("gen0", capacity=100, bus=el0, marginal_cost=50,
                        carrier='coal')
-gen1 = fc.Dispatchable("generator0", capacity=100, bus=el1, marginal_cost=25,
+gen1 = fc.Dispatchable("gen1", capacity=100, bus=el1, marginal_cost=25,
                        carrier='gas')
 
 load0 = fc.Load("load0", bus=el2, amount=100, profile=[1])
