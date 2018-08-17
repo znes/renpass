@@ -15,6 +15,7 @@ from oemof.network import Node, Edge, Transformer
 from oemof.solph import Flow, Bus
 from oemof.solph.plumbing import sequence
 
+from renpass.facades import Facade
 
 class ElectricalBus(Bus):
     """
@@ -37,7 +38,7 @@ class ElectricalBus(Bus):
         self.v_min = kwargs.get('v_min', -1000)
 
 
-class Line(Flow):
+class Line(Facade, Flow):
     """
     Paramters
     ---------
@@ -63,7 +64,7 @@ class Line(Flow):
 
         self.capacity = kwargs.get('capacity')
 
-        self.capacity_cost = sequence(kwargs.get('capacity_cost'))
+        self.capacity_cost = kwargs.get('capacity_cost')
 
         # oemof related attribute setting of 'Flow-object'
         self.input = self.from_bus
@@ -75,6 +76,8 @@ class Line(Flow):
         self.nominal_value = self.capacity
 
         self.min = sequence(-1)
+
+        self.investment = self._investment()
 
     def constraint_group(self):
         return ElectricalLineConstraints
