@@ -15,7 +15,7 @@ Thanks at Tom, Jonas and others!
 
 
 from renpass import facades as fc
-from renpass import components as cp
+from renpass.components import electrical as elec
 
 from oemof.solph import EnergySystem, Model
 from oemof.network import Bus, Node, Edge
@@ -26,13 +26,13 @@ import pandas as pd
 # initialise oemof energy system object
 es = EnergySystem()
 
-el0 = cp.ElectricalBus('el0')
-el1 = cp.ElectricalBus('el1')
-el2 = cp.ElectricalBus('el2')
+el0 = elec.ElectricalBus('el0')
+el1 = elec.ElectricalBus('el1')
+el2 = elec.ElectricalBus('el2')
 
-line0 = cp.Line(from_bus=el0, to_bus=el1, capacity=60, reactance=0.0001)
-line1 = cp.Line(from_bus=el1, to_bus=el2, capacity=60, reactance=0.0001)
-line2 = cp.Line(from_bus=el2, to_bus=el0, capacity=60, reactance=0.0001)
+line0 = elec.Line(from_bus=el0, to_bus=el1, capacity=60, reactance=0.0001)
+line1 = elec.Line(from_bus=el1, to_bus=el2, capacity=60, reactance=0.0001)
+line2 = elec.Line(from_bus=el2, to_bus=el0, capacity=60, reactance=0.0001)
 
 gen0 = fc.Dispatchable("gen0", capacity=100, bus=el0, marginal_cost=50,
                        carrier='coal')
