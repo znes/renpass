@@ -41,7 +41,7 @@ from oemof.solph import Model, EnergySystem, Bus
 from oemof.outputlib import processing, views
 
 import facades
-from options import typemap
+import options
 
 try:
     from docopt import docopt
@@ -73,9 +73,9 @@ def create_energysystem(datapackage, **arguments):
     es = EnergySystem.from_datapackage(
         arguments['DATAPACKAGE'],
         attributemap={},
-        typemap=typemap)
+        typemap=options.typemap)
 
-    es._typemap = typemap
+    es._typemap = options.typemap
 
     end = es.timeindex.get_loc(es.timeindex[int(arguments['--t_end'])]) + 1
 
