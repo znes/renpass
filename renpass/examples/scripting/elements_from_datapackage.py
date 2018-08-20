@@ -1,32 +1,35 @@
 
 from oemof.solph import EnergySystem, Model
-from renpass import options
+from renpass import options, system_constraints
 import pprint
 
 
-dispatch = False
-investment = True
+dispatch = True
+investment = False
 
 if dispatch:
-    es1 = EnergySystem.from_datapackage(
+    es = EnergySystem.from_datapackage(
         'renpass/examples/dispatch/datapackage.json',
         attributemap={},
         typemap=options.typemap)
 
-    for n in es1.nodes:
-        pprint.pprint(n.__dict__)
-
 
 if investment:
-    es2 = EnergySystem.from_datapackage(
+    es = EnergySystem.from_datapackage(
         'renpass/examples/investment/datapackage.json',
         attributemap={},
         typemap=options.typemap)
 
-    for n in es2.nodes:
-        pprint.pprint(n.__dict__)
 
-    m = Model(es2)
+for n in es.nodes:
+     pprint.pprint(n.__dict__)
+
+m = Model(es)
 
 
 m.solve()
+
+system_constraints.min_renewable_share(m, 0.1)
+
+m.min_renewable_share.pprint()
+#m.write()

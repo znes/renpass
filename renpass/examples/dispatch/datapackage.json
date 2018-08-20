@@ -175,6 +175,11 @@
                         "name": "bus",
                         "format": "default",
                         "type": "string"
+                    },
+                    {
+                        "name": "tech",
+                        "format": "default",
+                        "type": "string"
                     }
                 ],
                 "foreignKeys": [
@@ -214,6 +219,11 @@
                         "name": "balanced",
                         "format": "default",
                         "type": "boolean"
+                    },
+                    {
+                        "name": "carrier",
+                        "format": "default",
+                        "type": "string"
                     }
                 ],
                 "missingValues": [
@@ -262,6 +272,11 @@
                     },
                     {
                         "name": "to_bus",
+                        "format": "default",
+                        "type": "string"
+                    },
+                    {
+                        "name": "tech",
                         "format": "default",
                         "type": "string"
                     }

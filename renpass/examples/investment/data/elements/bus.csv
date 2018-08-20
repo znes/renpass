@@ -1,5 +1,5 @@
-name;type;balanced
-bus0;bus;true
-bus1;bus;true
-heat-bus;bus;false
-gas-bus;bus;false
+name;type;balanced;carrier
+bus0;bus;true;electricity
+bus1;bus;true;electricity
+heat-bus;bus;false;heat
+gas-bus;bus;false;gas

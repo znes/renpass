@@ -311,6 +311,11 @@
                         "format": "default",
                         "name": "balanced",
                         "type": "boolean"
+                    },
+                    {
+                        "format": "default",
+                        "name": "carrier",
+                        "type": "string"
                     }
                 ],
                 "missingValues": [
