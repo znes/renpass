@@ -536,12 +536,14 @@ class Storage(GenericStorage, Facade):
     bus: oemof.solph.Bus
         An oemof bus instance where the storage unit is connected to.
     storage_capacity: numeric
-        The total capacity of the storage (e.g. in MWh)
+        The total capacity of the storage (e.g. in MWh
     capacity: numeric
         Maximum production capacity (e.g. in MW)
     capacity_ratio: numeric
         Ratio between `storage_capacity` and `capacity`
-    investment_cost: numeric
+    efficiency: numeric
+        efficiency of charging and discharging process
+    capacity_cost: numeric
         Investment costs for the storage unit e.g in €/MWh-capacity
     commitable: boolean
         If True, Unit commitment is enforce with BigM-constraint
@@ -562,10 +564,10 @@ class Storage(GenericStorage, Facade):
         self.loss = sequence(kwargs.get('loss', 0))
 
         self.inflow_conversion_factor = sequence(
-            kwargs.get('charging_efficiency', 1))
+            kwargs.get('efficiency', 1))
 
         self.outflow_conversion_factor = sequence(
-            kwargs.get('discharging_efficiency', 1))
+            kwargs.get('efficiency', 1))
 
         self.investment = self._investment()
 
