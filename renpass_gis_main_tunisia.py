@@ -383,7 +383,7 @@ other.rename(columns={countrycode + '_storage_phs': countrycode + '_storage_phs_
              inplace=True)
 inputs.rename(columns={countrycode + '_storage_battery': countrycode + '_storage_battery_out'},
               inplace=True)
-outputs.rename(columns={countrycode + '_storage_battery': countrycode + '_storage_batterxy_in'},
+outputs.rename(columns={countrycode + '_storage_battery': countrycode + '_storage_battery_in'},
                inplace=True)
 other.rename(columns={countrycode + '_storage_battery': countrycode + '_storage_battery_level'},
              inplace=True)
@@ -456,7 +456,7 @@ files = {
 
 
 # define fuels 
-fuels = ['run_of_river', 'reservoir_out', 'biomass', 'solar', 'wind', 'geothermal',
+fuels = ['geothermal', 'run_of_river', 'reservoir_out', 'biomass', 'solar', 'wind', 
          'gas', 'hard_coal', 'oil', 'csp_direct', 'storage_csp_out', 'storage_reservoir_out',
          'load', 'excess', 
          'shortage']
@@ -521,12 +521,12 @@ results['csp'] = results['csp_direct'] + results['storage_csp_out']
 results.drop(['storage_level'], axis=1).sum(axis=1)
 
 # rename columns
-en_de = {'run_of_river': 'Run-of-the-River Hydro Power',
+en_de = {'geothermal': 'Geothermal',
+	 'run_of_river': 'Run-of-the-River Hydro Power',
          'storage_reservoir_out': 'Hydro Power with Reservoir',
          'biomass': 'Biomass',
          'solar': 'Solar PV',
          'wind': 'Wind',
-         'geothermal': 'Geothermal',
          'gas': 'Natural Gas',
          'hard_coal': 'Hard Coal',
          'oil': 'Oil',
@@ -543,7 +543,7 @@ en_de = {'run_of_river': 'Run-of-the-River Hydro Power',
 
 results_de = results.rename(columns=en_de)
 
-cols = ['Run-of-the-River Hydro Power', 'Hydro Power with Reservoir', 'Biomass', 'Solar PV', 'Wind', 
+cols = ['Geothermal', 'Run-of-the-River Hydro Power', 'Hydro Power with Reservoir', 'Biomass', 'Solar PV', 'Wind', 
     'Natural Gas', 'Hard Coal', 'Oil', 
     'PHStorage (Charge)', 
     'PHStorage (Discharge)',
@@ -612,7 +612,7 @@ files = {
 
 
 # define fuels 
-fuels = ['run_of_river', 'storage_reservoir_out', 'biomass', 'solar', 'wind', 'csp_direct', 'storage_csp_out', 'storage_battery_out', 'geothermal', 'gas', 'hard_coal', 'oil', 'load', 'excess', 
+fuels = ['geothermal', 'run_of_river', 'storage_reservoir_out', 'biomass', 'solar', 'wind', 'csp_direct', 'storage_csp_out', 'storage_battery_out', 'gas', 'hard_coal', 'oil', 'load', 'excess', 
          'shortage']
 
 
@@ -677,13 +677,13 @@ results['csp'] = results['storage_csp_out'] + results['csp_direct']
 results.drop(['storage_level'], axis=1).sum(axis=1)
 
 # rename columns
-en_de = {'run_of_river': 'Run-of-the River Hydro Power',
+en_de = {'geothermal': 'Geothermal',
+	 'run_of_river': 'Run-of-the River Hydro Power',
          'storage_reservoir_out': 'Hydro Power with Reservoir',
          'biomass': 'Biomass',
          'solar': 'Solar PV',
          'wind': 'Wind',
          'csp': 'CSP',
-         'geothermal': 'Geothermal',
          'gas': 'Natural Gas',
          'hard_coal': 'Hard Coal',
          'oil': 'Oil',
@@ -697,7 +697,7 @@ en_de = {'run_of_river': 'Run-of-the River Hydro Power',
 
 results_de = results.rename(columns=en_de)
 
-cols = ['Run-of-the River Hydro Power', 'Hydro Power with Reservoir', 'Biomass', 'Natural Gas', 'Hard Coal', 'Oil', 'Solar PV', 'Wind', 'CSP', 
+cols = ['Geothermal', 'Run-of-the River Hydro Power', 'Hydro Power with Reservoir', 'Biomass', 'Natural Gas', 'Hard Coal', 'Oil', 'Solar PV', 'Wind', 'CSP', 
         'Storage (Discharge)', 'Import', 'Power Shortage',
         'Load', 'Storage (Charge)', 'Export', 'Power Surplus']
 
@@ -755,7 +755,7 @@ df_raw.columns
 cc = countrycode
 
 # get fossil and renewable power plants
-fuels = ['run_of_river', 'biomass', 'solar', 
+fuels = ['geothermal', 'run_of_river', 'biomass', 'solar', 
          'wind', 'hydro_reservoir', 'csp_direct', 'storage_csp_out', 'storage_battery_out', 'gas', 'hard_coal', 'oil', 'storage_out', 'shortage']
 
 dispatch = pd.DataFrame()
@@ -819,10 +819,11 @@ dispatch = dispatch.divide(1000)
 #%%
 # translation
 dispatch_de = dispatch[
-    ['run_of_river', 'biomass', 'solar', 'wind', 'hydro_reservoir', 'csp', 'gas', 'hard_coal', 'oil', 'storage_out', 'shortage']]
+    ['geothermal', 'run_of_river', 'biomass', 'solar', 'wind', 'hydro_reservoir', 'csp', 'gas', 'hard_coal', 'oil', 'storage_out', 'shortage']]
 
 # dict with new column names
-en_de = {'run_of_river': 'Run-of-the-River Hydro Power',
+en_de = {'geothermal': 'Geothermal',
+	 'run_of_river': 'Run-of-the-River Hydro Power',
          'biomass': 'Biomass',
          'solar': 'Solar PV',
          'wind': 'Wind',
@@ -835,7 +836,7 @@ en_de = {'run_of_river': 'Run-of-the-River Hydro Power',
          'shortage': 'Power Shortage'}
 dispatch_de = dispatch_de.rename(columns=en_de)
 
-dispatch_de[['Run-of-the-River Hydro Power', 'Biomass', 'Solar PV', 'Wind', 'Hydro Power with Reservoir', 'CSP', 'Natural Gas', 'Hard Coal', 'Oil', 'Storage (Discharge)', 'Power Shortage']][0:24*365] \
+dispatch_de[['Geothermal', 'Run-of-the-River Hydro Power', 'Biomass', 'Solar PV', 'Wind', 'Hydro Power with Reservoir', 'CSP', 'Natural Gas', 'Hard Coal', 'Oil', 'Storage (Discharge)', 'Power Shortage']][0:24*365] \
              .plot(kind='area', stacked=True, linewidth=0, legend='reverse',
                    cmap=cm.get_cmap('Spectral'))
 #plt.legend(loc='lower center', bbox_to_anchor=(0.54, 1.04),
