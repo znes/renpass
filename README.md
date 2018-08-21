@@ -4,8 +4,12 @@ Welcome
 To install you need to get the repository and install. Do:
 
 ```bash
+
     git clone https://github.com/znes/renpass_gis.git
     pip install renpass
+
+    git clone https://github.com/znes/renpass.git
+
 ```
 
 To test, run the example with the commandline tool `renpass.py`:
@@ -25,7 +29,7 @@ and with indiviual start and end timestep:
 
 ```bash
     renpass.py -o gurobi --t_start 0 --t_end 24 path/to/datapackage.json
-```    
+```
 
 Per default, all result files are written back into the sub-folder */results*.
 
