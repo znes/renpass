@@ -17,7 +17,6 @@ import pandas as pd
 
 es = EnergySystem(timeindex=pd.date_range('2018', freq='H', periods=3))
 
-
 bus = fc.Bus('bus')
 
 residual_load = fc.Volatile('residual_load', bus=bus, capacity=100,
@@ -33,4 +32,4 @@ es.add(bus, residual_load, storage, slack)
 
 m = Model(es)
 
-m.write('lopf-model.lp', io_options={'symbolic_solver_labels': True})
+m.write('storage-model.lp', io_options={'symbolic_solver_labels': True})

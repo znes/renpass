@@ -47,5 +47,4 @@ m = Model(es)
 
 m.solve()
 
-
-#m.write('lopf-model.lp')
+m.write('lopf-model.lp')
