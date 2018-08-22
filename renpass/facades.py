@@ -465,48 +465,16 @@ class Conversion(Transformer, Facade):
                               **self.output_edge_parameters)})
 
 
-class Excess(Sink, Facade):
-    """ Excess slack with one input
+class Load(Sink, Facade):
+    """ Load object with one input
 
     Parameters
     ----------
     bus: oemof.solph.Bus
-        An oemof bus instance where the demand is connected to.
-    marginal_cost: numeric
-        Marginal cost for one unit of produced output. Default: 0
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, _facade_requires_=['bus'])
-
-        self.marginal_cost = kwargs.get('marginal_cost', 0)
-
-        self.inputs.update(
-            {self.bus: Flow(variable_costs=self.marginal_cost)})
-
-
-class Shortage(Dispatchable):
-    """
-    """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.marginal_cost = kwargs.get('marginal_cost', 0)
-
-        self.outputs.update(
-            {self.bus: Flow(variable_costs=self.marginal_cost)})
-
-
-class Load(Sink, Facade):
-    """ Load object with one input
-
-     Parameters
-     ----------
-     bus: oemof.solph.Bus
          An oemof bus instance where the demand is connected to.
-     amount: numeric
+    amount: numeric
          The total amount for the timehorzion (e.g. in MWh)
-     profile: array-like
+    profile: array-like
           Load profile with normed values such that `profile[t] * amount`
           yields the load in timestep t (e.g. in MWh)
     edge_parameters: dirct (optional)
@@ -522,9 +490,12 @@ class Load(Sink, Facade):
 
         self.edge_parameters = kwargs.get('edge_parameters', {})
 
+        self.marginal_cost = kwargs.get('marginal_cost', 0)
+
         self.inputs.update({self.bus: Flow(nominal_value=self.amount,
                                            actual_value=self.profile,
                                            fixed=True,
+                                           variable_cost=self.marginal_cost,
                                            **self.edge_parameters)})
 
 
@@ -661,3 +632,23 @@ class Connection(Link, Facade):
         self.conversion_factors.update({
             (self.from_bus, self.to_bus): sequence((1 - self.loss)),
             (self.to_bus, self.from_bus): sequence((1 - self.loss))})
+
+
+class Excess(Sink, Facade):
+    """
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, _facade_requires_=['bus'])
+
+        self.bus = kwargs.get('bus')
+
+        self.marginal_cost = kwargs.get('marginal_cost')
+
+        self.inputs.update({
+            self.bus: Flow(variable_costs=self.marginal_cost)})
+
+class Shortage(Dispatchable):
+    """
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
