@@ -54,7 +54,8 @@ class Facade(Node):
                 raise ValueError(msg.format(self.label))
             else:
                 # TODO: calculate ep_costs from specific capex
-                self.investment = Investment(ep_costs=self.capacity_cost)
+                self.investment = Investment(ep_costs=self.capacity_cost,
+                                             maximum=self.capacity_limit)
         else:
             self.investment = None
         return self.investment
@@ -169,6 +170,8 @@ class Dispatchable(Source, Facade):
     commitable: boolean
         Indicates if element is commitable
     edge_paramerters: dict (optional)
+    capacity_limit: numeric
+        Max install capacity if investment
     """
 
     def __init__(self, *args, **kwargs):
@@ -180,6 +183,8 @@ class Dispatchable(Source, Facade):
         self.profile = kwargs.get('profile')
 
         self.capacity = kwargs.get('capacity')
+
+        self.capacity_limit = kwargs.get('capacity_limit')
 
         self.marginal_cost = kwargs.get('marginal_cost', 0)
 
