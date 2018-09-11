@@ -54,8 +54,9 @@ class Facade(Node):
                 raise ValueError(msg.format(self.label))
             else:
                 # TODO: calculate ep_costs from specific capex
-                self.investment = Investment(ep_costs=self.capacity_cost,
-                                             maximum=self.capacity_potential)
+                self.investment = Investment(
+                    ep_costs=self.capacity_cost,
+                    maximum=getattr(self, 'capacity_potential', float('+inf')))
         else:
             self.investment = None
         return self.investment
@@ -229,6 +230,8 @@ class Volatile(Source, Facade):
         If capacity is not set, this value will be used for optimizing the
         generators capacity.
     edge_paramerters: dict (optional)
+    capacity_potential: numeric
+        Max install capacity if investment
     """
 
     def __init__(self, *args, **kwargs):
@@ -240,6 +243,8 @@ class Volatile(Source, Facade):
         self.profile = kwargs.get('profile')
 
         self.capacity = kwargs.get('capacity')
+
+        self.capacity_potential = kwargs.get('capacity_potential')
 
         self.marginal_cost = kwargs.get('marginal_cost', 0)
 
