@@ -531,6 +531,8 @@ class Storage(GenericStorage, Facade):
     efficiency: numeric
         efficiency of charging and discharging process
     capacity_cost: numeric
+        Investment costs for the storage unit e.g in €/MW-capacity
+    storage_capacity_cost: numeric
         Investment costs for the storage unit e.g in €/MWh-capacity
     commitable: boolean
         If True, Unit commitment is enforce with BigM-constraint
