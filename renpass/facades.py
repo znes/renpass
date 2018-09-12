@@ -54,9 +54,13 @@ class Facade(Node):
                 raise ValueError(msg.format(self.label))
             else:
                 # TODO: calculate ep_costs from specific capex
-                self.investment = Investment(
-                    ep_costs=self.capacity_cost,
-                    maximum=getattr(self, 'capacity_potential', float('+inf')))
+                if isinstance(self, GenericStorage):
+                    self.investment = Investment(
+                    ep_costs=self.storage_capacity_cost)
+                else:
+                    self.investment = Investment(
+                        ep_costs=self.capacity_cost,
+                        maximum=getattr(self, 'capacity_potential', float('+inf')))
         else:
             self.investment = None
         return self.investment
@@ -111,6 +115,8 @@ class Reservoir(GenericStorage, Facade):
         self.nominal_capacity = self.storage_capacity
 
         self.capacity_cost = kwargs.get('capacity_cost')
+
+        self.storage_capacity_cost = kwargs.get('storage_capacity_cost')
 
         self.spillage = kwargs.get('spillage', True)
 
@@ -528,6 +534,8 @@ class Storage(GenericStorage, Facade):
         Investment costs for the storage unit e.g in €/MWh-capacity
     commitable: boolean
         If True, Unit commitment is enforce with BigM-constraint
+    loss: numeric
+        Standing loss per timestep in % of capacity
     """
 
     def __init__(self, *args, **kwargs):
@@ -542,6 +550,8 @@ class Storage(GenericStorage, Facade):
 
         self.capacity_cost = kwargs.get('capacity_cost')
 
+        self.storage_capacity_cost = kwargs.get('storage_capacity_cost')
+
         self.loss = sequence(kwargs.get('loss', 0))
 
         self.inflow_conversion_factor = sequence(
@@ -550,6 +560,7 @@ class Storage(GenericStorage, Facade):
         self.outflow_conversion_factor = sequence(
             kwargs.get('efficiency', 1))
 
+        # make it investment but don't set costs (set below for flow (power))
         self.investment = self._investment()
 
         self.commitable = kwargs.get('commitable', False)
@@ -568,11 +579,17 @@ class Storage(GenericStorage, Facade):
             else:
                 self.invest_relation_input_capacity =  kwargs.get('capacity_ratio')
                 self.invest_relation_output_capacity = kwargs.get('capacity_ratio')
+                self.invest_relation_input_output = 1
 
-            investment = Investment()
-            fi = Flow(investment=investment,
+            # set capacity costs at one of the flows
+            fi = Flow(investment=Investment(
+                        ep_costs=self.capacity_cost,
+                        maximum=getattr(self,
+                                        'capacity_potential',
+                                        float('+inf'))),
                  **self.input_edge_parameters)
-            fo = Flow(investment=investment,
+            # set investment, but no costs (as relation input / output = 1)
+            fo = Flow(investment=Investment(),
                       **self.output_edge_parameters)
             # required for correct grouping in oemof.solph.components
             self._invest_group = True
