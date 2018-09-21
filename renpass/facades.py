@@ -204,6 +204,7 @@ class Dispatchable(Source, Facade):
         self.commitable = kwargs.get('commitable', False)
 
         self.pmin = kwargs.get('pmin', 0.5)
+        self.pmin = kwargs.get('pmin', 0)
 
         f = Flow(nominal_value=self.capacity,
                  variable_costs=self.marginal_cost,
@@ -340,7 +341,7 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
 
         self.heat_bus = kwargs.get('heat_bus')
 
-        self.pmin = kwargs.get('pmin')
+        self.pmin = kwargs.get('pmin', 0)
 
         self.conversion_factors.update({
             self.carrier: sequence(1),
@@ -422,7 +423,7 @@ class BackpressureTurbine(Transformer, Facade):
 
         self.commitable = kwargs.get('commitable', False)
 
-        self.pmin = kwargs.get('pmin')
+        self.pmin = kwargs.get('pmin', 0)
 
         self.conversion_factors.update({
             self.carrier: sequence(1),
