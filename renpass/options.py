@@ -7,6 +7,7 @@ typemap = {
     'bus': Bus,
     #'line': electrical.Line,
     #'electricalbus': electrical.ElectricalBus,
+    'generator': facades.Generator,
     'extraction': facades.ExtractionTurbine,
     'load': facades.Load,
     'dispatchable': facades.Dispatchable,

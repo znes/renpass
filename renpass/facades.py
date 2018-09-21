@@ -68,8 +68,8 @@ class Facade(Node):
     def _commitable(self):
         if getattr(self, 'commitable', False):
             nonconvex = NonConvex(
-                            min=getattr(self, 'min', 0),
-                            max=getattr(self, 'max', self.capacity)
+                            # min=getattr(self, 'pmin', 0),
+                            max=getattr(self, 'pmax', self.capacity)
                         )
         else:
             nonconvex = None
@@ -151,7 +151,7 @@ class Reservoir(GenericStorage, Facade):
 
 
 class Dispatchable(Source, Facade):
-    """ Dispatchable elements with one output for example a gas-turbine
+    """ Dispatchable element with one output for example a gas-turbine
 
     Parameters
     ----------
@@ -176,6 +176,8 @@ class Dispatchable(Source, Facade):
         generators capacity.
     commitable: boolean
         Indicates if element is commitable
+    pmin: numeric
+        Minimal electrical production capacity (0 <= pmin <= 1)
     edge_paramerters: dict (optional)
     capacity_potential: numeric
         Max install capacity if investment
@@ -201,18 +203,21 @@ class Dispatchable(Source, Facade):
 
         self.commitable = kwargs.get('commitable', False)
 
+        self.pmin = kwargs.get('pmin', 0.5)
+
         f = Flow(nominal_value=self.capacity,
                  variable_costs=self.marginal_cost,
                  actual_value=self.profile,
                  investment=self._investment(),
-                 nonconex=self._commitable(),
+                 nonconvex=self._commitable(),
+                 min=self.pmin,
                  **self.edge_parameters)
 
         self.outputs.update({self.bus: f})
 
 
 class Volatile(Source, Facade):
-    """ Dispatchable elements with one output for example a gas-turbine
+    """ Volatile element with one output for example a wind turbine
 
     Parameters
     ----------
@@ -302,6 +307,8 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
         if timestep length is one hour.
     commitable: boolean
         Indicates whether unit is commitable
+    pmin: numeric
+        Minimal electrical production capacity (0 <= pmin <= 1)
     capacity_cost: numeric
         Investment costs per unit of electrical capacity (e.g. Euro / MW) .
         If capacity is not set, this value will be used for optimizing the
@@ -333,6 +340,8 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
 
         self.heat_bus = kwargs.get('heat_bus')
 
+        self.pmin = kwargs.get('pmin')
+
         self.conversion_factors.update({
             self.carrier: sequence(1),
             self.electricity_bus: sequence(self.electric_efficiency),
@@ -344,6 +353,7 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
         self.outputs.update({
             self.electricity_bus: Flow(nominal_value=self.capacity,
                                        variable_costs=self.marginal_cost,
+                                       min=self.pmin,
                                        nonconvex=self._commitable(),
                                        investment=self._investment()),
             self.heat_bus: Flow()})
@@ -385,6 +395,9 @@ class BackpressureTurbine(Transformer, Facade):
         If capacity is not set, this value will be used for optimizing the
         chp capacity.
     commitable: boolean
+        Indicating whether unit is commitable
+    pmin: numeric
+        Minimal electrical production capacity (0 <= pmin <= 1)
     """
 
     def __init__(self, *args, **kwargs):
@@ -409,6 +422,8 @@ class BackpressureTurbine(Transformer, Facade):
 
         self.commitable = kwargs.get('commitable', False)
 
+        self.pmin = kwargs.get('pmin')
+
         self.conversion_factors.update({
             self.carrier: sequence(1),
             self.electricity_bus: sequence(self.electric_efficiency),
@@ -420,6 +435,7 @@ class BackpressureTurbine(Transformer, Facade):
         self.outputs.update({
             self.electricity_bus: Flow(nominal_value=self.capacity,
                                        variable_costs=self.marginal_cost,
+                                       min=self.pmin,
                                        investment=self._investment(),
                                        nonconvex=self._commitable()),
             self.heat_bus: Flow()})
@@ -534,8 +550,6 @@ class Storage(GenericStorage, Facade):
         Investment costs for the storage unit e.g in €/MW-capacity
     storage_capacity_cost: numeric
         Investment costs for the storage unit e.g in €/MWh-capacity
-    commitable: boolean
-        If True, Unit commitment is enforce with BigM-constraint
     loss: numeric
         Standing loss per timestep in % of capacity
     """
@@ -565,8 +579,6 @@ class Storage(GenericStorage, Facade):
         # make it investment but don't set costs (set below for flow (power))
         self.investment = self._investment()
 
-        self.commitable = kwargs.get('commitable', False)
-
         self.input_edge_parameters = kwargs.get('input_edge_parameters', {})
 
         self.output_edge_parameters = kwargs.get('output_edge_parameters', {})
@@ -574,7 +586,7 @@ class Storage(GenericStorage, Facade):
         if self.investment:
             if self._commitable():
                 raise AttributeError('Commitment and Investment not compatible!')
-            if kwargs.get('capacity_ratio') is None:
+            elif kwargs.get('capacity_ratio') is None:
                 raise AttributeError(
                     ("You need to set attr `capacity_ratio` for "
                      "component {}").format(self.label))
@@ -599,10 +611,8 @@ class Storage(GenericStorage, Facade):
             investment = None
 
             fi = Flow(nominal_value=self.capacity,
-                      nonconvex=self._commitable(),
                       **self.input_edge_parameters)
             fo = Flow(nominal_value=self.capacity,
-                      nonconvex=self._commitable(),
                       **self.output_edge_parameters)
 
         self.inputs.update({self.bus: fi})
@@ -677,6 +687,13 @@ class Excess(Sink, Facade):
             self.bus: Flow(variable_costs=self.marginal_cost)})
 
 class Shortage(Dispatchable):
+    """
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class Generator(Dispatchable):
     """
     """
     def __init__(self, *args, **kwargs):
