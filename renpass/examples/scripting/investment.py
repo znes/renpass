@@ -24,21 +24,20 @@ heat = fc.Bus('heat')
 biomass = fc.Bus('biomass', balanced=False)
 gas = fc.Bus('gas', balanced=False)
 
-# also buggy do to subnodes
-# res = fc.Reservoir('res', bus=el1, storage_capacity=100, capacity=None,
-#                 inflow=[1,2,3], efficiency=0.5,
-#                 spillage=False, capacity_cost=10)
-
 st = fc.Dispatchable('st', bus=el1, carrier='biogas', tech='st', capacity=10,
                      marginal_cost=[0.1, 5, 100],
-                     edge_parameters={'flow': 10, 'positive_gradient': {'ub': 0.1, 'costs': 0.2}}, commitable=False)
+                     edge_parameters={
+                        'flow': 10,
+                        'positive_gradient': {
+                            'ub': 0.1,
+                            'costs': 0.2}}, commitable=False)
 
 wind = fc.Volatile('wt', bus=el1, carrier='wind', tech='wind',
-                   capacity_cost=20, profile=[0.1, 0.2, 0], edge_parameters={'summed_max':10})
+                   capacity_cost=20, profile=[0.1, 0.2, 0],
+                   edge_parameters={'summed_max':10})
 
 sto = fc.Storage('sto', bus=el2, carrier='electricity', tech='battery',
-                 commitable=False,
-                 capacity_cost=4, storage_capacity_cost=5, capacity_ratio=0.5)
+                 commitable=False, capacity_cost=4, capacity_ratio=0.5)
 
 
 conv = fc.Conversion('conv', from_bus=el2, to_bus=heat, efficiency=0.95,
@@ -46,7 +45,6 @@ conv = fc.Conversion('conv', from_bus=el2, to_bus=heat, efficiency=0.95,
 
 load = fc.Load('load', bus=el1, amount=1000, profile=[0.005, 0.00034, 0.0434])
 
-# Connection
 conn = fc.Connection('conn', from_bus=el1, to_bus=el2, loss=0.07, capacity=100)
 
 es.add(el1, el2, heat, biomass, st, wind, sto, conv, load, conn, gas)
