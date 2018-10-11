@@ -549,8 +549,6 @@ class Storage(GenericStorage, Facade):
         efficiency of charging and discharging process
     capacity_cost: numeric
         Investment costs for the storage unit e.g in €/MW-capacity
-    storage_capacity_cost: numeric
-        Investment costs for the storage unit e.g in €/MWh-capacity
     loss: numeric
         Standing loss per timestep in % of capacity
     """
@@ -566,8 +564,6 @@ class Storage(GenericStorage, Facade):
         self.nominal_capacity = self.storage_capacity
 
         self.capacity_cost = kwargs.get('capacity_cost')
-
-        self.storage_capacity_cost = kwargs.get('storage_capacity_cost')
 
         self.loss = sequence(kwargs.get('loss', 0))
 
