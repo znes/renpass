@@ -55,8 +55,7 @@ class Facade(Node):
             else:
                 # TODO: calculate ep_costs from specific capex
                 if isinstance(self, GenericStorage):
-                    self.investment = Investment(
-                    ep_costs=self.storage_capacity_cost)
+                    self.investment = Investment()
                 else:
                     self.investment = Investment(
                         ep_costs=self.capacity_cost,
