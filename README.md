@@ -4,12 +4,8 @@ Welcome
 To install you need to get the repository and install. Do:
 
 ```bash
-
-    git clone https://github.com/znes/renpass_gis.git
-    pip install renpass
-
     git clone https://github.com/znes/renpass.git
-
+    pip install renpass
 ```
 
 To test, run the example with the commandline tool `renpass.py`:
@@ -200,17 +196,8 @@ this)
 Write results
 --------------
 
+**Not implemented yet...**
 
-```python
-    from oemof.solph import EnergySystem
-
-    # compute the model and write results back to energy system
-
-    ...
-
-    # write the energy system
-    es = EnergySystem.to_datapackage('datapackage.json')
-```
 
 Debugging
 =============
