@@ -64,16 +64,6 @@ class Facade(Node):
             self.investment = None
         return self.investment
 
-    def _commitable(self):
-        if getattr(self, 'commitable', False):
-            nonconvex = NonConvex(
-                            # min=getattr(self, 'pmin', 0),
-                            max=getattr(self, 'pmax', self.capacity)
-                        )
-        else:
-            nonconvex = None
-        return nonconvex
-
 
 class Reservoir(GenericStorage, Facade):
     """ Reservoir storage unit
@@ -173,10 +163,6 @@ class Dispatchable(Source, Facade):
         Investment costs per unit of capacity (e.g. Euro / MW) .
         If capacity is not set, this value will be used for optimizing the
         generators capacity.
-    commitable: boolean
-        Indicates if element is commitable
-    pmin: numeric
-        Minimal electrical production capacity (0 <= pmin <= 1)
     edge_paramerters: dict (optional)
     capacity_potential: numeric
         Max install capacity if investment
@@ -200,17 +186,10 @@ class Dispatchable(Source, Facade):
 
         self.edge_parameters = kwargs.get('edge_parameters', {})
 
-        self.commitable = kwargs.get('commitable', False)
-
-        self.pmin = kwargs.get('pmin', 0.5)
-        self.pmin = kwargs.get('pmin', 0)
-
         f = Flow(nominal_value=self.capacity,
                  variable_costs=self.marginal_cost,
                  actual_value=self.profile,
                  investment=self._investment(),
-                 nonconvex=self._commitable(),
-                 min=self.pmin,
                  **self.edge_parameters)
 
         self.outputs.update({self.bus: f})
@@ -305,10 +284,6 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
         E.g. for a powerplant:
         marginal cost =fuel cost + operational cost + co2 cost (in Euro / MWh)
         if timestep length is one hour.
-    commitable: boolean
-        Indicates whether unit is commitable
-    pmin: numeric
-        Minimal electrical production capacity (0 <= pmin <= 1)
     capacity_cost: numeric
         Investment costs per unit of electrical capacity (e.g. Euro / MW) .
         If capacity is not set, this value will be used for optimizing the
@@ -340,8 +315,6 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
 
         self.heat_bus = kwargs.get('heat_bus')
 
-        self.pmin = kwargs.get('pmin', 0)
-
         self.conversion_factors.update({
             self.carrier: sequence(1),
             self.electricity_bus: sequence(self.electric_efficiency),
@@ -353,8 +326,6 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
         self.outputs.update({
             self.electricity_bus: Flow(nominal_value=self.capacity,
                                        variable_costs=self.marginal_cost,
-                                       min=self.pmin,
-                                       nonconvex=self._commitable(),
                                        investment=self._investment()),
             self.heat_bus: Flow()})
 
@@ -394,10 +365,6 @@ class BackpressureTurbine(Transformer, Facade):
         Investment costs per unit of electrical capacity (e.g. Euro / MW) .
         If capacity is not set, this value will be used for optimizing the
         chp capacity.
-    commitable: boolean
-        Indicating whether unit is commitable
-    pmin: numeric
-        Minimal electrical production capacity (0 <= pmin <= 1)
     """
 
     def __init__(self, *args, **kwargs):
@@ -420,10 +387,6 @@ class BackpressureTurbine(Transformer, Facade):
 
         self.capacity_cost = kwargs.get('capacity_cost')
 
-        self.commitable = kwargs.get('commitable', False)
-
-        self.pmin = kwargs.get('pmin', 0)
-
         self.conversion_factors.update({
             self.carrier: sequence(1),
             self.electricity_bus: sequence(self.electric_efficiency),
@@ -434,10 +397,7 @@ class BackpressureTurbine(Transformer, Facade):
 
         self.outputs.update({
             self.electricity_bus: Flow(nominal_value=self.capacity,
-                                       variable_costs=self.marginal_cost,
-                                       min=self.pmin,
-                                       investment=self._investment(),
-                                       nonconvex=self._commitable()),
+                                       investment=self._investment()),
             self.heat_bus: Flow()})
 
 
@@ -493,7 +453,6 @@ class Conversion(Transformer, Facade):
             self.to_bus: Flow(nominal_value=self.capacity,
                               variable_costs=self.marginal_cost,
                               investment=self._investment(),
-                              nonconex=self._commitable(),
                               **self.output_edge_parameters)})
 
 
@@ -580,9 +539,7 @@ class Storage(GenericStorage, Facade):
         self.output_edge_parameters = kwargs.get('output_edge_parameters', {})
 
         if self.investment:
-            if self._commitable():
-                raise AttributeError('Commitment and Investment not compatible!')
-            elif kwargs.get('capacity_ratio') is None:
+            if kwargs.get('capacity_ratio') is None:
                 raise AttributeError(
                     ("You need to set attr `capacity_ratio` for "
                      "component {}").format(self.label))
