@@ -223,6 +223,16 @@ If you encounter errors from oemof, the objects are not instantiated correctly
 which may happen if something of the following is wrong in your metadata file:
 
 * foreign-keys
+Errors regarding the non-int type like this one:
+
+```python
+  ...
+  self.flows[o, i].nominal_value)
+  TypeError: can't multiply sequence by non-int of type 'float'
+```
+
+Check your type(s) in the `datapackage.json` file. If meta-data are inferred types
+might be string instead of number or integer which most likely causes such an error.
 
 **pyomo related errors**
 
