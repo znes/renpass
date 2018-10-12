@@ -11,6 +11,7 @@ setup(name='renpass',
       description='renpass',
       url='https://github.com/znes/renpass',
       long_description=read('README.md'),
+      scripts=['bin/renpass'],
       packages=find_packages(),
       package_data={'oemof': [
           os.path.join('tools', 'default_files', '*.ini')]},
