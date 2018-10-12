@@ -19,9 +19,13 @@ es = EnergySystem(timeindex=pd.date_range('2018', freq='H', periods=3))
 
 # buses
 el1 = fc.Bus('electricity1')
+
 el2 = fc.Bus('electricity2')
+
 heat = fc.Bus('heat')
+
 biomass = fc.Bus('biomass', balanced=False)
+
 gas = fc.Bus('gas', balanced=False)
 
 st = fc.Dispatchable('st', bus=el1, carrier='biogas', tech='st', capacity=10,
