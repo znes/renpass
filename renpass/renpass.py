@@ -40,8 +40,7 @@ from oemof.tools import logger
 from oemof.solph import Model, EnergySystem, Bus
 from oemof.outputlib import processing, views
 
-import facades
-import options
+from . import facades, options
 
 try:
     from docopt import docopt
