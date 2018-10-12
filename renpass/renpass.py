@@ -249,7 +249,7 @@ def main(**arguments):
 ###############################################################################
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version='renpass v0.2')
+    arguments = docopt(__doc__, version='renpass v0.3')
 
     logger.define_logging()
 
