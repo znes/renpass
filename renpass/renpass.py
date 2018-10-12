@@ -29,11 +29,12 @@ Options:
                              timestep of datapackage timeindex [default: -1]
 """
 
-from datapackage import Package
 from datetime import datetime
 from itertools import chain
 import logging
 import os
+
+from datapackage import Package
 import pandas as pd
 
 from oemof.tools import logger
