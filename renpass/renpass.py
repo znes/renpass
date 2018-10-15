@@ -2,12 +2,12 @@
 """ renpass
 
 Usage:
-  renpass.py [options] DATAPACKAGE
-  renpass.py -h | --help | --version
+  renpass [options] DATAPACKAGE
+  renpass -h | --help | --version
 
 Examples:
 
-  renpass.py -o glpk path/to/datapackage.json
+  renpass -o glpk path/to/datapackage.json
 
 Arguments:
 
