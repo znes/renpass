@@ -6,7 +6,7 @@ from docopt import docopt
 
 import renpass.renpass
 
-arguments = docopt(__doc__, version='renpass v0.3')
+arguments = docopt(renpass.renpass.__doc__, version='renpass v0.3')
 logger.define_logging()
 
 renpass.renpass.main(**arguments)
