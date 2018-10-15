@@ -40,8 +40,7 @@ from oemof.tools import logger
 from oemof.solph import Model, EnergySystem, Bus
 from oemof.outputlib import processing, views
 
-import facades
-from options import typemap
+from . import facades, options
 
 try:
     from docopt import docopt
@@ -73,9 +72,9 @@ def create_energysystem(datapackage, **arguments):
     es = EnergySystem.from_datapackage(
         arguments['DATAPACKAGE'],
         attributemap={},
-        typemap=typemap)
+        typemap=options.typemap)
 
-    es._typemap = typemap
+    es._typemap = options.typemap
 
     end = es.timeindex.get_loc(es.timeindex[int(arguments['--t_end'])]) + 1
 
@@ -249,7 +248,7 @@ def main(**arguments):
 ###############################################################################
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version='renpass v0.2')
+    arguments = docopt(__doc__, version='renpass v0.3')
 
     logger.define_logging()
 
