@@ -18,16 +18,19 @@ from renpass import facades
 import pyomo.environ as po
 
 
-def min_renewable_share(m, share=0.5):
+def min_renewable_share(m, share=0.5,
+                        renewable_carrier=[
+                            'biomass', 'biogas', 'wind', 'solar', 'waste'],
+                        flexibility_types= [
+                            'storage', 'connection', 'transshipment',
+                            'battery']):
     """
     """
-    renewable_carrier = ['biomass', 'biogas', 'wind', 'solar', 'waste']
 
     renewables = [f for f in m.es.flows()
                   if f[0].carrier in renewable_carrier
                   and f[1].carrier == 'electricity']
 
-    flexibility_types = ['storage', 'connection', 'transshipment', 'battery']
 
     total = [f for f in m.es.flows()
              if f[1].carrier == 'electricity'
@@ -38,13 +41,39 @@ def min_renewable_share(m, share=0.5):
         """
         """
         renewable_production = sum(m.flow[i, o, t]
-                                  for i,o in renewables
+                                  for i, o in renewables
                                   for t in m.TIMESTEPS)
         total_production = sum(m.flow[i, o, t]
                                for i, o  in total
                                for t in m.TIMESTEPS)
 
         return (renewable_production >= total_production * share)
+
+    m.min_renewable_share = po.Constraint(rule=_rule)
+
+    return m
+
+def co2_limit(m, limit, #
+              flexibility_types = [
+                'storage', 'connection', 'transshipment', 'battery']):
+    """
+    """
+
+    emmitting_flows = [f for f in m.es.flows()
+                  if f[1].carrier in ['electricity', 'heat']
+                  and getattr(f[0], 'tech', None) not in flexibility_types
+                  and getattr(f[1], 'tech', None) not in flexibility_types]
+
+    def _rule(m):
+        """
+        """
+        total_emissions = sum(
+            m.flow[i, o, t] / m.flows[i, o].emmission_factor
+            for i, o in emmitting_flows
+            for t in m.TIMESTEPS)
+
+        return (total_emssions <= limit)
+
     m.min_renewable_share = po.Constraint(rule=_rule)
 
     return m
