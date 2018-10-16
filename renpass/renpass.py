@@ -41,7 +41,7 @@ from oemof.tools import logger
 from oemof.solph import Model, EnergySystem, Bus
 from oemof.outputlib import processing, views
 
-from . import facades, options
+from . import facades, options, system_constraints
 
 try:
     from docopt import docopt
@@ -101,6 +101,10 @@ def compute(es=None, **arguments):
         m = Model(es, objective_weighting=es.temporal['weighting'])
     else:
         m = Model(es)
+
+    if es.co2_limit:
+        system_constraints.co2_limit(
+            m, limit, flexibility_types=['storage', 'connection'])
 
     logging.info('Model creation time: ' + stopwatch())
 

@@ -315,19 +315,27 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
 
         self.heat_bus = kwargs.get('heat_bus')
 
+        self.input_edge_parameters = kwargs.get('input_edge_parameters', {})
+
+        self.electricity_edge_parameters = kwargs.get('electricity_edge_parameters', {})
+
+        self.heat_edge_parameters = kwargs.get('heat_edge_parameters', {})
+
         self.conversion_factors.update({
             self.carrier: sequence(1),
             self.electricity_bus: sequence(self.electric_efficiency),
             self.heat_bus: sequence(self.thermal_efficiency)})
 
         self.inputs.update({
-            self.carrier: Flow(variable_cost=self.carrier_cost)})
+            self.carrier: Flow(variable_cost=self.carrier_cost,
+                              **self.input_edge_parameters)})
 
         self.outputs.update({
             self.electricity_bus: Flow(nominal_value=self.capacity,
                                        variable_costs=self.marginal_cost,
-                                       investment=self._investment()),
-            self.heat_bus: Flow()})
+                                       investment=self._investment(),
+                                       **self.electricity_edge_parameters),
+            self.heat_bus: Flow(**self.heat_edge_parameters)})
 
         self.conversion_factor_full_condensation.update({
             self.electricity_bus: self.condensing_efficiency})
@@ -387,18 +395,26 @@ class BackpressureTurbine(Transformer, Facade):
 
         self.capacity_cost = kwargs.get('capacity_cost')
 
+        self.input_edge_parameters = kwargs.get('input_edge_parameters', {})
+
+        self.electricity_edge_parameters = kwargs.get('electricity_edge_parameters', {})
+
+        self.heat_edge_parameters = kwargs.get('heat_edge_parameters', {})
+
         self.conversion_factors.update({
             self.carrier: sequence(1),
             self.electricity_bus: sequence(self.electric_efficiency),
             self.heat_bus: sequence(self.thermal_efficiency)})
 
         self.inputs.update({
-            self.carrier: Flow(variable_costs=self.carrier_cost)})
+            self.carrier: Flow(variable_costs=self.carrier_cost,
+                               **self.input_edge_parameters)})
 
         self.outputs.update({
             self.electricity_bus: Flow(nominal_value=self.capacity,
-                                       investment=self._investment()),
-            self.heat_bus: Flow()})
+                                       investment=self._investment(),
+                                       **self.electricity_edge_parameters),
+            self.heat_bus: Flow(**self.input_edge_parameters)})
 
 
 class Conversion(Transformer, Facade):

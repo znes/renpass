@@ -199,6 +199,11 @@
                         "format": "default",
                         "name": "condensing_efficiency",
                         "type": "number"
+                    },
+                    {
+                        "format": "default",
+                        "name": "input_edge_parameters",
+                        "type": "object"
                     }
                 ],
                 "foreignKeys": [
@@ -272,6 +277,11 @@
                         "format": "default",
                         "name": "bus",
                         "type": "string"
+                    },
+                    {
+                        "format": "default",
+                        "name": "tech",
+                        "type": "string"
                     }
                 ],
                 "foreignKeys": [
@@ -340,6 +350,11 @@
                     {
                         "format": "default",
                         "name": "type",
+                        "type": "string"
+                    },
+                    {
+                        "format": "default",
+                        "name": "tech",
                         "type": "string"
                     },
                     {

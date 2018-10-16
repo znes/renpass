@@ -22,8 +22,7 @@ def min_renewable_share(m, share=0.5,
                         renewable_carrier=[
                             'biomass', 'biogas', 'wind', 'solar', 'waste'],
                         flexibility_types= [
-                            'storage', 'connection', 'transshipment',
-                            'battery']):
+                            'storage']):
     """
     """
 
@@ -53,27 +52,29 @@ def min_renewable_share(m, share=0.5,
 
     return m
 
-def co2_limit(m, limit, #
-              flexibility_types = [
-                'storage', 'connection', 'transshipment', 'battery']):
+def co2_limit(m, limit,
+              ignore = [
+                'storage', 'connection', 'link', 'battery']):
     """
     """
 
     emmitting_flows = [f for f in m.es.flows()
-                  if f[1].carrier in ['electricity', 'heat']
-                  and getattr(f[0], 'tech', None) not in flexibility_types
-                  and getattr(f[1], 'tech', None) not in flexibility_types]
+                       if getattr(f[0], 'tech', None) not in ignore
+                       and getattr(f[1], 'tech', None) not in ignore]
 
+
+
+    import pdb; pdb.set_trace()
     def _rule(m):
         """
         """
         total_emissions = sum(
-            m.flow[i, o, t] / m.flows[i, o].emmission_factor
+            m.flow[i, o, t] * getattr(m.flows[i, o], 'emmission_factor', 0)
             for i, o in emmitting_flows
             for t in m.TIMESTEPS)
 
-        return (total_emssions <= limit)
+        return (total_emissions <= limit)
 
-    m.min_renewable_share = po.Constraint(rule=_rule)
+    m.co2_limit = po.Constraint(rule=_rule)
 
     return m

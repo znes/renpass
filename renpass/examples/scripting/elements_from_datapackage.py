@@ -4,8 +4,8 @@ from renpass import options, system_constraints
 import pprint
 
 
-dispatch = True
-investment = False
+dispatch = False
+investment = True
 
 if dispatch:
     es = EnergySystem.from_datapackage(
@@ -21,6 +21,8 @@ if investment:
         typemap=options.typemap)
 
 
+
+
 for n in es.nodes:
      pprint.pprint(n.__dict__)
 
@@ -31,5 +33,6 @@ m.solve()
 
 system_constraints.min_renewable_share(m, 0.1)
 
-m.min_renewable_share.pprint()
-#m.write()
+system_constraints.co2_limit(m, 100, ignore=['battery', 'pumped_storage', 'link'])
+
+m.co2_limit.pprint()
