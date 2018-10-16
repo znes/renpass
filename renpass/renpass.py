@@ -2,12 +2,12 @@
 """ renpass
 
 Usage:
-  renpass.py [options] DATAPACKAGE
-  renpass.py -h | --help | --version
+  renpass [options] DATAPACKAGE
+  renpass -h | --help | --version
 
 Examples:
 
-  renpass.py -o glpk path/to/datapackage.json
+  renpass -o glpk path/to/datapackage.json
 
 Arguments:
 
@@ -29,11 +29,12 @@ Options:
                              timestep of datapackage timeindex [default: -1]
 """
 
-from datapackage import Package
 from datetime import datetime
 from itertools import chain
 import logging
 import os
+
+from datapackage import Package
 import pandas as pd
 
 from oemof.tools import logger
@@ -248,7 +249,7 @@ def main(**arguments):
 ###############################################################################
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version='renpass v0.3')
+    arguments = docopt(__doc__, version='renpass v0.3.1')
 
     logger.define_logging()
 

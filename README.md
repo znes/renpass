@@ -8,23 +8,23 @@ To install you need to get the repository and install. Do:
     pip install renpass
 ```
 
-To test, run the example with the commandline tool `renpass.py`:
+To test, run the example with the commandline tool `renpass`:
 
 ```bash
     cd renpass/renpass
-    python renpass.py examples/investment/datapackage.json
+    renpass examples/investment/datapackage.json
 ```
 
 Getting help:
 
 ```bash
-    renpass.py -h
+    renpass -h
 ```
 Example usage with another solver (standard is [CBC](https://projects.coin-or.org/Cbc)
 and with indiviual start and end timestep:
 
 ```bash
-    renpass.py -o gurobi --t_start 0 --t_end 24 path/to/datapackage.json
+    renpass -o gurobi --t_start 0 --t_end 24 path/to/datapackage.json
 ```
 
 Per default, all result files are written back into the sub-folder */results*.
