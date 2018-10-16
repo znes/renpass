@@ -1,0 +1,3 @@
+name;type;capacity;capacity_cost;bus;marginal_cost;profile;edge_parameters;carrier
+gen0;dispatchable;100;;bus0;50;;{};coal
+gen1;dispatchable;100;;bus0;25;;{};gas

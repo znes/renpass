@@ -1,0 +1,4 @@
+name;type;capacity;capacity_cost;reactance;from_bus;to_bus
+line0;line;60;;0.0001;bus0;bus1
+line1;line;60;;0.0001;bus1;bus2
+line2;line;60;;0.0001;bus2;bus0

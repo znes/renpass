@@ -116,6 +116,16 @@
                         "name": "edge_parameters",
                         "format": "default",
                         "type": "object"
+                    },
+                    {
+                        "name": "commitable",
+                        "format": "default",
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "pmin",
+                        "format": "default",
+                        "type": "number"
                     }
                 ],
                 "foreignKeys": [

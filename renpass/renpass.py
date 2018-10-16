@@ -2,12 +2,12 @@
 """ renpass
 
 Usage:
-  renpass.py [options] DATAPACKAGE
-  renpass.py -h | --help | --version
+  renpass [options] DATAPACKAGE
+  renpass -h | --help | --version
 
 Examples:
 
-  renpass.py -o glpk path/to/datapackage.json
+  renpass -o glpk path/to/datapackage.json
 
 Arguments:
 
@@ -29,19 +29,19 @@ Options:
                              timestep of datapackage timeindex [default: -1]
 """
 
-from datapackage import Package
 from datetime import datetime
 from itertools import chain
 import logging
 import os
+
+from datapackage import Package
 import pandas as pd
 
 from oemof.tools import logger
 from oemof.solph import Model, EnergySystem, Bus
 from oemof.outputlib import processing, views
 
-import facades
-from options import typemap
+from . import facades, options
 
 try:
     from docopt import docopt
@@ -73,9 +73,9 @@ def create_energysystem(datapackage, **arguments):
     es = EnergySystem.from_datapackage(
         arguments['DATAPACKAGE'],
         attributemap={},
-        typemap=typemap)
+        typemap=options.typemap)
 
-    es._typemap = typemap
+    es._typemap = options.typemap
 
     end = es.timeindex.get_loc(es.timeindex[int(arguments['--t_end'])]) + 1
 
@@ -249,7 +249,7 @@ def main(**arguments):
 ###############################################################################
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version='renpass v0.2')
+    arguments = docopt(__doc__, version='renpass v0.3.1')
 
     logger.define_logging()
 

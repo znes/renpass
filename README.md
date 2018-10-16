@@ -4,28 +4,28 @@ Welcome
 To install you need to get the repository and install. Do:
 
 ```bash
-    git clone https://github.com/znes/renpass_gis.git
+    git clone https://github.com/znes/renpass.git
     pip install renpass
 ```
 
-To test, run the example with the commandline tool `renpass.py`:
+To test, run the example with the commandline tool `renpass`:
 
 ```bash
     cd renpass/renpass
-    python renpass.py examples/investment/datapackage.json
+    renpass examples/investment/datapackage.json
 ```
 
 Getting help:
 
 ```bash
-    renpass.py -h
+    renpass -h
 ```
 Example usage with another solver (standard is [CBC](https://projects.coin-or.org/Cbc)
 and with indiviual start and end timestep:
 
 ```bash
-    renpass.py -o gurobi --t_start 0 --t_end 24 path/to/datapackage.json
-```    
+    renpass -o gurobi --t_start 0 --t_end 24 path/to/datapackage.json
+```
 
 Per default, all result files are written back into the sub-folder */results*.
 
@@ -196,17 +196,8 @@ this)
 Write results
 --------------
 
+**Not implemented yet...**
 
-```python
-    from oemof.solph import EnergySystem
-
-    # compute the model and write results back to energy system
-
-    ...
-
-    # write the energy system
-    es = EnergySystem.to_datapackage('datapackage.json')
-```
 
 Debugging
 =============
@@ -232,6 +223,16 @@ If you encounter errors from oemof, the objects are not instantiated correctly
 which may happen if something of the following is wrong in your metadata file:
 
 * foreign-keys
+Errors regarding the non-int type like this one:
+
+```python
+  ...
+  self.flows[o, i].nominal_value)
+  TypeError: can't multiply sequence by non-int of type 'float'
+```
+
+Check your type(s) in the `datapackage.json` file. If meta-data are inferred types
+might be string instead of number or integer which most likely causes such an error.
 
 **pyomo related errors**
 
