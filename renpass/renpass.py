@@ -102,10 +102,6 @@ def compute(es=None, **arguments):
     else:
         m = Model(es)
 
-    if es.co2_limit:
-        system_constraints.co2_limit(
-            m, limit, flexibility_types=['storage', 'connection'])
-
     logging.info('Model creation time: ' + stopwatch())
 
     m.receive_duals()
