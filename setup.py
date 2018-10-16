@@ -5,8 +5,8 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(name='renpass',
-      version='0.3.0',
-      author='Simon Hilpert, Cord Kaldemeyer, Martin Söthe, Clemens Wingenbach',
+      version='0.3.1',
+      author='Simon Hilpert, Cord Kaldemeyer, Martin Söthe, Stephan Günther',
       author_email='simon.hilpert@uni-flensburg.de',
       description='renpass',
       url='https://github.com/znes/renpass',

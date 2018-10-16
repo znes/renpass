@@ -8,7 +8,7 @@ from oemof.tools import logger
 
 import renpass.renpass
 
-arguments = docopt(renpass.renpass.__doc__, version='renpass v0.3')
+arguments = docopt(renpass.renpass.__doc__, version='renpass v0.3.1')
 logger.define_logging()
 
 renpass.renpass.main(**arguments)
