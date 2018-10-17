@@ -22,6 +22,10 @@ def storage_net_results(path, label=[]):
     storage_results = pd.read_csv(
         path, sep=";", header=[0, 1, 2], index_col=0, parse_dates=True)
 
+    if not label:
+        x = storage_results.xs('capacity', axis=1, level=2).columns.values
+        label = [s for s,t in x]
+
     dataframes = []
 
     for l in label:
