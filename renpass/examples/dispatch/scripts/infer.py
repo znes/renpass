@@ -1,6 +1,3 @@
-from datapackage import Package
+from datapackage_utilities import building
 
-p = Package()
-p.infer('data/**/*.csv')
-
-p.save('datapackage.json')
+building.infer_metadata(package_name='renpass-invest-example')

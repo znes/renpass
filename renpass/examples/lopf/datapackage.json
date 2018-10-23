@@ -26,7 +26,7 @@
                     {
                         "name": "capacity_cost",
                         "format": "default",
-                        "type": "string"
+                        "type": "number"
                     },
                     {
                         "name": "reactance",
@@ -92,7 +92,7 @@
                     {
                         "name": "capacity_cost",
                         "format": "default",
-                        "type": "string"
+                        "type": "number"
                     },
                     {
                         "name": "bus",
