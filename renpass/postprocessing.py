@@ -10,25 +10,54 @@ import os
 import pandas as pd
 
 
-def storage_net_results(path, label=[]):
+def supply_results(path, types=['dispatchable', 'volatile'], bus=None):
+    """
+    """
+
+    selection = pd.DataFrame()
+    for t in types:
+        result = pd.read_csv(
+            os.path.join(path, t + '.csv'),
+            sep=";", header=[0, 1, 2], index_col=0, parse_dates=True)
+        selection = pd.concat(
+            [selection,
+             result.xs([bus, 'flow'], axis=1, level=[1,2])], axis=1)
+    return selection
+
+def demand_results(path, types=['load'], bus=None):
+    """
+    """
+
+    selection = pd.DataFrame()
+    for t in types:
+        result = pd.read_csv(
+            os.path.join(path, t + '.csv'),
+            sep=";", header=[0, 1, 2], index_col=0, parse_dates=True)
+        selection = pd.concat(
+            [selection,
+             result.xs([bus, 'flow'], axis=1, level=[0,2])], axis=1)
+    return selection
+
+
+def storage_net_results(path, labels=[], store=True):
     """ Writes net results for storage components.
 
     path: str
         Path to storage component results.
-    label: list
+    labels: list
         List of storage component labels.
     """
 
     storage_results = pd.read_csv(
         path, sep=";", header=[0, 1, 2], index_col=0, parse_dates=True)
 
-    if not label:
+    if not labels:
         x = storage_results.xs('capacity', axis=1, level=2).columns.values
         label = [s for s,t in x]
 
     dataframes = []
 
-    for l in label:
+    for l in labels:
 
         grouper = lambda x: (lambda fr, to, ty:
                             'output' if (fr == l and ty == 'flow') else
@@ -44,12 +73,17 @@ def storage_net_results(path, label=[]):
 
         dataframes.append(subset)
 
-    pd.concat(dataframes, axis=1).to_csv(
-        os.path.join(os.path.dirname(path), 'storage-processed' + '.csv'),
-        sep=";", date_format='%Y-%m-%dT%H:%M:%SZ')
+    df = pd.concat(dataframes, axis=1)
+
+    if store:
+        df.to_csv(
+            os.path.join(os.path.dirname(path), 'storage-processed' + '.csv'),
+            sep=";", date_format='%Y-%m-%dT%H:%M:%SZ')
+    else:
+        return df
 
 
-def connection_net_results(path, hubs=[]):
+def connection_net_results(path, hubs=[], store=True):
     """ Writes net results for connection components.
 
     path: str
@@ -69,9 +103,12 @@ def connection_net_results(path, hubs=[]):
 
         df[hub + '-' + 'net-import'] = im - ex
 
-    df.to_csv(
-        os.path.join(os.path.dirname(path), 'connection-processed' + '.csv'),
-        sep=";", date_format='%Y-%m-%dT%H:%M:%SZ')
+    if store:
+        df.to_csv(
+            os.path.join(os.path.dirname(path), 'connection-processed' + '.csv'),
+            sep=";", date_format='%Y-%m-%dT%H:%M:%SZ')
+    else:
+        return df
 
 
 def links(es):
