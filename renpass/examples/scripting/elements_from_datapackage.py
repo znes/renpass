@@ -1,6 +1,6 @@
 
 from oemof.solph import EnergySystem, Model
-from renpass import options
+from renpass import options, postprocessing
 import pprint
 
 
@@ -30,3 +30,5 @@ if investment:
 
 
 m.solve()
+
+postprocessing.system_info(es2)

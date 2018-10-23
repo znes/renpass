@@ -97,3 +97,24 @@ def _edges(nodes):
         for i in n.inputs:
             edges[str(n)].append((i, n))
     return edges
+
+
+def system_info(es, path=None):
+    """
+    """
+    d = {}
+    for n in es.nodes:
+        d[n.label] = {
+            'type': n.type,
+            'tech': getattr(n, 'tech', None),
+            'mapped_type': getattr(n, 'mapped_type', None),
+            'carrier': getattr(n, 'carrier', None)
+        }
+
+    df = pd.DataFrame.from_dict(d, orient='index')
+
+    if path:
+        df.to_csv(os.path.join(path, 'es_information.csv'))
+        return True
+    else:
+        return pd.DataFrame.from_dict(d, orient='index')

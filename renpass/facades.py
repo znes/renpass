@@ -28,11 +28,14 @@ class Facade(Node):
         """
         """
 
-        self.type = type(self)
+        self.mapped_type = type(self)
 
         self.tech = kwargs.get('tech')
 
         self.carrier = kwargs.get('carrier')
+
+        self.type = kwargs.get('type')
+
 
         required = kwargs.pop("_facade_requires_", [])
         super().__init__(*args, **kwargs)
@@ -145,27 +148,30 @@ class Dispatchable(Source, Facade):
     Parameters
     ----------
     bus: oemof.solph.Bus
-        An oemof bus instance where the generator is connected to
+        An oemof bus instance where the unit is connected to with its output
     tech: string
-        Description of technoglogy (for example: ST, GT, OCGT, ...)
+        Description of technoglogy
     carrier: string
         Carrier of input used for production (for example gas, coal, ...)
     capacity: numeric
-        The installed power of the generator (e.g. in MW).
-    profile: array-like
+        The installed power of the generator (e.g. in MW). If not set the
+        capacity will be optimized (s. also `capacity_cost` argument)
+    profile: array-like (optional)
         Profile of the output such that profile[t] * installed yields output
         for timestep t
     marginal_cost: numeric
         Marginal cost for one unit of produced output, i.e. for a powerplant:
         mc = fuel_cost + co2_cost + ... (in Euro / MWh) if timestep length is
-        one hour.
+        one hour. Default: 0
     capacity_cost: numeric (optional)
         Investment costs per unit of capacity (e.g. Euro / MW) .
         If capacity is not set, this value will be used for optimizing the
         generators capacity.
     edge_paramerters: dict (optional)
+        Parameters to set on the output Edge of the component (see. oemof.solph
+        Edge/Flow class for possible arguments)
     capacity_potential: numeric
-        Max install capacity if investment
+        Max install capacity if capacity is to be optimized
     """
 
     def __init__(self, *args, **kwargs):
@@ -192,24 +198,25 @@ class Dispatchable(Source, Facade):
                  investment=self._investment(),
                  **self.edge_parameters)
 
-        self.outputs.update({self.bus: f})
+        self.outputs.update({
+                        self.bus: f})
 
 
 class Volatile(Source, Facade):
-    """ Volatile element with one output for example a wind turbine
+    """ Volatile element with one output, for example a wind turbine
 
     Parameters
     ----------
     bus: oemof.solph.Bus
         An oemof bus instance where the generator is connected to
     tech: string
-        Description of technoglogy (for example: ST, GT, OCGT, ...)
+        Description of technoglogy
     carrier: string
-        Carrier of input used for production (for example gas, coal, ...)
+        Carrier of input used for production (for example solar, wind, ...)
     capacity: numeric
-        The installed power of the generator (e.g. in MW).
+        The installed power of the unit (e.g. in MW).
     profile: array-like
-        Profile of the output such that profile[t] * installed yields output
+        Profile of the output such that profile[t] * capacity yields output
         for timestep t
     marginal_cost: numeric
         Marginal cost for one unit of produced output, i.e. for a powerplant:
@@ -220,6 +227,8 @@ class Volatile(Source, Facade):
         If capacity is not set, this value will be used for optimizing the
         generators capacity.
     edge_paramerters: dict (optional)
+        Parameters to set on the output Edge of the component (see. oemof.solph
+        Edge/Flow class for possible arguments)
     capacity_potential: numeric
         Max install capacity if investment
     """
@@ -265,9 +274,11 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
     heat_bus: oemof.solph.Bus
         An oemof bus instance where the chp unit is connected to with its
         thermal output
-    carrier: oemof.solph.Bus
+    fuel_bus:  oemof.solph.Bus
         An oemof bus instance where the chp unit is connected to with its
         input
+    carrier: string
+        Description of input carrier (for example gas, oil, biomass)
     carrier_cost: numeric
         Cost per unit of used input carrier
     capacity: numeric
@@ -295,9 +306,16 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
                          *args,
                          **kwargs,
                          _facade_requires_=[
-                             'carrier', 'electricity_bus', 'heat_bus',
+                             'fuel_bus', 'carrier', 'electricity_bus',
+                             'heat_bus',
                              'thermal_efficiency', 'electric_efficiency',
                              'condensing_efficiency'])
+
+        self.fuel_bus = kwargs.get('fuel_bus')
+
+        self.electricity_bus = kwargs.get('electricity_bus')
+
+        self.heat_bus = kwargs.get('heat_bus')
 
         self.carrier = kwargs.get('carrier')
 
@@ -311,17 +329,14 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
 
         self.capacity_cost = kwargs.get('capacity_cost')
 
-        self.electricity_bus = kwargs.get('electricity_bus')
-
-        self.heat_bus = kwargs.get('heat_bus')
 
         self.conversion_factors.update({
-            self.carrier: sequence(1),
+            self.fuel_bus: sequence(1),
             self.electricity_bus: sequence(self.electric_efficiency),
             self.heat_bus: sequence(self.thermal_efficiency)})
 
         self.inputs.update({
-            self.carrier: Flow(variable_cost=self.carrier_cost)})
+            self.fuel_bus: Flow(variable_cost=self.carrier_cost)})
 
         self.outputs.update({
             self.electricity_bus: Flow(nominal_value=self.capacity,
@@ -345,11 +360,13 @@ class BackpressureTurbine(Transformer, Facade):
     heat_bus: oemof.solph.Bus
         An oemof bus instance where the chp unit is connected to with its
         thermal output
-    carrier: oemof.solph.Bus
+    fuel_bus: oemof.solph.Bus
         An oemof bus instance where the chp unit is connected to with its
         input
+    carrier: string
+        Description of the input carrier (for example: gas, coal, etc.)
     carrier_cost: numeric
-        Input carrier cost of the backpressure unit
+        Input carrier cost of the backpressure unit, Default: 0
     capacity: numeric
         The electrical capacity of the chp unit (e.g. in MW).
     electric_efficiency:
@@ -360,7 +377,7 @@ class BackpressureTurbine(Transformer, Facade):
         Marginal cost for one unit of produced electrical output
         E.g. for a powerplant:
         marginal cost =fuel cost + operational cost + co2 cost (in Euro / MWh)
-        if timestep length is one hour.
+        if timestep length is one hour. Default: 0
     capacity_cost: numeric
         Investment costs per unit of electrical capacity (e.g. Euro / MW) .
         If capacity is not set, this value will be used for optimizing the
@@ -371,11 +388,14 @@ class BackpressureTurbine(Transformer, Facade):
         super().__init__(*args, **kwargs,
                          _facade_requires_=[
                              'carrier', 'electricity_bus', 'heat_bus',
+                             'fuel_bus',
                              'thermal_efficiency', 'electric_efficiency'])
 
         self.electricity_bus = kwargs.get('electricity_bus')
 
         self.heat_bus = kwargs.get('heat_bus')
+
+        self.fuel_bus = kwargs.get('fuel_bus')
 
         self.capacity = kwargs.get('capacity')
 
@@ -388,12 +408,12 @@ class BackpressureTurbine(Transformer, Facade):
         self.capacity_cost = kwargs.get('capacity_cost')
 
         self.conversion_factors.update({
-            self.carrier: sequence(1),
+            self.fuel_bus: sequence(1),
             self.electricity_bus: sequence(self.electric_efficiency),
             self.heat_bus: sequence(self.thermal_efficiency)})
 
         self.inputs.update({
-            self.carrier: Flow(variable_costs=self.carrier_cost)})
+            self.fuel_bus: Flow(variable_costs=self.carrier_cost)})
 
         self.outputs.update({
             self.electricity_bus: Flow(nominal_value=self.capacity,
@@ -465,6 +485,8 @@ class Load(Sink, Facade):
          An oemof bus instance where the demand is connected to.
     amount: numeric
          The total amount for the timehorzion (e.g. in MWh)
+    carrier: string
+        Description of the carrier (for example heat, electricity)
     profile: array-like
           Load profile with normed values such that `profile[t] * amount`
           yields the load in timestep t (e.g. in MWh)
@@ -498,17 +520,23 @@ class Storage(GenericStorage, Facade):
     bus: oemof.solph.Bus
         An oemof bus instance where the storage unit is connected to.
     storage_capacity: numeric
-        The total capacity of the storage (e.g. in MWh
+        The total capacity of the storage (e.g. in MWh)
     capacity: numeric
         Maximum production capacity (e.g. in MW)
     capacity_ratio: numeric
         Ratio between `storage_capacity` and `capacity`
     efficiency: numeric
-        efficiency of charging and discharging process
+        Efficiency of charging and discharging process: Default: 1
     capacity_cost: numeric
         Investment costs for the storage unit e.g in €/MW-capacity
     loss: numeric
-        Standing loss per timestep in % of capacity
+        Standing loss per timestep in % of capacity. Default: 0
+    input_edge_parameters: dict (optional)
+        Set parameters on the input edge of the storage (see oemof.solph for
+        more information on possible parameters)
+    ouput_edge_parameters: dict (optional)
+        Set parameters on the output edge of the storage (see oemof.solph for
+        more information on possible parameters)
     """
 
     def __init__(self, *args, **kwargs):
@@ -590,7 +618,7 @@ class Connection(Link, Facade):
         its output.
     capacity: numeric
         The maximal capacity (output side each) of the unit. If not set, attr
-        `investment_cost` needs to be set.
+        `capacity_cost` needs to be set.
     loss:
         Relative loss through the connection (default: 0)
     capacity_cost: numeric
@@ -638,6 +666,7 @@ class Excess(Sink, Facade):
 
         self.inputs.update({
             self.bus: Flow(variable_costs=self.marginal_cost)})
+
 
 class Shortage(Dispatchable):
     """

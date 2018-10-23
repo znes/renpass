@@ -37,7 +37,7 @@ sto = fc.Storage('sto', bus=el2, carrier='electricity', tech='battery',
                  commitable=False,
                  storage_capacity=10, capacity=1)
 
-bp = fc.BackpressureTurbine('bp', carrier=biomass,
+bp = fc.BackpressureTurbine('bp', fuel_bus=biomass,
                             tech='bp',
                             commitable=False,
                             electricity_bus=el1, heat_bus=heat,
@@ -45,7 +45,7 @@ bp = fc.BackpressureTurbine('bp', carrier=biomass,
                             thermal_efficiency=0.4,
                             electric_efficiency=0.44)
 
-ext = fc.ExtractionTurbine(label='ext', carrier=gas,
+ext = fc.ExtractionTurbine(label='ext', fuel_bus=gas,
                            tech='ext',
                            commitable=False,
                            electricity_bus=el1, heat_bus=heat,
