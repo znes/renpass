@@ -40,7 +40,8 @@ Options:
   -h --help                  Show this screen and exit.
   -o --solver=SOLVER         Solver to be used. [default: cbc]
      --output-directory=DIR  Directory to write results to. [default: results]
-     --output-orient=ORIENT  Bus- or component-oriented results. [default: component]
+     --output-orient=ORIENT  Bus- or component-oriented results.
+                             [default: component]
      --version               Show version.
      --results=RESULTS       How should results be saved [default: datapackage]
   -s --safe                  If argument --safe is set, results will not be
