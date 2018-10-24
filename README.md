@@ -20,7 +20,7 @@ Getting help:
 ```bash
     renpass -h
 ```
-Example usage with another solver (standard is [CBC](https://projects.coin-or.org/Cbc)
+Example usage with another solver (standard is [CBC](https://projects.coin-or.org/Cbc))
 and with indiviual start and end timestep:
 
 ```bash
@@ -120,7 +120,7 @@ The resulting tree of the datapackage could for example look like this:
           |-- datapackage.json
 
 
-To simplifiy the process of creating and processing datapackage you may
+To simplifiy the process of creating and processing a datapackage you may
 also use the [(datapackage-utilities)](https://github.com/znes/datapackage-utilities-utitiles).
 The datamodel used for creating facades and examples is also based on the datamodel
 described there.
@@ -202,14 +202,14 @@ Write results
 Debugging
 =============
 
-Debugging can sometimes with tricky, here are some things you might want to
+Debugging can sometimes be tricky, here are some things you might want to
 consider:
 
 **Components do not end up in the model**
 * Does the data resource (i.e. csv-file) for your components exist in the
 `datapackage.json` file.
 * Did you set the `attributemap` and `typemap` arguments of the
-`EnergySystem.from_datapackge()` method of correctly? Make sure all classes
+`EnergySystem.from_datapackge()` method correctly? Make sure all classes
 with their types are present.
 
 **Cast errors when reading a datapackage**
@@ -239,7 +239,7 @@ might be string instead of number or integer which most likely causes such an er
 If you encounter an error for writing a lp-file, you might want to check if
 your foreign-keys are set correctly. In particular for resources with fk's for
 sequences. If this is missing, you will get unsupported operation string and
-numeric. This will unfortunately only be happen on the pyomo level currently.
+numeric. This will unfortunately only happen on the pyomo level currently.
 
 
 
