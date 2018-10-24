@@ -4,9 +4,9 @@ import logging
 
 from docopt import docopt
 
-import renpass.renpass
+import renpass.cli
 
-arguments = docopt(renpass.renpass.HELP, version='renpass v0.3')
+arguments = docopt(renpass.cli.HELP, version='renpass v0.3')
 logger.define_logging()
 
 renpass.renpass.main(**arguments)

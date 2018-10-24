@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+""" Utility functions comprising `renpass`' command line interface.
+"""
+
 from datetime import datetime
 from itertools import chain
 import logging
