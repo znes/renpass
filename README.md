@@ -5,7 +5,7 @@ To install you need to get the repository and install. Do:
 
 ```bash
     git clone https://github.com/znes/renpass.git
-    pip install renpass
+    pip install -e renpass
 ```
 
 To test, run the example with the commandline tool `renpass`:
