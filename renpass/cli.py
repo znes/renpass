@@ -1,32 +1,6 @@
 # -*- coding: utf-8 -*-
-""" renpass
 
-Usage:
-  renpass [options] DATAPACKAGE
-  renpass -h | --help | --version
-
-Examples:
-
-  renpass -o glpk path/to/datapackage.json
-
-Arguments:
-
-  DATAPACKAGE                valid datapackage with input data
-
-Options:
-
-  -h --help                  Show this screen and exit.
-  -o --solver=SOLVER         Solver to be used. [default: cbc]
-     --output-directory=DIR  Directory to write results to. [default: results]
-     --output-orient=ORIENT  Bus- or component-oriented results. [default: component]
-     --version               Show version.
-     --results=RESULTS       How should results be saved [default: datapackage]
-  -s --safe                  If argument --safe is set, results will not be
-                             overwritten
-  -d --debug                 If set debug mode is turned on
-     --t_start=T_START       Start timestep of simulation [default: 0]
-     --t_end=T_END           End timestep of simulation, default is last
-                             timestep of datapackage timeindex [default: -1]
+""" Utility functions comprising `renpass`' command line interface.
 """
 
 from datetime import datetime
@@ -49,6 +23,37 @@ except ImportError:
     print("Unable to load docopt. Is docopt installed?")
 
 ###############################################################################
+
+HELP = """ renpass
+
+Usage:
+  renpass [options] DATAPACKAGE
+  renpass -h | --help | --version
+
+Examples:
+
+  renpass -o glpk path/to/datapackage.json
+
+Arguments:
+
+  DATAPACKAGE                valid datapackage with input data
+
+Options:
+
+  -h --help                  Show this screen and exit.
+  -o --solver=SOLVER         Solver to be used. [default: cbc]
+     --output-directory=DIR  Directory to write results to. [default: results]
+     --output-orient=ORIENT  Bus- or component-oriented results.
+                             [default: component]
+     --version               Show version.
+     --results=RESULTS       How should results be saved [default: datapackage]
+  -s --safe                  If argument --safe is set, results will not be
+                             overwritten
+  -d --debug                 If set debug mode is turned on
+     --t_start=T_START       Start timestep of simulation [default: 0]
+     --t_end=T_END           End timestep of simulation, default is last
+                             timestep of datapackage timeindex [default: -1]
+"""
 
 
 def stopwatch():
@@ -249,7 +254,7 @@ def main(**arguments):
 ###############################################################################
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version='renpass v0.3.1')
+    arguments = docopt(HELP, version='renpass v0.3.1')
 
     logger.define_logging()
 
