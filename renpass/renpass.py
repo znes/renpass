@@ -1,5 +1,27 @@
 # -*- coding: utf-8 -*-
-""" renpass
+
+from datetime import datetime
+from itertools import chain
+import logging
+import os
+
+from datapackage import Package
+import pandas as pd
+
+from oemof.tools import logger
+from oemof.solph import Model, EnergySystem, Bus
+from oemof.outputlib import processing, views
+
+from . import facades, options
+
+try:
+    from docopt import docopt
+except ImportError:
+    print("Unable to load docopt. Is docopt installed?")
+
+###############################################################################
+
+HELP = """ renpass
 
 Usage:
   renpass [options] DATAPACKAGE
@@ -28,27 +50,6 @@ Options:
      --t_end=T_END           End timestep of simulation, default is last
                              timestep of datapackage timeindex [default: -1]
 """
-
-from datetime import datetime
-from itertools import chain
-import logging
-import os
-
-from datapackage import Package
-import pandas as pd
-
-from oemof.tools import logger
-from oemof.solph import Model, EnergySystem, Bus
-from oemof.outputlib import processing, views
-
-from . import facades, options
-
-try:
-    from docopt import docopt
-except ImportError:
-    print("Unable to load docopt. Is docopt installed?")
-
-###############################################################################
 
 
 def stopwatch():
@@ -249,7 +250,7 @@ def main(**arguments):
 ###############################################################################
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version='renpass v0.3')
+    arguments = docopt(HELP, version='renpass v0.3')
 
     logger.define_logging()
 
