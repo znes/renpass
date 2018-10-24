@@ -1,34 +1,45 @@
 
 from oemof.solph import EnergySystem, Model
-from renpass import options, postprocessing
+from renpass import options
+from renpass import postprocessing as pp
 import pprint
 
 
 dispatch = False
-investment = True
+
 
 if dispatch:
-    es1 = EnergySystem.from_datapackage(
+    es = EnergySystem.from_datapackage(
         'renpass/examples/dispatch/datapackage.json',
         attributemap={},
         typemap=options.typemap)
-
-    for n in es1.nodes:
-        pprint.pprint(n.__dict__)
-
-
-if investment:
-    es2 = EnergySystem.from_datapackage(
+else:
+    es = EnergySystem.from_datapackage(
         'renpass/examples/investment/datapackage.json',
         attributemap={},
         typemap=options.typemap)
 
-    for n in es2.nodes:
-        pprint.pprint(n.__dict__)
+# for n in es.nodes:
+#     pprint.pprint(n.__dict__)
+es.timeindex = es.timeindex[0:5]
+m = Model(es)
 
-    m = Model(es2)
-
-
+m.pprint()
 m.solve()
 
-postprocessing.system_info(es2)
+# get component results
+cr = pp.component_results(es, m.results(), select='sequences')
+
+# get bus results
+br = pp.bus_results(es, m.results(), select='scalars')
+
+# select on bus and reduce multiindex
+br['bus0'].xs([es.groups['bus0'], 'invest'], level=[1, 2])
+
+
+
+
+
+
+
+#supply = cr['load'].xs(['bus0', 'flow'], axis=1, level=[0, 2])

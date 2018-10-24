@@ -9,11 +9,58 @@ import os
 
 import pandas as pd
 
+from oemof.network import Bus
+from oemof.outputlib import views
+
+def component_results(es, results, select='sequences'):
+    """ Aggregated by component type
+    """
+
+    c = {}
+
+    for k, v in es.typemap.items():
+        if type(k) == str:
+            if select == 'sequences':
+                _seq_by_type = [
+                    views.node(results, n, multiindex=True)['sequences']
+                    for n in es.nodes if isinstance(n, v) and not isinstance(n, Bus)]
+                if _seq_by_type:
+                    seq_by_type =  pd.concat(_seq_by_type, axis=1)
+                    c[str(k)] = seq_by_type
+
+            if select == 'scalars':
+                _sca_by_type = [
+                    views.node(results, n, multiindex=True).get('scalars')
+                    for n in es.nodes if isinstance(n, v) and not isinstance(n, Bus)]
+
+                if [x for x in _sca_by_type if x is not None]:
+                    sca_by_type =  pd.concat(_sca_by_type)
+
+                c[str(k)] = _sca_by_type
+
+    return c
+
+def bus_results(es, results, select='sequences'):
+    """ Aggregated for every bus of the energy system
+    """
+    br = {}
+
+    buses = [b for b in es.nodes if isinstance(b, Bus)]
+
+    for b in buses:
+        if select == 'sequences':
+            bus_sequences = pd.concat([
+                views.node(results, b, multiindex=True)['sequences']], axis=1)
+            br[str(b)] = bus_sequences
+        if select == 'scalars':
+            br[str(b)] = views.node(results, b, multiindex=True).get('scalars')
+
+    return br
+
 
 def supply_results(path, types=['dispatchable', 'volatile'], bus=None):
     """
     """
-
     selection = pd.DataFrame()
     for t in types:
         result = pd.read_csv(
@@ -27,7 +74,6 @@ def supply_results(path, types=['dispatchable', 'volatile'], bus=None):
 def demand_results(path, types=['load'], bus=None):
     """
     """
-
     selection = pd.DataFrame()
     for t in types:
         result = pd.read_csv(

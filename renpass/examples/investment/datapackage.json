@@ -23,7 +23,7 @@
                     },
                     {
                         "name": "capacity",
-                        "type": "string",
+                        "type": "number",
                         "format": "default"
                     },
                     {
@@ -95,7 +95,7 @@
                     },
                     {
                         "name": "capacity",
-                        "type": "string",
+                        "type": "number",
                         "format": "default"
                     },
                     {
@@ -171,7 +171,7 @@
                     },
                     {
                         "name": "capacity",
-                        "type": "string",
+                        "type": "number",
                         "format": "default"
                     },
                     {
@@ -265,12 +265,12 @@
                     },
                     {
                         "name": "storage_capacity",
-                        "type": "string",
+                        "type": "number",
                         "format": "default"
                     },
                     {
                         "name": "capacity",
-                        "type": "string",
+                        "type": "number",
                         "format": "default"
                     },
                     {
@@ -422,12 +422,12 @@
                     },
                     {
                         "name": "capacity",
-                        "type": "string",
+                        "type": "number",
                         "format": "default"
                     },
                     {
                         "name": "capacity_cost",
-                        "type": "integer",
+                        "type": "number",
                         "format": "default"
                     },
                     {
