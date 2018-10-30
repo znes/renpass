@@ -6,9 +6,9 @@ from docopt import docopt
 
 from oemof.tools import logger
 
-import renpass.renpass
+import renpass.cli
 
-arguments = docopt(renpass.renpass.__doc__, version='renpass v0.3.1')
+arguments = docopt(renpass.cli.HELP, version='renpass v0.3.1')
 logger.define_logging()
 
-renpass.renpass.main(**arguments)
+renpass.cli.main(**arguments)
