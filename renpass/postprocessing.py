@@ -12,6 +12,12 @@ import pandas as pd
 from oemof.network import Bus
 from oemof.outputlib import views
 
+def read_results(path):
+    """
+    """
+    pass
+
+
 def component_results(es, results, select='sequences'):
     """ Aggregated by component type
     """
@@ -35,8 +41,7 @@ def component_results(es, results, select='sequences'):
 
                 if [x for x in _sca_by_type if x is not None]:
                     sca_by_type =  pd.concat(_sca_by_type)
-
-                c[str(k)] = _sca_by_type
+                    c[str(k)] = _sca_by_type
 
     return c
 
@@ -57,31 +62,68 @@ def bus_results(es, results, select='sequences'):
 
     return br
 
+def supply_results(path=None, types=['dispatchable', 'volatile',
+                                     'backpressure', 'extraction', 'storage'],
+                   bus=None, results=None, es=None):
+    """
+    """
+    if path is None and results is None:
+        raise ValueError('You need to specifiy either path or results!')
 
-def supply_results(path, types=['dispatchable', 'volatile'], bus=None):
-    """
-    """
     selection = pd.DataFrame()
-    for t in types:
-        result = pd.read_csv(
-            os.path.join(path, t + '.csv'),
-            sep=";", header=[0, 1, 2], index_col=0, parse_dates=True)
-        selection = pd.concat(
-            [selection,
-             result.xs([bus, 'flow'], axis=1, level=[1,2])], axis=1)
+
+    if path:
+        for t in types:
+            result = pd.read_csv(
+                os.path.join(path, t + '.csv'),
+                sep=";", header=[0, 1, 2], index_col=0, parse_dates=True)
+
+            selection = pd.concat(
+                [selection,
+                 result.xs([bus, 'flow'], axis=1, level=[1,2])], axis=1)
+
+    else:
+        for t in types:
+            if t == 'storage':
+                df = views.net_storage_flow(results,
+                                            node_type=es.typemap[t])
+                if df is not None:
+                    selection = pd.concat([selection, df], axis=1)
+            else:
+                df = views.node_output_by_type(results,
+                                               node_type=es.typemap[t])
+                if df is not None:
+                    selection = pd.concat([selection, df], axis=1)
+
+        selection = selection.loc[:, (slice(None),
+                                      [es.groups[b] for b in bus],
+                                      ['flow', 'net_flow'])]
     return selection
 
-def demand_results(path, types=['load'], bus=None):
+def demand_results(path=None, types=['load'], bus=None, results=None, es=None):
     """
     """
+
     selection = pd.DataFrame()
-    for t in types:
-        result = pd.read_csv(
-            os.path.join(path, t + '.csv'),
-            sep=";", header=[0, 1, 2], index_col=0, parse_dates=True)
-        selection = pd.concat(
-            [selection,
-             result.xs([bus, 'flow'], axis=1, level=[0,2])], axis=1)
+    if path:
+        for t in types:
+            result = pd.read_csv(
+                os.path.join(path, t + '.csv'),
+                sep=";", header=[0, 1, 2], index_col=0, parse_dates=True)
+            selection = pd.concat(
+                [selection,
+                 result.xs([bus, 'flow'], axis=1, level=[0,2])], axis=1)
+    else:
+        for t in types:
+            selection = pd.concat(
+                [selection,
+                 views.node_input_by_type(results, node_type=es.typemap[t])],
+                 axis=1)
+
+        selection = selection.loc[:, ([es.groups[b] for b in bus],
+                                     slice(None),
+                                     ['flow'])]
+
     return selection
 
 
