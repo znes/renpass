@@ -54,3 +54,5 @@ views.net_storage_flow(results=m.results(), node_type=options.typemap['storage']
 
 
 views.node(processing.parameter_as_dict(es), es.nodes[0], multiindex=True)['scalars']
+
+pp.bus_results(es, m.results(), select='scalars', aggregate=True)

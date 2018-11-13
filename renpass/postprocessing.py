@@ -45,7 +45,7 @@ def component_results(es, results, select='sequences'):
 
     return c
 
-def bus_results(es, results, select='sequences'):
+def bus_results(es, results, select='sequences', aggregate=False):
     """ Aggregated for every bus of the energy system
     """
     br = {}
@@ -59,6 +59,13 @@ def bus_results(es, results, select='sequences'):
             br[str(b)] = bus_sequences
         if select == 'scalars':
             br[str(b)] = views.node(results, b, multiindex=True).get('scalars')
+
+    if aggregate:
+        if select == 'sequences':
+            axis = 1
+        else:
+            axis = 0
+        br = pd.concat([b for b in br.values()], axis=axis)
 
     return br
 
@@ -125,7 +132,6 @@ def demand_results(path=None, types=['load'], bus=None, results=None, es=None):
                                      ['flow'])]
 
     return selection
-
 
 def storage_net_results(path, labels=[], store=True):
     """ Writes net results for storage components.
