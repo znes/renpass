@@ -24,8 +24,6 @@ m = Model(es)
 
 m.solve()
 
-m.process_results()
-
 # get component results
 cr = pp.component_results(es, m.results(), select='sequences')
 

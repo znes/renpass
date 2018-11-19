@@ -67,6 +67,9 @@ class Facade(Node):
             self.investment = None
         return self.investment
 
+    def update(self):
+        self.build_solph_components()
+
 
 class Reservoir(GenericStorage, Facade):
     """ Reservoir storage unit
@@ -116,6 +119,11 @@ class Reservoir(GenericStorage, Facade):
 
         self.output_edge_parameters = kwargs.get('output_edge_parameters', {})
 
+        self.build_solph_components()
+
+    def build_solph_components(self):
+        """
+        """
         investment = self._investment()
 
         reservoir_bus = Bus(label="reservoir-bus-" + self.label)
@@ -192,6 +200,11 @@ class Dispatchable(Source, Facade):
 
         self.edge_parameters = kwargs.get('edge_parameters', {})
 
+        self.build_solph_components()
+
+    def build_solph_components(self):
+        """
+        """
         f = Flow(nominal_value=self.capacity,
                  variable_costs=self.marginal_cost,
                  actual_value=self.profile,
@@ -251,7 +264,11 @@ class Volatile(Source, Facade):
 
         self.edge_parameters = kwargs.get('edge_parameters', {})
 
+        self.build_solph_components()
 
+    def build_solph_components(self):
+        """
+        """
         f = Flow(nominal_value=self.capacity,
                  variable_costs=self.marginal_cost,
                  actual_value=self.profile,
@@ -329,7 +346,11 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
 
         self.capacity_cost = kwargs.get('capacity_cost')
 
+        self.build_solph_components()
 
+    def build_solph_components(self):
+        """
+        """
         self.conversion_factors.update({
             self.fuel_bus: sequence(1),
             self.electricity_bus: sequence(self.electric_efficiency),
@@ -407,6 +428,11 @@ class BackpressureTurbine(Transformer, Facade):
 
         self.capacity_cost = kwargs.get('capacity_cost')
 
+        self.build_solph_components()
+
+    def build_solph_components(self):
+        """
+        """
         self.conversion_factors.update({
             self.fuel_bus: sequence(1),
             self.electricity_bus: sequence(self.electric_efficiency),
@@ -461,7 +487,11 @@ class Conversion(Transformer, Facade):
 
         self.output_edge_parameters = kwargs.get('output_edge_parameters', {})
 
+        self.build_solph_components()
 
+    def build_solph_components(self):
+        """
+        """
         self.conversion_factors.update({
             self.from_bus: sequence(1),
             self.to_bus: sequence(self.efficiency)})
@@ -503,12 +533,17 @@ class Load(Sink, Facade):
 
         self.edge_parameters = kwargs.get('edge_parameters', {})
 
-        self.marginal_cost = kwargs.get('marginal_cost', 0)
+        self.marginal_utility = kwargs.get('marginal_utility', 0)
 
+        self.build_solph_components()
+
+    def build_solph_components(self):
+        """
+        """
         self.inputs.update({self.bus: Flow(nominal_value=self.amount,
                                            actual_value=self.profile,
                                            fixed=True,
-                                           variable_cost=self.marginal_cost,
+                                           variable_cost=self.marginal_utility,
                                            **self.edge_parameters)})
 
 
@@ -547,42 +582,53 @@ class Storage(GenericStorage, Facade):
 
         self.capacity = kwargs.get('capacity')
 
-        self.nominal_capacity = self.storage_capacity
-
         self.capacity_cost = kwargs.get('capacity_cost')
 
+        self.capacity_potential = kwargs.get('capacity_potential',
+                                             float('+inf'))
+
+        self.efficiency = kwargs.get('efficiency', 1)
+
         self.loss = sequence(kwargs.get('loss', 0))
-
-        self.inflow_conversion_factor = sequence(
-            kwargs.get('efficiency', 1))
-
-        self.outflow_conversion_factor = sequence(
-            kwargs.get('efficiency', 1))
-
-        # make it investment but don't set costs (set below for flow (power))
-        self.investment = self._investment()
 
         self.input_edge_parameters = kwargs.get('input_edge_parameters', {})
 
         self.output_edge_parameters = kwargs.get('output_edge_parameters', {})
 
+        self.capacity_ratio = kwargs.get('capacity_ratio')
+
+        self.build_solph_components()
+
+    def build_solph_components(self):
+        """
+        """
+        self.nominal_capacity = self.storage_capacity
+
+        self.inflow_conversion_factor = sequence(
+            self.efficiency)
+
+        self.outflow_conversion_factor = sequence(
+            self.efficiency)
+
+        # make it investment but don't set costs (set below for flow (power))
+        self.investment = self._investment()
+
+
         if self.investment:
-            if kwargs.get('capacity_ratio') is None:
+            if self.capacity_ratio is None:
                 raise AttributeError(
                     ("You need to set attr `capacity_ratio` for "
                      "component {}").format(self.label))
             else:
-                self.invest_relation_input_capacity =  kwargs.get('capacity_ratio')
-                self.invest_relation_output_capacity = kwargs.get('capacity_ratio')
+                self.invest_relation_input_capacity =  self.capacity_ratio
+                self.invest_relation_output_capacity = self.capacity_ratio
                 self.invest_relation_input_output = 1
 
             # set capacity costs at one of the flows
             fi = Flow(investment=Investment(
                         ep_costs=self.capacity_cost,
-                        maximum=getattr(self,
-                                        'capacity_potential',
-                                        float('+inf'))),
-                 **self.input_edge_parameters)
+                        maximum=self.capacity_potential),
+                    **self.input_edge_parameters)
             # set investment, but no costs (as relation input / output = 1)
             fo = Flow(investment=Investment(),
                       **self.output_edge_parameters)
@@ -637,6 +683,11 @@ class Connection(Link, Facade):
 
         self.capacity_cost = kwargs.get('capacity_cost')
 
+        self.build_solph_components()
+
+    def build_solph_components(self):
+        """
+        """
         investment = self._investment()
 
         self.inputs.update({

@@ -55,7 +55,8 @@ def bus_results(es, results, select='sequences', aggregate=False):
     for b in buses:
         if select == 'sequences':
             bus_sequences = pd.concat([
-                views.node(results, b, multiindex=True)['sequences']], axis=1)
+                views.node(results, b, multiindex=True).get('sequences',
+                                                            pd.DataFrame())], axis=1)
             br[str(b)] = bus_sequences
         if select == 'scalars':
             br[str(b)] = views.node(results, b, multiindex=True).get('scalars')

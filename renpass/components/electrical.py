@@ -58,7 +58,7 @@ class Line(Facade, Flow):
 
         self.from_bus = kwargs.get('from_bus')
 
-        self.to_bus = kwargs.get('to_bus')
+        self.to_bus = kwargs.get('to_bus')#
 
         self.reactance = sequence(kwargs.get('reactance', 0.00001))
 
@@ -66,6 +66,11 @@ class Line(Facade, Flow):
 
         self.capacity_cost = kwargs.get('capacity_cost')
 
+        self.build_solph_components()
+
+    def build_solph_components(self):
+        """
+        """
         # oemof related attribute setting of 'Flow-object'
         self.input = self.from_bus
 
