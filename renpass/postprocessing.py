@@ -28,7 +28,7 @@ def component_results(es, results, select='sequences'):
         if type(k) == str:
             if select == 'sequences':
                 _seq_by_type = [
-                    views.node(results, n, multiindex=True)['sequences']
+                    views.node(results, n, multiindex=True).get('sequences')
                     for n in es.nodes if isinstance(n, v) and not isinstance(n, Bus)]
                 if _seq_by_type:
                     seq_by_type =  pd.concat(_seq_by_type, axis=1)

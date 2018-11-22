@@ -346,6 +346,8 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
 
         self.capacity_cost = kwargs.get('capacity_cost')
 
+        self.input_edge_parameters = kwargs.get('input_edge_parameters', {})
+
         self.build_solph_components()
 
     def build_solph_components(self):
@@ -357,7 +359,8 @@ class ExtractionTurbine(ExtractionTurbineCHP, Facade):
             self.heat_bus: sequence(self.thermal_efficiency)})
 
         self.inputs.update({
-            self.fuel_bus: Flow(variable_cost=self.carrier_cost)})
+            self.fuel_bus: Flow(variable_cost=self.carrier_cost,
+                                **self.input_edge_parameters)})
 
         self.outputs.update({
             self.electricity_bus: Flow(nominal_value=self.capacity,
@@ -428,6 +431,8 @@ class BackpressureTurbine(Transformer, Facade):
 
         self.capacity_cost = kwargs.get('capacity_cost')
 
+        self.input_edge_parameters = kwargs.get('input_edge_parameters', {})
+
         self.build_solph_components()
 
     def build_solph_components(self):
@@ -439,7 +444,9 @@ class BackpressureTurbine(Transformer, Facade):
             self.heat_bus: sequence(self.thermal_efficiency)})
 
         self.inputs.update({
-            self.fuel_bus: Flow(variable_costs=self.carrier_cost)})
+            self.fuel_bus: Flow(variable_costs=self.carrier_cost,
+                                **self.input_edge_parameters)
+                            })
 
         self.outputs.update({
             self.electricity_bus: Flow(nominal_value=self.capacity,
