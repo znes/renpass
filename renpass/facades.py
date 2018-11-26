@@ -58,7 +58,11 @@ class Facade(Node):
             else:
                 # TODO: calculate ep_costs from specific capex
                 if isinstance(self, GenericStorage):
-                    self.investment = Investment()
+                    if self.storage_capacity_cost is not None:
+                        self.investment = Investment(
+                            ep_costs=self.storage_capacity_cost)
+                    else:
+                        self.investment = Investment()
                 else:
                     self.investment = Investment(
                         ep_costs=self.capacity_cost,
@@ -590,6 +594,8 @@ class Storage(GenericStorage, Facade):
         self.capacity = kwargs.get('capacity')
 
         self.capacity_cost = kwargs.get('capacity_cost')
+
+        self.storage_capacity_cost = kwargs.get('storage_capacity_cost')
 
         self.capacity_potential = kwargs.get('capacity_potential',
                                              float('+inf'))
