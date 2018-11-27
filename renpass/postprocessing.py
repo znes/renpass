@@ -11,6 +11,7 @@ import pandas as pd
 
 from oemof.network import Bus
 from oemof.outputlib import views
+from . import facades
 
 def read_results(path):
     """
