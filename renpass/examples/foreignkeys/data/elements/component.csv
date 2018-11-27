@@ -1,3 +1,3 @@
 name;type;capacity;bus;profile;edge_parameters;carrier;tech;amount;max
-coal;dispatchable;100000;bus0;dispatchable-profile;{"max": "max"};coal;st;Infinity;max-profile
+coal;dispatchable;100000;bus0;dispatchable-profile;{"max": "max-profile"};coal;st;Infinity;max-profile
 demand;load;Infinity;bus0;electricity-load-profile;{"max": 5};electricity;load;10;max-profile
