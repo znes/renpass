@@ -88,16 +88,10 @@ class Reservoir(GenericStorage, Facade):
         Installed production capacity of the turbine installed at the
         reservoir
     efficiency: numeric
-        Efficiency of the turbine converting inflow (in MWel) to electricity
+        Efficiency of the turbine converting inflow to electricity
         production
     inflow: array-like
-        Absolute profile of water inflow into the storage
-    capacity_cost: numeric
-        Investment costs for the storage capacity! i.e. unit for example
-        €/MW installed capacity not per MWh
-    spillage: boolean
-        If True, spillage of water will be possible, otherwise water is forced
-        to storage. Default: True
+        Absolute profile of inflow into the storage
     """
 
     def __init__(self, *args, **kwargs):
@@ -111,13 +105,9 @@ class Reservoir(GenericStorage, Facade):
 
         self.efficiency = kwargs.get('efficiency')
 
-        self.nominal_capacity = self.storage_capacity
-
         self.capacity_cost = kwargs.get('capacity_cost')
 
         self.storage_capacity_cost = kwargs.get('storage_capacity_cost')
-
-        self.spillage = kwargs.get('spillage', True)
 
         self.input_edge_parameters = kwargs.get('input_edge_parameters', {})
 
@@ -128,30 +118,41 @@ class Reservoir(GenericStorage, Facade):
     def build_solph_components(self):
         """
         """
+        self.nominal_capacity = self.storage_capacity
+
+        self.outflow_conversion_factor = sequence(
+            self.efficiency)
+
         investment = self._investment()
 
-        reservoir_bus = Bus(label="reservoir-bus-" + self.label)
+        if self.investment:
+            raise NotImplementedError(
+                "Investment for reservoir class is not implemented.")
+            # if self.capacity_ratio is None:
+            #     raise AttributeError(
+            #         ("You need to set attr `capacity_ratio` for "
+            #          "component {}").format(self.label))
+            # else:
+            #     self.invest_relation_output_capacity = self.capacity_ratio
+
         inflow = Source(
             label="inflow" + self.label,
             outputs={
-                reservoir_bus: Flow(nominal_value=1,
-                                    actual_value=self.inflow,
-                                    fixed=True)})
-        if self.spillage:
-            f = Flow()
-        else:
-            f = Flow(actual_value=0, fixed=True)
+                self: Flow(nominal_value=1,
+                           actual_value=self.inflow,
+                           fixed=True)})
 
-        spillage = Sink(label="spillage" + self.label,
-                        inputs={reservoir_bus: f})
+
         self.inputs.update({
-            reservoir_bus: Flow(**self.input_edge_parameters)})
+            inflow: Flow(nominal_value=None,
+                         **self.input_edge_parameters)})
 
         self.outputs.update({
-            self.bus: Flow(investment=investment,
-                            **self.output_edge_parameters)})
+            self.bus: Flow(nominal_value=self.capacity,
+                           investment=investment,
+                           **self.output_edge_parameters)})
 
-        self.subnodes = (reservoir_bus, inflow, spillage)
+        self.subnodes = (inflow)
 
 
 class Dispatchable(Source, Facade):
