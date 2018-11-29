@@ -90,7 +90,7 @@ class Reservoir(GenericStorage, Facade):
     efficiency: numeric
         Efficiency of the turbine converting inflow to electricity
         production
-    inflow: array-like
+    profile: array-like
         Absolute profile of inflow into the storage
     """
 
@@ -139,7 +139,7 @@ class Reservoir(GenericStorage, Facade):
             label="inflow" + self.label,
             outputs={
                 self: Flow(nominal_value=1,
-                           actual_value=self.inflow,
+                           actual_value=self.profile,
                            fixed=True)})
 
 
