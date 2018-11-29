@@ -26,7 +26,7 @@ biomass = fc.Bus('biomass', balanced=False)
 
 gas = fc.Bus('gas', balanced=False)
 
-res = fc.Reservoir(capacity=10, inflow=[1,2,3], bus=el1, storage_capacity=100,
+res = fc.Reservoir(capacity=10, profile=[1,2,3], bus=el1, storage_capacity=100,
                    efficiency=0.95)
 
 st = fc.Dispatchable('st', bus=el1, carrier='biogas', tech='st', capacity=10,
@@ -67,7 +67,7 @@ conn = fc.Connection('conn', from_bus=el1, to_bus=el2, loss=0.07, capacity=100)
 
 es.add(el1, el2, heat, biomass, bp, st, wind, sto, conv, load, conn, gas, ext, res)
 
-es.add(res.subnodes)
+es.add(res.subnodes[0])
 m = Model(es)
 
 m.pprint()
