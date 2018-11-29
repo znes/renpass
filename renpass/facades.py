@@ -118,6 +118,9 @@ class Reservoir(GenericStorage, Facade):
     def build_solph_components(self):
         """
         """
+        # set have full to beginning of optimzation by default for all reservoir
+        self.initial_capacity = 0.5
+
         self.nominal_capacity = self.storage_capacity
 
         self.outflow_conversion_factor = sequence(
