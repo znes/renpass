@@ -97,13 +97,13 @@ class Reservoir(GenericStorage, Facade):
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs,
-                        _facade_requires_=['bus', 'inflow', 'efficiency'])
+                        _facade_requires_=['bus', 'profile', 'efficiency'])
 
         self.storage_capacity = kwargs.get('storage_capacity')
 
         self.capacity = kwargs.get('capacity')
 
-        self.efficiency = kwargs.get('efficiency')
+        self.efficiency = kwargs.get('efficiency', 1)
 
         self.capacity_cost = kwargs.get('capacity_cost')
 
@@ -152,7 +152,7 @@ class Reservoir(GenericStorage, Facade):
                            investment=investment,
                            **self.output_edge_parameters)})
 
-        self.subnodes = (inflow)
+        self.subnodes = (inflow,)
 
 
 class Dispatchable(Source, Facade):
