@@ -146,10 +146,6 @@ class Reservoir(GenericStorage, Facade):
                            fixed=True)})
 
 
-        self.inputs.update({
-            inflow: Flow(nominal_value=None,
-                         **self.input_edge_parameters)})
-
         self.outputs.update({
             self.bus: Flow(nominal_value=self.capacity,
                            investment=investment,
