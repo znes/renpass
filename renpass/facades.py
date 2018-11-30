@@ -142,8 +142,8 @@ class Reservoir(GenericStorage, Facade):
             label="inflow" + self.label,
             outputs={
                 self: Flow(nominal_value=1,
-                           actual_value=self.profile,
-                           fixed=True)})
+                           max=self.profile,
+                           fixed=False)})
 
 
         self.outputs.update({
