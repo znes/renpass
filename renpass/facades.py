@@ -600,7 +600,7 @@ class Storage(GenericStorage, Facade):
         self.capacity_potential = kwargs.get('capacity_potential',
                                              float('+inf'))
 
-        self.marginal_cost = kwargs.get('marginal_cost', 0)                                            
+        self.marginal_cost = kwargs.get('marginal_cost', 0)
 
         self.efficiency = kwargs.get('efficiency', 1)
 
@@ -646,7 +646,7 @@ class Storage(GenericStorage, Facade):
                     **self.input_edge_parameters)
             # set investment, but no costs (as relation input / output = 1)
             fo = Flow(investment=Investment(),
-                      variable_cost=self.marginal_cost,
+                      variable_costs=self.marginal_cost,
                       **self.output_edge_parameters)
             # required for correct grouping in oemof.solph.components
             self._invest_group = True
@@ -656,7 +656,7 @@ class Storage(GenericStorage, Facade):
             fi = Flow(nominal_value=self.capacity,
                       **self.input_edge_parameters)
             fo = Flow(nominal_value=self.capacity,
-                      variable_cost=self.marginal_cost,
+                      variable_costs=self.marginal_cost,
                       **self.output_edge_parameters)
 
         self.inputs.update({self.bus: fi})
