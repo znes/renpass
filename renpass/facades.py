@@ -712,7 +712,8 @@ class Connection(Link, Facade):
             self.to_bus: Flow()})
 
         self.outputs.update({
-            self.from_bus: Flow(nominal_value=self.capacity,
+            self.from_bus: Flow(variable_costs=0.00001,
+                                nominal_value=self.capacity,
                                 investment=investment),
             self.to_bus: Flow(nominal_value=self.capacity,
                               investment=investment)})
