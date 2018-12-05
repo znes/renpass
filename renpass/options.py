@@ -42,25 +42,27 @@ techmap = {
 }
 
 techcolor = {
-    'extraction': 'gray',
-    'boiler_central': 'sandybrown',
-    'hotwatertank_central': 'red',
-    'backpressure': 'gray',
-    'boiler_decentral': 'sandybrown',
-    'electricity_heatpump': 'orange',
-    'gas_heatpump': 'brown',
-    'hotwatertank_decentral': 'red',
-    'ocgt': 'lightgray',
+    # 'extraction': 'gray',
+    # 'boiler_central': 'sandybrown',
+    # 'hotwatertank_central': 'red',
+    # 'backpressure': 'gray',
+    # 'boiler_decentral': 'sandybrown',
+    # 'electricity_heatpump': 'orange',
+    # 'gas_heatpump': 'brown',
+    # 'hotwatertank_decentral': 'red',
+    'acaes': 'brown',
+    'ocgt': 'gray',
     'ccgt': 'lightgray',
     'pv': 'gold',
-    'wind_onshore': 'aqua',
-    'wind_offshore': 'darkcyan',
+    'wind_onshore': 'skyblue',
+    'wind_offshore': 'darkblue',
     'biomass': 'olivedrab',
-    'battery': 'magenta',
-    'ror': 'darkblue',
-    'phs': 'blueviolet',
-    'reservoir': 'steelblue'
+    'lithium_battery': 'lightsalmon',
+    'ror': 'aqua',
+    'phs': 'darkred',
+    'reservoir': 'magenta'
 }
 
 carriercolor = {
+
 }

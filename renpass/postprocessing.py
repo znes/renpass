@@ -10,7 +10,8 @@ import os
 import pandas as pd
 
 from oemof.network import Bus
-from oemof.outputlib import views
+from oemof.solph.components import GenericStorage
+from oemof.outputlib import views, processing
 from . import facades
 
 def read_results(path):
@@ -71,8 +72,9 @@ def bus_results(es, results, select='sequences', aggregate=False):
 
     return br
 
-def supply_results(path=None, types=['dispatchable', 'volatile',
-                                     'backpressure', 'extraction', 'storage'],
+def supply_results(path=None, types=['dispatchable', 'volatile', 'conversion',
+                                     'backpressure', 'extraction', 'storage',
+                                     'generator', 'reservoir'],
                    bus=None, results=None, es=None):
     """
     """
@@ -231,23 +233,63 @@ def _edges(nodes):
             edges[str(n)].append((i, n))
     return edges
 
-
-def system_info(es, path=None):
+def write_results(es, results, results_path):
     """
     """
-    d = {}
-    for n in es.nodes:
-        d[n.label] = {
-            'type': n.type,
-            'tech': getattr(n, 'tech', None),
-            'mapped_type': getattr(n, 'mapped_type', None),
-            'carrier': getattr(n, 'carrier', None)
-        }
+    writer = pd.ExcelWriter(os.path.join(results_path, 'results.xlsx'))
 
-    df = pd.DataFrame.from_dict(d, orient='index')
+    buses = [b.label for b in es.nodes if isinstance(b, Bus)]
 
-    if path:
-        df.to_csv(os.path.join(path, 'es_information.csv'))
-        return True
-    else:
-        return pd.DataFrame.from_dict(d, orient='index')
+    # write suppy results with net-import per bus
+    connection_results = component_results(es, results).get('connection')
+
+    for b in buses.index:
+        supply = supply_results(results=results, es=es, bus=[b])
+        supply.columns = supply.columns.droplevel([1, 2])
+
+        if connection_results is not None and \
+            es.groups[b] in list(connection_results.columns.levels[0]):
+            ex = connection_results.loc[:, (es.groups[b], slice(None), 'flow')].sum(axis=1)
+            im = connection_results.loc[:, (slice(None), es.groups[b], 'flow')].sum(axis=1)
+            supply['net_import'] =  im - ex
+
+        supply.to_excel(writer, 'supply-' + b)
+
+    # write installed capacities (including exogenously defined ones)
+    all = bus_results(es, results, select='scalars', aggregate=True)
+    all.name = 'value'
+    endogenous = all.reset_index()
+    endogenous['tech'] = [
+        getattr(t, 'tech', np.nan) for t in all.index.get_level_values(0)]
+
+    d = dict()
+    for node in es.nodes:
+        if not isinstance(node, (Bus, Sink)):
+            if getattr(node, 'capacity', None) is not None:
+                key = (node, [n for n in node.outputs.keys()][0], 'capacity', node.tech)
+                d[key] = {'value': node.capacity}
+    exogenous = pd.DataFrame.from_dict(d, orient='index').dropna()
+    exogenous.index = exogenous.index.set_names(['from', 'to', 'type', 'tech'])
+
+    capacities = pd.concat(
+        [endogenous, exogenous.reset_index()]).groupby(['to', 'tech']).sum().unstack('to')
+    capacities.columns = capacities.columns.droplevel(0)
+    capacities.to_excel(writer, 'capacities')
+
+    demand = demand_results(results=results, es=es, bus=buses)
+    demand.columns = demand.columns.droplevel([0, 2])
+    demand.to_excel(writer, 'load')
+
+    duals = bus_results(es, results, aggregate=True).xs('duals', level=2, axis=1)
+    duals.columns = duals.columns.droplevel(1)
+    (duals.T / m.objective_weighting).T.to_excel(writer, 'shadow_prices')
+
+    excess = component_results(es, results, select='sequences')['excess']
+    excess.columns = excess.columns.droplevel([1, 2])
+    excess.to_excel(writer, 'excess')
+
+    filling_levels = views.node_weight_by_type(results, GenericStorage)
+    filling_levels.columns = filling_levels.columns.droplevel(1)
+    filling_levels.to_excel(writer, 'filling_levels')
+
+    writer.save()

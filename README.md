@@ -234,6 +234,20 @@ Errors regarding the non-int type like this one:
 Check your type(s) in the `datapackage.json` file. If meta-data are inferred types
 might be string instead of number or integer which most likely causes such an error.
 
+* Profiles for volatile and load components
+
+```python
+  ...
+  ValueError: Cannot fix flow value to None.
+  Please set the actual_value attribute of the flow
+```
+
+This error is likely to occur if your foreign keys are set correctly but
+the name in the field `profile` of your `volatilel.csv` resource does not match
+any name inside the `volatile_profile.csv` file, i.e. the profile is not found
+where it is looked for.
+
+
 **pyomo related errors**
 
 If you encounter an error for writing a lp-file, you might want to check if

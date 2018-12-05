@@ -31,6 +31,8 @@ class ElectricalBus(Bus):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.carrier = kwargs.get('carrier', 'electricity')
+
         self.slack = kwargs.get('slack', False)
 
         self.v_max = kwargs.get('v_max', 1000)
