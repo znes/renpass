@@ -26,15 +26,12 @@ def line_results(es, results, select='sequences'):
     lines = [l for l in es.nodes
              if isinstance(l, components.electrical.Line)]
 
-    data = [results[line.input, line.output][select] for line in lines],
+    df = pd.concat([results[line.input, line.output][select]
+                    for line in lines], axis=1)
 
-    if [isinstance(i, (pd.DataFrame, pd.Series)) for i in data]:
-        df = pd.concat(data, axis=1)
+    df.columns = [line.input.label + '-' + line.output.label for line in lines]
 
-        df.columns = [line.input.label + '-' + line.output.label
-                      for line in lines]
-
-        return df
+    return df
 
 
 def component_results(es, results, select='sequences'):
