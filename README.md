@@ -61,9 +61,10 @@ Currently we provide the following facades:
 
 * Dispatchable
 * Volatile
-* Connection
+* Link
 * Conversion
 * Storage
+* Reservoir
 * ExtractionTurbine
 * BackpressureTurbine
 * Reservoir

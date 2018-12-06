@@ -59,8 +59,8 @@ conv = fc.Conversion('conv', from_bus=el2, to_bus=heat, efficiency=0.95,
 
 load = fc.Load('load', bus=el1, amount=1000, profile=[0.005, 0.00034, 0.0434])
 
-# Connection
-conn = fc.Connection('conn', from_bus=el1, to_bus=el2, loss=0.07, capacity=100)
+# Link
+conn = fc.Link('conn', from_bus=el1, to_bus=el2, loss=0.07, capacity=100)
 
 es.add(el1, el2, heat, biomass, bp, st, wind, sto, conv, load, conn, gas, ext)
 

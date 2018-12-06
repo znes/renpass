@@ -181,29 +181,29 @@ def storage_net_results(path, labels=[], store=True):
         return df
 
 
-def connection_net_results(path, hubs=[], store=True):
-    """ Writes net results for connection components.
+def link_net_results(path, hubs=[], store=True):
+    """ Writes net results for link components.
 
     path: str
-        Path to connection component results.
+        Path to link component results.
     label: list
         List of hub labels.
     """
 
-    connection_results = pd.read_csv(
+    link_results = pd.read_csv(
         path, sep=";", header=[0, 1, 2], index_col=0, parse_dates=True)
 
     df = pd.DataFrame()
 
     for hub in hubs:
-        ex = connection_results.loc[:, (hub, slice(None), 'flow')].sum(axis=1)
-        im = connection_results.loc[:, (slice(None), hub, 'flow')].sum(axis=1)
+        ex = link_results.loc[:, (hub, slice(None), 'flow')].sum(axis=1)
+        im = link_results.loc[:, (slice(None), hub, 'flow')].sum(axis=1)
 
         df[hub + '-' + 'net-import'] = im - ex
 
     if store:
         df.to_csv(
-            os.path.join(os.path.dirname(path), 'connection-processed' + '.csv'),
+            os.path.join(os.path.dirname(path), 'link-processed' + '.csv'),
             sep=";", date_format='%Y-%m-%dT%H:%M:%SZ')
     else:
         return df
@@ -212,7 +212,7 @@ def connection_net_results(path, hubs=[], store=True):
 def links(es):
     """
     """
-    buses = [n for n in es.nodes if isinstance(n, facades.Connection)]
+    buses = [n for n in es.nodes if isinstance(n, facades.Link)]
     links = list()
     for b in buses:
         for i in b.inputs:
@@ -241,16 +241,16 @@ def write_results(es, results, results_path):
     buses = [b.label for b in es.nodes if isinstance(b, Bus)]
 
     # write suppy results with net-import per bus
-    connection_results = component_results(es, results).get('connection')
+    link_results = component_results(es, results).get('link')
 
     for b in buses.index:
         supply = supply_results(results=results, es=es, bus=[b])
         supply.columns = supply.columns.droplevel([1, 2])
 
-        if connection_results is not None and \
-            es.groups[b] in list(connection_results.columns.levels[0]):
-            ex = connection_results.loc[:, (es.groups[b], slice(None), 'flow')].sum(axis=1)
-            im = connection_results.loc[:, (slice(None), es.groups[b], 'flow')].sum(axis=1)
+        if link_results is not None and \
+            es.groups[b] in list(link_results.columns.levels[0]):
+            ex = link_results.loc[:, (es.groups[b], slice(None), 'flow')].sum(axis=1)
+            im = link_results.loc[:, (slice(None), es.groups[b], 'flow')].sum(axis=1)
             supply['net_import'] =  im - ex
 
         supply.to_excel(writer, 'supply-' + b)

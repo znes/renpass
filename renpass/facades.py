@@ -668,22 +668,22 @@ class Storage(GenericStorage, Facade):
         self._set_flows('Ignore this warning...')
 
 
-class Connection(Link, Facade):
-    """ Bi-direction connection for two buses (e.g. to model transshipment)
+class Link(Link, Facade):
+    """ Bi-direction link for two buses (e.g. to model transshipment)
 
     Parameters
     ----------
     from_bus: oemof.solph.Bus
-        An oemof bus instance where the connection unit is connected to with
+        An oemof bus instance where the link unit is connected to with
         its input.
     to_bus: oemof.solph.Bus
-        An oemof bus instance where the connection unit is connected to with
+        An oemof bus instance where the link unit is connected to with
         its output.
     capacity: numeric
         The maximal capacity (output side each) of the unit. If not set, attr
         `capacity_cost` needs to be set.
     loss:
-        Relative loss through the connection (default: 0)
+        Relative loss through the link (default: 0)
     capacity_cost: numeric
         Investment costs per unit of output capacity.
         If capacity is not set, this value will be used for optimizing the
@@ -712,7 +712,7 @@ class Connection(Link, Facade):
             self.to_bus: Flow()})
 
         self.outputs.update({
-            self.from_bus: Flow(variable_costs=0.00001,
+            self.from_bus: Flow(variable_costs=0.000001,
                                 nominal_value=self.capacity,
                                 investment=investment),
             self.to_bus: Flow(nominal_value=self.capacity,

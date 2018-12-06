@@ -15,7 +15,7 @@ typemap = {
     'storage': facades.Storage,
     'reservoir': facades.Reservoir,
     'backpressure': facades.BackpressureTurbine,
-    'connection': facades.Connection,
+    'link': facades.Link,
     'conversion': facades.Conversion,
     'excess': facades.Excess,
     'shortage': facades.Shortage}
