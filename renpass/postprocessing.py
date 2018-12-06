@@ -12,12 +12,29 @@ import pandas as pd
 from oemof.network import Bus
 from oemof.solph.components import GenericStorage
 from oemof.outputlib import views, processing
-from . import facades
+from . import facades, components
 
 def read_results(path):
     """
     """
     pass
+
+
+def line_results(es, results, select='sequences'):
+    """
+    """
+    lines = [l for l in es.nodes
+             if isinstance(l, components.electrical.Line)]
+
+    data = [results[line.input, line.output][select] for line in lines],
+
+    if [isinstance(i, (pd.DataFrame, pd.Series)) for i in data]:
+        df = pd.concat(data, axis=1)
+
+        df.columns = [line.input.label + '-' + line.output.label
+                      for line in lines]
+
+        return df
 
 
 def component_results(es, results, select='sequences'):
@@ -32,7 +49,9 @@ def component_results(es, results, select='sequences'):
                 _seq_by_type = [
                     views.node(results, n, multiindex=True).get('sequences')
                     for n in es.nodes if isinstance(n, v) and not isinstance(n, Bus)]
-                if _seq_by_type:
+                # check if dataframes / series have been returned
+                if any([isinstance(i, (pd.DataFrame, pd.Series))
+                       for i in _seq_by_type]):
                     seq_by_type =  pd.concat(_seq_by_type, axis=1)
                     c[str(k)] = seq_by_type
 

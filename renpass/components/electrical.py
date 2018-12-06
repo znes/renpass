@@ -78,6 +78,8 @@ class Line(Facade, Flow):
 
         self.output = self.to_bus
 
+        self.variable_costs = sequence(0.000001)
+
         self.bidirectional = True
 
         self.nominal_value = self.capacity
