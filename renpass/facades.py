@@ -577,6 +577,9 @@ class Storage(GenericStorage, Facade):
         Investment costs for the storage unit e.g in €/MW-capacity
     loss: numeric
         Standing loss per timestep in % of capacity. Default: 0
+    storage_capacity_initial: numeric
+        The state of the storage capacity in the first (and last) time step of
+        optimization. Default: 0.5
     input_edge_parameters: dict (optional)
         Set parameters on the input edge of the storage (see oemof.solph for
         more information on possible parameters)
@@ -606,6 +609,9 @@ class Storage(GenericStorage, Facade):
 
         self.loss = sequence(kwargs.get('loss', 0))
 
+        self.storage_capacity_initial = kwargs.get(
+            'storage_capacity_initial', 0.5)
+
         self.input_edge_parameters = kwargs.get('input_edge_parameters', {})
 
         self.output_edge_parameters = kwargs.get('output_edge_parameters', {})
@@ -618,6 +624,8 @@ class Storage(GenericStorage, Facade):
         """
         """
         self.nominal_capacity = self.storage_capacity
+
+        self.initial_capacity = self.storage_capacity_initial
 
         self.inflow_conversion_factor = sequence(
             self.efficiency)

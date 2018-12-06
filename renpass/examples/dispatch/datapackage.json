@@ -182,6 +182,11 @@
                         "type": "number",
                         "format": "default"
                     },
+		    {
+			"name": "storage_capacity_initial",
+			"type": "number",
+			"format": "default"
+		    },
                     {
                         "name": "type",
                         "type": "string",
