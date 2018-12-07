@@ -627,6 +627,8 @@ class Storage(GenericStorage, Facade):
 
         self.initial_capacity = self.storage_capacity_initial
 
+        self.capacity_loss = self.loss
+
         self.inflow_conversion_factor = sequence(
             self.efficiency)
 
