@@ -1,4 +1,5 @@
 import os
+import json
 
 import dash
 import dash_core_components as dcc
@@ -86,13 +87,12 @@ analysis_layout = html.Div(children=[
     html.H3(children='Hourly analysis per country'),
 
     html.Div([
-        dcc.Input(
+        dcc.Dropdown(
             id='country',
-            placeholder='Enter a country code...',
-            type='text',
-            value='DE'
-        )
+            options=[{}],
+            value='DE')
     ], style={'width': '20%'}),
+
 
     html.Div(children=[
         dcc.Graph(
@@ -153,6 +153,15 @@ def update_stacked_plot(scenario):
     """
     """
     return plots.stacked_plot(scenario)
+
+@app.callback(dash.dependencies.Output('country', 'options'),
+              [dash.dependencies.Input('scenario', 'value')])
+def update_country_list(scenario):
+    """
+    """
+    with open(os.path.join(app.datapath, scenario, 'config.json')) as f:
+        data = json.load(f)
+    return [{'label': r, 'value': r} for r in data['regions']]
 
 
 if __name__ == '__main__':
