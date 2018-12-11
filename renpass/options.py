@@ -1,7 +1,9 @@
 
 from oemof.solph import Bus
+from oemof.tabular import facades
+
 from renpass.components import electrical
-from renpass import facades
+
 
 typemap = {
     'bus': Bus,

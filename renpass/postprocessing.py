@@ -5,14 +5,18 @@ from the model.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 """
+
 import os
 
 import pandas as pd
 
 from oemof.network import Bus
-from oemof.solph.components import GenericStorage
 from oemof.outputlib import views, processing
-from . import facades, components
+from oemof.solph.components import GenericStorage
+from oemof.tabular import facades
+
+from . import components
+
 
 def read_results(path):
     """

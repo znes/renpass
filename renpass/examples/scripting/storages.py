@@ -7,12 +7,12 @@ application and work with the oemof datapackage - reader functionality
 SPDX-License-Identifier: GPL-3.0-or-later
 """
 
-from renpass import facades as fc
-from renpass.components import storages as st
+import pandas as pd
 
 from oemof.solph import EnergySystem, Model
+from oeomf.tabular import facades as fc
 
-import pandas as pd
+from renpass.components import storages as st
 
 
 es = EnergySystem(timeindex=pd.date_range('2018', freq='H', periods=3))

@@ -13,14 +13,13 @@ https://www.pypsa.org/examples/minimal_example_lopf.html
 Thanks at Tom, Jonas and others!
 """
 
-
-from renpass import facades as fc
-from renpass.components import electrical as elec
-
-from oemof.solph import EnergySystem, Model
-from oemof.network import Bus, Node, Edge
-
 import pandas as pd
+
+from oemof.network import Bus, Node, Edge
+from oemof.solph import EnergySystem, Model
+from oemof.tabular import facades as fc
+
+from renpass.components import electrical as elec
 
 
 # initialise oemof energy system object
