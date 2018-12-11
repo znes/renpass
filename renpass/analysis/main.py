@@ -43,7 +43,7 @@ analysis_layout = html.Div(children=[
 
     html.Div([
         html.Div([
-            html.Label('Scenarios'),
+            html.Label('Scenario'),
             dcc.Dropdown(
                 id='scenario',
                 options=[{
@@ -54,6 +54,36 @@ analysis_layout = html.Div(children=[
             )],
         style={'width': '20%'})
     ]),
+
+    html.Div([
+        html.Div([
+            html.Label('Comapare with'),
+            dcc.Dropdown(
+                id='compare',
+                options=[{
+                    'label': s,
+                    'value': s}
+                         for s in app.scenarios],
+                value=''
+            )],
+        style={'width': '20%'})
+    ]),
+
+    html.Div([
+        html.Div(children=[
+            dcc.Graph(
+                id='stacked_plot1'
+            )
+        ], style={'width': '50%', 'display': 'inline-block'}),
+
+        html.Div(children=[
+            dcc.Graph(
+                id='stacked_plot2'
+            )
+        ], style={'width': '50%', 'display': 'inline-block'}),
+    ], className="row"),
+
+    html.H3(children='Hourly analysis per country'),
 
     html.Div([
         dcc.Input(
@@ -85,15 +115,8 @@ analysis_layout = html.Div(children=[
                 )
             )
         )
-    ], className='six Columns'),
-
-    html.Div(children=[
-        dcc.Graph(
-            id='stacked_plot'
-        )
-    ], className='six Columns'),
-
-
+    ], className='six Columns',
+       style={'width': '90%', 'height':'80vh'}),
 
 ])
 
@@ -117,8 +140,15 @@ def update_hourly_plot(scenario, country='DE'):
     """
     return plots.hourly_plot(scenario, country)
 
-@app.callback(dash.dependencies.Output('stacked_plot', 'figure'),
+@app.callback(dash.dependencies.Output('stacked_plot1', 'figure'),
               [dash.dependencies.Input('scenario', 'value')])
+def update_stacked_plot(scenario):
+    """
+    """
+    return plots.stacked_plot(scenario)
+
+@app.callback(dash.dependencies.Output('stacked_plot2', 'figure'),
+              [dash.dependencies.Input('compare', 'value')])
 def update_stacked_plot(scenario):
     """
     """
