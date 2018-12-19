@@ -89,9 +89,9 @@ analysis_layout = html.Div(children=[
 
     html.Div([
         dcc.Dropdown(
-            id='country',
+            id='bus',
             options=[{}],
-            value='DE')
+            value='DE-electricity')
     ], style={'width': '20%'}),
 
 
@@ -135,11 +135,11 @@ def display_page(pathname):
 @app.callback(
     dash.dependencies.Output('hourly_plot', 'figure'),
     [dash.dependencies.Input('scenario', 'value'),
-     dash.dependencies.Input('country', 'value')])
-def update_hourly_plot(scenario, country='DE'):
+     dash.dependencies.Input('bus', 'value')])
+def update_hourly_plot(scenario, bus='DE-electricity'):
     """
     """
-    return plots.hourly_plot(scenario, country)
+    return plots.hourly_plot(scenario, bus)
 
 @app.callback(dash.dependencies.Output('stacked_plot1', 'figure'),
               [dash.dependencies.Input('scenario', 'value')])
@@ -155,14 +155,14 @@ def update_stacked_plot(scenario):
     """
     return plots.stacked_plot(scenario)
 
-@app.callback(dash.dependencies.Output('country', 'options'),
+@app.callback(dash.dependencies.Output('bus', 'options'),
               [dash.dependencies.Input('scenario', 'value')])
 def update_country_list(scenario):
     """
     """
     with open(os.path.join(app.datapath, scenario, 'config.json')) as f:
         data = json.load(f)
-    return [{'label': r, 'value': r} for r in data['regions']]
+    return [{'label': r, 'value': r+'-electricity'} for r in data['regions']]
 
 
 if __name__ == '__main__':

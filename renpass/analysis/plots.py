@@ -14,30 +14,26 @@ import pandas as pd
 from renpass import options
 from renpass.analysis.main import app
 
-def hourly_plot(scenario, country):
+def hourly_plot(scenario, bus):
     """
     """
     datapath = app.datapath
 
     df = pd.read_csv(
-        os.path.join(datapath, scenario, 'endogenous',
-                     'supply-' + country + '-electricity.csv'),
+        os.path.join(datapath, scenario, 'output', bus + '.csv'),
         index_col=[0], parse_dates=True)
-
-    load = pd.read_csv(
-        os.path.join(datapath, scenario, 'endogenous', 'load.csv'),
-        index_col=[0], parse_dates=True)[country +'-electricity-load']
 
     #df = df.resample('1D').mean()
     x = df.index
-    df.columns = [c.strip(country + '-') for c in df.columns]
+    # kind of a hack to get only the technologies
+    df.columns = [c.strip(bus[0:3]) for c in df.columns]
 
     flexibility = ['import', 'acaes', 'phs', 'lithium_battery']
 
     # create plot
     layout = go.Layout(
         barmode='stack',
-        title='Hourly supply and demand in {} for scenario {}'.format(country, scenario),
+        title='Hourly supply and demand in {} for scenario {}'.format(bus, scenario),
         yaxis=dict(
             title='Energy in MWh',
             titlefont=dict(
@@ -55,17 +51,7 @@ def hourly_plot(scenario, country):
 
 
     for c in df:
-        if c not in flexibility:
-            data.append(
-                go.Scatter(
-                    x = x,
-                    y = df[c],
-                    name=c,
-                    stackgroup='positive',
-                    line=dict(width=0, color=app.color_dict[c])
-                )
-            )
-        else:
+        if c in flexibility:
             data.append(
                 go.Scatter(
                     x = x,
@@ -85,16 +71,28 @@ def hourly_plot(scenario, country):
                     showlegend= False
                 )
             )
-
-    # append load
-    data.append(
-        go.Scatter(
-            x = x,
-            y = load,
-            name = load.name,
-            line=dict(width=3, color='darkred')
-        )
-    )
+        elif 'load' in c:
+            # append load
+            data.append(
+                go.Scatter(
+                    x = x,
+                    y = df[c],
+                    name = c,
+                    line=dict(width=3, color='darkred')
+                )
+            )
+        elif 'excess' in c:
+            pass
+        else:
+            data.append(
+                go.Scatter(
+                    x = x,
+                    y = df[c],
+                    name=c,
+                    stackgroup='positive',
+                    line=dict(width=0, color=app.color_dict[c])
+                )
+            )
 
     return {'data': data, 'layout': layout}
 
@@ -103,7 +101,7 @@ def stacked_plot(scenario):
     """
     """
     df = pd.read_csv(
-        os.path.join(app.datapath, scenario, 'endogenous', 'capacities.csv'),
+        os.path.join(app.datapath, scenario, 'output', 'capacities.csv'),
         index_col=0)
 
     return {
