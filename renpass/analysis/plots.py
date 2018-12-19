@@ -20,12 +20,13 @@ def hourly_plot(scenario, country):
     datapath = app.datapath
 
     df = pd.read_csv(
-        os.path.join(datapath, scenario, 'supply-' + country + '-electricity.csv'),
+        os.path.join(datapath, scenario, 'endogenous',
+                     'supply-' + country + '-electricity.csv'),
         index_col=[0], parse_dates=True)
 
     load = pd.read_csv(
-        os.path.join(datapath, scenario, 'load.csv'),
-        index_col=[0], parse_dates=True)[country +'-electricty-load']
+        os.path.join(datapath, scenario, 'endogenous', 'load.csv'),
+        index_col=[0], parse_dates=True)[country +'-electricity-load']
 
     #df = df.resample('1D').mean()
     x = df.index
@@ -102,7 +103,7 @@ def stacked_plot(scenario):
     """
     """
     df = pd.read_csv(
-        os.path.join(app.datapath, scenario, 'capacities.csv'),
+        os.path.join(app.datapath, scenario, 'endogenous', 'capacities.csv'),
         index_col=0)
 
     return {

@@ -18,7 +18,8 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 app.config.suppress_callback_exceptions = True
 
-app.datapath = os.path.abspath('../../data/oemof-eu/results')
+app.datapath = os.path.join(os.path.expanduser('~'), 'results')
+
 app.scenarios = os.listdir(app.datapath)
 app.color_dict = {
     name: colors.to_hex(color) for name, color in options.techcolor.items()}
