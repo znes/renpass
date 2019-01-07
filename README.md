@@ -248,6 +248,8 @@ the name in the field `profile` of your `volatilel.csv` resource does not match
 any name inside the `volatile_profile.csv` file, i.e. the profile is not found
 where it is looked for.
 
+Another possible source of error might be the missing values in your sequences files. Check these files for NaNs. 
+
 
 **pyomo related errors**
 
