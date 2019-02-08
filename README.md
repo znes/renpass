@@ -122,7 +122,7 @@ The resulting tree of the datapackage could for example look like this:
 
 
 To simplifiy the process of creating and processing a datapackage you may
-also use the [(datapackage-utilities)](https://github.com/znes/datapackage-utilities-utitiles).
+also use functions of [(oemof-tabular)](https://github.com/oemof/oemof-tabular).
 The datamodel used for creating facades and examples is also based on the datamodel
 described there.
 
